@@ -1,0 +1,303 @@
+@import "tailwindcss";
+
+/* ============================================
+   CLAUDE-INSPIRED PORTFOLIO — DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* === PRIMARY === */
+  --parchment:       #f5f4ed;
+  --ivory:           #faf9f5;
+  --near-black:      #141413;
+  --terracotta:      #c96442;
+  --coral:           #d97757;
+
+  /* === SURFACE & NEUTRALS === */
+  --pure-white:      #ffffff;
+  --warm-sand:       #e8e6dc;
+  --dark-surface:    #30302e;
+  --charcoal-warm:   #4d4c48;
+  --olive-gray:      #5e5d59;
+  --stone-gray:      #87867f;
+  --dark-warm:       #3d3d3a;
+  --warm-silver:     #b0aea5;
+
+  /* === BORDERS & RINGS === */
+  --border-cream:    #f0eee6;
+  --border-warm:     #e8e6dc;
+  --border-dark:     #30302e;
+  --ring-warm:       #d1cfc5;
+  --ring-subtle:     #dedc01;
+  --ring-deep:       #c2c0b6;
+
+  /* === SEMANTIC === */
+  --error-crimson:   #b53333;
+  --focus-blue:      #3898ec;
+}
+
+@theme inline {
+  /* Colors */
+  --color-parchment:       var(--parchment);
+  --color-ivory:           var(--ivory);
+  --color-near-black:      var(--near-black);
+  --color-terracotta:      var(--terracotta);
+  --color-coral:           var(--coral);
+  --color-pure-white:      var(--pure-white);
+  --color-warm-sand:       var(--warm-sand);
+  --color-dark-surface:    var(--dark-surface);
+  --color-charcoal-warm:   var(--charcoal-warm);
+  --color-olive-gray:      var(--olive-gray);
+  --color-stone-gray:      var(--stone-gray);
+  --color-dark-warm:       var(--dark-warm);
+  --color-warm-silver:     var(--warm-silver);
+  --color-border-cream:    var(--border-cream);
+  --color-border-warm:     var(--border-warm);
+  --color-border-dark:     var(--border-dark);
+  --color-ring-warm:       var(--ring-warm);
+  --color-error-crimson:   var(--error-crimson);
+  --color-focus-blue:      var(--focus-blue);
+
+  /* Fonts */
+  --font-serif:  var(--font-playfair), Georgia, "Times New Roman", serif;
+  --font-sans:   var(--font-inter), Arial, Helvetica, sans-serif;
+  --font-mono:   var(--font-jetbrains), "Courier New", monospace;
+
+  /* Radius */
+  --radius-sharp:        4px;
+  --radius-subtle:       6px;
+  --radius-comfortable:  8px;
+  --radius-generous:     12px;
+  --radius-very:        16px;
+  --radius-high:         24px;
+  --radius-max:          32px;
+
+  /* Shadows */
+  --shadow-ring:        0px 0px 0px 1px;
+  --shadow-whisper:     0 4px 24px rgba(0, 0, 0, 0.05);
+  --shadow-card:        0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--parchment);
+  color: var(--near-black);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--terracotta);
+  color: var(--ivory);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--parchment);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--warm-sand);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--stone-gray);
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid var(--focus-blue);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   TYPOGRAPHY UTILITIES
+   ============================================ */
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);    opacity: 0.8; }
+  100% { transform: scale(1.6);  opacity: 0; }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 30s linear infinite;
+}
+
+/* ============================================
+   SECTION ALTERNATION
+   ============================================ */
+
+.section-light {
+  background-color: var(--parchment);
+  color: var(--near-black);
+}
+
+.section-dark {
+  background-color: var(--near-black);
+  color: var(--ivory);
+}
+
+/* ============================================
+   BUTTON UTILITIES
+   ============================================ */
+
+.btn-terracotta {
+  background-color: var(--terracotta);
+  color: var(--ivory);
+  border-radius: var(--radius-generous);
+  box-shadow: var(--shadow-ring) var(--terracotta);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-terracotta:hover {
+  background-color: var(--coral);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(201, 100, 66, 0.3);
+}
+
+.btn-warm-sand {
+  background-color: var(--warm-sand);
+  color: var(--charcoal-warm);
+  border-radius: var(--radius-comfortable);
+  box-shadow: var(--shadow-ring) var(--ring-warm);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-warm-sand:hover {
+  background-color: var(--border-warm);
+  transform: translateY(-1px);
+}
+
+.btn-dark {
+  background-color: var(--dark-surface);
+  color: var(--ivory);
+  border-radius: var(--radius-comfortable);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-dark:hover {
+  background-color: var(--near-black);
+}
+
+/* ============================================
+   CARD UTILITIES
+   ============================================ */
+
+.card-ivory {
+  background-color: var(--ivory);
+  border: 1px solid var(--border-cream);
+  border-radius: var(--radius-generous);
+  box-shadow: var(--shadow-card);
+}
+
+.card-dark {
+  background-color: var(--dark-surface);
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-generous);
+}
+
+.card-glass {
+  background: rgba(250, 249, 245, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(240, 238, 230, 0.8);
+  border-radius: var(--radius-very);
+  box-shadow: var(--shadow-whisper);
+}
+
+/* ============================================
+   TEXT UTILITIES
+   ============================================ */
+
+.text-primary   { color: var(--near-black); }
+.text-secondary { color: var(--olive-gray); }
+.text-tertiary  { color: var(--stone-gray); }
+.text-accent    { color: var(--terracotta); }
+
+.text-on-dark-primary   { color: var(--ivory); }
+.text-on-dark-secondary { color: var(--warm-silver); }
+.text-on-dark-tertiary  { color: var(--stone-gray); }
