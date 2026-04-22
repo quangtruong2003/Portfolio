@@ -37,9 +37,19 @@ export default function Navbar() {
       }
     };
 
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -175,9 +185,9 @@ export default function Navbar() {
                 aria-label="Toggle language"
                 className="
                   flex items-center gap-1.5
-                  px-2.5 py-1.5 rounded-[8px]
+                  px-2.5 py-1.5 rounded-comfortable
                   text-xs font-medium font-mono
-                  border border-[#e8e6dc]
+                  border border-border-warm
                   text-stone-gray hover:text-terracotta hover:border-terracotta/30
                   transition-all duration-200
                 "
@@ -195,9 +205,9 @@ export default function Navbar() {
                 aria-label="Toggle language"
                 className="
                   flex items-center gap-1
-                  px-2 py-1 rounded-[6px]
+                  px-2 py-1 rounded-subtle
                   text-xs font-medium font-mono
-                  border border-[#e8e6dc]
+                  border border-border-warm
                   text-stone-gray hover:text-terracotta hover:border-terracotta/30
                   transition-all duration-200
                 "
@@ -222,7 +232,7 @@ export default function Navbar() {
         </nav>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay — only visible on mobile */}
       <div
         id="mobile-menu"
         ref={menuRef}
@@ -230,6 +240,7 @@ export default function Navbar() {
         aria-modal="true"
         aria-label={language === "vi" ? "Điều hướng trang" : "Page navigation"}
         className={`
+          md:hidden
           fixed inset-0 z-40 bg-parchment/98 backdrop-blur-lg
           flex flex-col
           transition-all duration-300
@@ -237,26 +248,6 @@ export default function Navbar() {
         `}
       >
         <div className="flex flex-col h-full pt-20 px-8 pb-8">
-          {/* Logo + close */}
-          <div className="flex items-center justify-between mb-12">
-            <button
-              type="button"
-              className="font-serif font-semibold text-2xl text-terracotta"
-              onClick={() => { closeMenu(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-              aria-label="Scroll to top"
-            >
-              NQT
-            </button>
-            <button
-              type="button"
-              onClick={closeMenu}
-              className="text-charcoal-warm"
-              aria-label={language === "vi" ? "Đóng menu" : "Close menu"}
-            >
-              <X size={28} />
-            </button>
-          </div>
-
           {/* Nav Links */}
           <nav className="flex flex-col gap-6 flex-1">
             {NAV_LINKS.map((link, i) => (
@@ -266,16 +257,17 @@ export default function Navbar() {
                 ref={i === 0 ? firstFocusRef : undefined}
                 onClick={() => handleNavClick(link.href)}
                 className={`
-                  font-serif font-medium text-left
-                  transition-all duration-200
+                  text-left transition-all duration-200
                   ${isOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"}
                 `}
                 style={{
-                  transitionDelay: `${i * 60}ms`,
+                  fontFamily: "var(--font-serif)",
                   fontSize: "clamp(1.75rem, 5vw, 2.5rem)",
+                  fontWeight: 500,
                   color: activeSection === link.href.replace("#", "")
                     ? "var(--terracotta)"
                     : "var(--near-black)",
+                  transitionDelay: `${i * 60}ms`,
                 }}
               >
                 {dictionary.nav[link.key as keyof typeof dictionary.nav]}
