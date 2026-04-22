@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
+import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
 import { ArrowRight, Download, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -28,10 +29,6 @@ const itemVariants = {
 export default function HeroSection() {
   const { dictionary, language } = useLanguage();
   const { hero: t } = dictionary;
-
-  const fullName = language === "vi"
-    ? "Nguyễn Quang Trường"
-    : "Nguyen Quang Truong";
 
   return (
     <section
@@ -104,27 +101,35 @@ export default function HeroSection() {
               "
               style={{ fontSize: "clamp(2rem, 5vw, 4.25rem)" }}
             >
-              {t.greeting} <br className="hidden sm:block" />
-              <span className="text-charcoal-warm">{language === "vi" ? "tôi là" : "I'm"}{" "}</span>
-              <span className="relative inline-block">
-                <span className="relative z-10 text-terracotta">
-                  {language === "vi" ? "Nguyễn Quang Trường" : "Nguyen Quang Truong"}
+              {/* Row 1: greeting + role label */}
+              <div className="flex items-baseline justify-center gap-4 sm:gap-6">
+                <span>{t.greeting}</span>
+                <span className="text-charcoal-warm text-right">
+                  {language === "vi" ? "tôi là" : "I'm"}
                 </span>
-                <svg
-                  className="absolute -bottom-1.5 left-0 w-full"
-                  viewBox="0 0 200 8"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M2 6 C 40 2, 80 2, 120 5 C 150 7, 180 4, 198 5"
-                    stroke="#c96442"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    opacity="0.35"
-                  />
-                </svg>
-              </span>
+              </div>
+              {/* Row 2: name with underline */}
+              <div className="flex justify-center">
+                <span className="relative inline-block">
+                  <span className="relative z-10 text-terracotta">
+                    {language === "vi" ? "Nguyễn Quang Trường" : "Nguyen Quang Truong"}
+                  </span>
+                  <svg
+                    className="absolute -bottom-1.5 left-0 w-full"
+                    viewBox="0 0 200 8"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2 6 C 40 2, 80 2, 120 5 C 150 7, 180 4, 198 5"
+                      stroke="#c96442"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      opacity="0.35"
+                    />
+                  </svg>
+                </span>
+              </div>
             </motion.h1>
 
             {/* Role */}
@@ -151,35 +156,67 @@ export default function HeroSection() {
             {/* CTA Buttons */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-wrap items-center justify-center gap-4 pt-1"
+              className="flex flex-col items-center justify-center gap-3 pt-1"
             >
-              <Button
-                variant="terracotta"
-                size="lg"
-                icon={ArrowRight}
-                iconPosition="right"
-                onClick={() => {
-                  const targetY = document.getElementById("projects")?.getBoundingClientRect().top ?? 0;
-                  window.scrollTo({ top: targetY + window.scrollY, behavior: "smooth" });
-                }}
-              >
-                {t.viewProjects}
-              </Button>
+              {/* Primary CTA: View Projects + Download CV */}
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <Button
+                  variant="terracotta"
+                  size="lg"
+                  icon={ArrowRight}
+                  iconPosition="right"
+                  onClick={() => {
+                    const targetY = document.getElementById("projects")?.getBoundingClientRect().top ?? 0;
+                    window.scrollTo({ top: targetY + window.scrollY, behavior: "smooth" });
+                  }}
+                >
+                  {t.viewProjects}
+                </Button>
 
-              <Button
-                variant="warm-sand"
-                size="lg"
-                icon={Download}
-                onClick={() => {
-                  window.open(
-                    "https://drive.google.com/file/d/1GC2Dq9sRW0eUNLd8nwJL7oGeVbtoYHAT/view?usp=sharing",
-                    "_blank",
-                    "noopener,noreferrer"
-                  );
-                }}
-              >
-                {t.downloadCV}
-              </Button>
+                <Button
+                  variant="warm-sand"
+                  size="lg"
+                  icon={Download}
+                  onClick={() => {
+                    window.open(
+                      "https://drive.google.com/file/d/1GC2Dq9sRW0eUNLd8nwJL7oGeVbtoYHAT/view?usp=sharing",
+                      "_blank",
+                      "noopener,noreferrer"
+                    );
+                  }}
+                >
+                  {t.downloadCV}
+                </Button>
+              </div>
+
+              {/* Social Buttons: GitHub + LinkedIn */}
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Button
+                  variant="social-github"
+                  size="md"
+                  icon={GitHubIcon}
+                  iconPosition="left"
+                  onClick={() => {
+                    window.open("https://github.com/quangtruong2003", "_blank", "noopener,noreferrer");
+                  }}
+                  aria-label="GitHub"
+                >
+                  GitHub
+                </Button>
+
+                <Button
+                  variant="social-linkedin"
+                  size="md"
+                  icon={LinkedInIcon}
+                  iconPosition="left"
+                  onClick={() => {
+                    window.open("https://www.linkedin.com/in/quangtruong2003", "_blank", "noopener,noreferrer");
+                  }}
+                  aria-label="LinkedIn"
+                >
+                  LinkedIn
+                </Button>
+              </div>
             </motion.div>
 
             {/* Stats Row */}

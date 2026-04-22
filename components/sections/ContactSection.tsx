@@ -6,28 +6,66 @@ import SectionTitle from "@/components/ui/SectionTitle";
 import FadeIn from "@/components/animations/FadeIn";
 import Button from "@/components/ui/Button";
 import InputField from "@/components/ui/InputField";
-import { Mail, Phone, Send, MapPin, ExternalLink, CircleUser } from "lucide-react";
+import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
+import { Mail, Phone, Send, MapPin } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function ContactSection() {
-  const { dictionary } = useLanguage();
+  const { dictionary, language } = useLanguage();
   const { contact: t } = dictionary;
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setSubmitting(false);
-    setSubmitted(true);
-    setForm({ name: "", email: "", message: "" });
-    setTimeout(() => setSubmitted(false), 4000);
+    setError(null);
+
+    const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+      const mailtoBody = `Name: ${form.name}%0D%0AEmail: ${form.email}%0D%0A%0D%0AMessage:%0D%0A${encodeURIComponent(form.message)}`;
+      window.location.href = `mailto:nguyentruongk530042003@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(form.name)}&body=${mailtoBody}`;
+
+      setSubmitting(false);
+      setSubmitted(true);
+      setForm({ name: "", email: "", message: "" });
+      setTimeout(() => setSubmitted(false), 4000);
+      return;
+    }
+
+    try {
+      const { default: emailjs } = await import("@emailjs/browser");
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name: form.name,
+          from_email: form.email,
+          message: form.message,
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+      setSubmitted(true);
+      setForm({ name: "", email: "", message: "" });
+      setTimeout(() => setSubmitted(false), 4000);
+    } catch {
+      setError(language === "vi"
+        ? "Gửi thất bại. Vui lòng thử lại hoặc liên hệ trực tiếp qua email."
+        : "Failed to send. Please try again or contact directly via email."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -67,14 +105,14 @@ export default function ContactSection() {
                 color: "#d97757",
               },
               {
-                icon: CircleUser,
+                icon: LinkedInIcon,
                 labelKey: "linkedin" as const,
                 value: "quangtruong2003",
                 href: "https://www.linkedin.com/in/quangtruong2003",
                 color: "#0A66C2",
               },
               {
-                icon: ExternalLink,
+                icon: GitHubIcon,
                 labelKey: "github" as const,
                 value: "quangtruong2003",
                 href: "https://github.com/quangtruong2003",
@@ -199,6 +237,16 @@ export default function ContactSection() {
                   rows={5}
                 />
 
+                {error ? (
+              <div className="flex items-center gap-2 px-4 py-3 rounded-[12px] bg-error-crimson/10 border border-error-crimson/20 text-sm text-coral">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                {error}
+              </div>
+            ) : null}
                 <div className="flex justify-end pt-2">
                   <Button
                     type="submit"
@@ -223,8 +271,8 @@ export default function ContactSection() {
             </p>
             <div className="flex items-center gap-5">
               {[
-                { icon: ExternalLink, href: "https://github.com/quangtruong2003", label: "GitHub" },
-                { icon: CircleUser, href: "https://www.linkedin.com/in/quangtruong2003", label: "LinkedIn" },
+                { icon: GitHubIcon, href: "https://github.com/quangtruong2003", label: "GitHub" },
+                { icon: LinkedInIcon, href: "https://www.linkedin.com/in/quangtruong2003", label: "LinkedIn" },
                 { icon: Mail, href: "mailto:nguyentruongk530042003@gmail.com", label: "Email" },
               ].map(({ icon: Icon, href, label }) => (
                 <a

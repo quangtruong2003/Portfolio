@@ -1,29 +1,33 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import { Menu, X, Mail, ExternalLink, CircleUser, Globe } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { Menu, X, Mail, Globe } from "lucide-react";
+import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+const NAV_LINKS = [
+  { key: "about", href: "#about" },
+  { key: "skills", href: "#skills" },
+  { key: "experience", href: "#experience" },
+  { key: "projects", href: "#projects" },
+  { key: "contact", href: "#contact" },
+] as const;
+
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [scrolled, setScrolled] = React.useState(false);
+  const [activeSection, setActiveSection] = React.useState("");
   const { language, dictionary, toggleLanguage } = useLanguage();
 
-  const navLinks = [
-    { key: "about", href: "#about" },
-    { key: "skills", href: "#skills" },
-    { key: "experience", href: "#experience" },
-    { key: "projects", href: "#projects" },
-    { key: "contact", href: "#contact" },
-  ];
+  const menuRef = useRef<HTMLDivElement>(null);
+  const firstFocusRef = useRef<HTMLButtonElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
 
-      const sections = navLinks.map((l) => l.href.replace("#", ""));
+      const sections = NAV_LINKS.map((l) => l.href.replace("#", ""));
       for (const id of [...sections].reverse()) {
         const el = document.getElementById(id);
         if (el && el.getBoundingClientRect().top <= 100) {
@@ -37,18 +41,69 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement;
+
+    requestAnimationFrame(() => {
+      firstFocusRef.current?.focus();
+    });
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+        hamburgerRef.current?.focus();
+        return;
+      }
+      if (e.key !== "Tab") return;
+
+      const menu = menuRef.current;
+      if (!menu) return;
+
+      const focusable = menu.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+      previouslyFocused?.focus();
+    };
+  }, [isOpen]);
+
   const handleNavClick = (href: string) => {
     setIsOpen(false);
     const el = document.querySelector(href);
     if (el) {
-      const targetY = el.getBoundingClientRect().top + window.scrollY;
+      const headerHeight = 72;
+      const targetY = el.getBoundingClientRect().top + window.scrollY - headerHeight;
       window.scrollTo({ top: targetY, behavior: "smooth" });
     }
   };
 
+  const closeMenu = () => setIsOpen(false);
+
   return (
     <>
-      {/* Desktop & Mobile Navbar */}
       <header
         className={`
           fixed top-0 left-0 right-0 z-50
@@ -67,13 +122,11 @@ export default function Navbar() {
             `}
           >
             {/* Logo */}
-            <Link
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="flex items-center gap-2 group"
+              aria-label="Scroll to top"
             >
               <span
                 className="
@@ -85,13 +138,14 @@ export default function Navbar() {
               >
                 NQT
               </span>
-            </Link>
+            </button>
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <button
                   key={link.href}
+                  type="button"
                   onClick={() => handleNavClick(link.href)}
                   className={`
                     font-sans text-sm font-medium
@@ -116,6 +170,7 @@ export default function Navbar() {
 
               {/* Language Toggle */}
               <button
+                type="button"
                 onClick={toggleLanguage}
                 aria-label="Toggle language"
                 className="
@@ -130,34 +185,12 @@ export default function Navbar() {
                 <Globe size={13} />
                 <span>{language === "vi" ? "VI" : "EN"}</span>
               </button>
-
-              {/* Social Icons */}
-              <div className="flex items-center gap-3 ml-1">
-                <a
-                  href="https://github.com/quangtruong2003"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-stone-gray hover:text-terracotta transition-colors duration-200"
-                  aria-label="GitHub"
-                >
-                  <ExternalLink size={18} />
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/quangtruong2003"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-stone-gray hover:text-terracotta transition-colors duration-200"
-                  aria-label="LinkedIn"
-                >
-                  <CircleUser size={18} />
-                </a>
-              </div>
             </div>
 
             {/* Mobile Header Right: Language + Hamburger */}
             <div className="md:hidden flex items-center gap-2">
-              {/* Language Toggle */}
               <button
+                type="button"
                 onClick={(e) => { e.stopPropagation(); toggleLanguage(); }}
                 aria-label="Toggle language"
                 className="
@@ -173,13 +206,16 @@ export default function Navbar() {
                 {language === "vi" ? "VI" : "EN"}
               </button>
 
-              {/* Hamburger */}
               <button
+                ref={hamburgerRef}
+                type="button"
                 className="text-charcoal-warm p-2 -mr-2"
                 onClick={() => setIsOpen(!isOpen)}
-                aria-label="Toggle menu"
+                aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
+                aria-controls="mobile-menu"
               >
-                <Menu size={24} />
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
@@ -188,6 +224,11 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       <div
+        id="mobile-menu"
+        ref={menuRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={language === "vi" ? "Điều hướng trang" : "Page navigation"}
         className={`
           fixed inset-0 z-40 bg-parchment/98 backdrop-blur-lg
           flex flex-col
@@ -198,11 +239,19 @@ export default function Navbar() {
         <div className="flex flex-col h-full pt-20 px-8 pb-8">
           {/* Logo + close */}
           <div className="flex items-center justify-between mb-12">
-            <span className="font-serif font-semibold text-2xl text-terracotta">NQT</span>
             <button
-              onClick={() => setIsOpen(false)}
+              type="button"
+              className="font-serif font-semibold text-2xl text-terracotta"
+              onClick={() => { closeMenu(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              aria-label="Scroll to top"
+            >
+              NQT
+            </button>
+            <button
+              type="button"
+              onClick={closeMenu}
               className="text-charcoal-warm"
-              aria-label="Close menu"
+              aria-label={language === "vi" ? "Đóng menu" : "Close menu"}
             >
               <X size={28} />
             </button>
@@ -210,9 +259,11 @@ export default function Navbar() {
 
           {/* Nav Links */}
           <nav className="flex flex-col gap-6 flex-1">
-            {navLinks.map((link, i) => (
+            {NAV_LINKS.map((link, i) => (
               <button
                 key={link.href}
+                type="button"
+                ref={i === 0 ? firstFocusRef : undefined}
                 onClick={() => handleNavClick(link.href)}
                 className={`
                   font-serif font-medium text-left
@@ -240,7 +291,7 @@ export default function Navbar() {
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-olive-gray hover:text-terracotta transition-colors font-sans text-sm"
             >
-              <ExternalLink size={18} />
+              <GitHubIcon size={18} />
               GitHub
             </a>
             <a
@@ -249,7 +300,7 @@ export default function Navbar() {
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-olive-gray hover:text-terracotta transition-colors font-sans text-sm"
             >
-              <CircleUser size={18} />
+              <LinkedInIcon size={18} />
               LinkedIn
             </a>
             <a

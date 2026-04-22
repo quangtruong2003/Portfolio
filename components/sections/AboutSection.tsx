@@ -21,7 +21,7 @@ const languages = [
 ];
 
 export default function AboutSection() {
-  const { dictionary, language } = useLanguage();
+  const { dictionary } = useLanguage();
   const { about: t } = dictionary;
 
   return (

@@ -11,7 +11,7 @@ interface ExperienceItem {
   company: string;
   role: string;
   period: string;
-  location: string;
+  locationKey: string;
   type: "work" | "project";
   descriptionKey: string;
   bullets: string[];
@@ -24,7 +24,7 @@ const experiences: ExperienceItem[] = [
     company: "C3TEK Digital Marketing Solutions",
     role: "Junior PHP Developer",
     period: "Feb 2025 — Present",
-    location: "District 10, Ho Chi Minh City",
+    locationKey: "exp_c3tek_loc",
     type: "work",
     descriptionKey: "exp_c3tek_desc",
     bullets: [
@@ -41,7 +41,7 @@ const experiences: ExperienceItem[] = [
     company: "Medical Appointment Booking System",
     role: "Backend Developer — Thesis Project",
     period: "May 2025 — Aug 2025",
-    location: "Ho Chi Minh City",
+    locationKey: "exp_medical_loc",
     type: "project",
     descriptionKey: "exp_medical_desc",
     bullets: [
@@ -58,7 +58,7 @@ const experiences: ExperienceItem[] = [
     company: "ChatBot (ChatGPT Clone)",
     role: "Android Developer — Personal Project",
     period: "Oct 2024 — Mar 2025",
-    location: "Ho Chi Minh City",
+    locationKey: "exp_chatbot_loc",
     type: "project",
     descriptionKey: "exp_chatbot_desc",
     bullets: [
@@ -71,24 +71,26 @@ const experiences: ExperienceItem[] = [
   },
 ];
 
-const expDescriptions: Record<string, Record<"vi" | "en", string>> = {
-  exp_c3tek_desc: {
-    vi: "Vai trò full-time xây dựng và duy trì nền tảng quản lý bất động sản phục vụ quản lý và chủ nhà.",
-    en: "Full-time role building and maintaining a property management platform used by property managers and rental owners.",
-  },
-  exp_medical_desc: {
-    vi: "Nền tảng đặt lịch khám y tế full-stack với backend Spring Boot và frontend React, tích hợp thanh toán VNPay.",
-    en: "Full-stack medical appointment booking platform with Spring Boot backend and React frontend, featuring secure payment integration.",
-  },
-  exp_chatbot_desc: {
-    vi: "Ứng dụng Android AI hội thoại xây dựng với Kotlin, tái hiện các tính năng tương tác của ChatGPT với Firebase.",
-    en: "Android conversational AI application replicating core interactive features of ChatGPT, built with Kotlin and Firebase.",
-  },
-};
-
 export default function ExperienceSection() {
   const { dictionary, language } = useLanguage();
   const { experience: t } = dictionary;
+
+  const getText = (key: string) => {
+    const val = (dictionary as unknown as Record<string, unknown>)[key];
+    if (typeof val === "string") return val;
+    if (typeof val === "object" && val !== null && "vi" in val) {
+      return (val as Record<"vi" | "en", string>)[language];
+    }
+    return key;
+  };
+
+  const getDescription = (key: string) => {
+    const val = (dictionary as unknown as Record<string, unknown>)[key];
+    if (typeof val === "object" && val !== null && "vi" in val) {
+      return (val as Record<"vi" | "en", string>)[language];
+    }
+    return key;
+  };
 
   return (
     <SectionWrapper id="experience" theme="dark" py="xl">
@@ -135,6 +137,7 @@ export default function ExperienceSection() {
                         flex items-center justify-center
                         mt-1.5
                       "
+                      aria-hidden="true"
                     >
                       <div className="w-2 h-2 rounded-full bg-ivory" />
                     </div>
@@ -183,13 +186,13 @@ export default function ExperienceSection() {
                             {exp.period}
                           </span>
                           <span className="text-[#30302e]">|</span>
-                          <span>{exp.location}</span>
+                          <span>{getText(exp.locationKey)}</span>
                         </div>
                       </div>
 
                       {/* Description */}
                       <p className="font-sans text-sm leading-relaxed text-warm-silver mb-5">
-                        {expDescriptions[exp.descriptionKey][language]}
+                        {getDescription(exp.descriptionKey)}
                       </p>
 
                       {/* Bullet points */}
@@ -199,7 +202,7 @@ export default function ExperienceSection() {
                             key={j}
                             className="flex items-start gap-3 font-sans text-sm text-warm-silver/85"
                           >
-                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-terracotta/60 flex-shrink-0" />
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-terracotta/60 flex-shrink-0" aria-hidden="true" />
                             <span className="leading-relaxed">{bullet}</span>
                           </li>
                         ))}

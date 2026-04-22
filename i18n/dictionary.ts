@@ -52,6 +52,12 @@ export interface Dictionary {
     work: string;
     project: string;
   };
+  exp_c3tek_loc: string;
+  exp_medical_loc: string;
+  exp_chatbot_loc: string;
+  exp_c3tek_desc: { vi: string; en: string };
+  exp_medical_desc: { vi: string; en: string };
+  exp_chatbot_desc: { vi: string; en: string };
   projects: {
     eyebrow: string;
     title: string;
@@ -140,6 +146,21 @@ export const vi: Dictionary = {
     work: "Toàn thời gian",
     project: "Dự Án Cá Nhân",
   },
+  exp_c3tek_loc: "Quận 10, TP. Hồ Chí Minh",
+  exp_medical_loc: "TP. Hồ Chí Minh",
+  exp_chatbot_loc: "TP. Hồ Chí Minh",
+  exp_c3tek_desc: {
+    vi: "Vai trò full-time xây dựng và duy trì nền tảng quản lý bất động sản phục vụ quản lý và chủ nhà.",
+    en: "Full-time role building and maintaining a property management platform used by property managers and rental owners.",
+  },
+  exp_medical_desc: {
+    vi: "Nền tảng đặt lịch khám y tế full-stack với backend Spring Boot và frontend React, tích hợp thanh toán VNPay.",
+    en: "Full-stack medical appointment booking platform with Spring Boot backend and React frontend, featuring secure payment integration.",
+  },
+  exp_chatbot_desc: {
+    vi: "Ứng dụng Android AI hội thoại xây dựng với Kotlin, tái hiện các tính năng tương tác của ChatGPT với Firebase.",
+    en: "Android conversational AI application replicating core interactive features of ChatGPT, built with Kotlin and Firebase.",
+  },
   projects: {
     eyebrow: "Dự Án",
     title: "Những Thứ Tôi Đã Xây Dựng",
@@ -227,6 +248,21 @@ export const en: Dictionary = {
     subtitle: "From enterprise Laravel backends to personal Android experiments — each project taught me something new about building software that matters.",
     work: "Full-time",
     project: "Personal Project",
+  },
+  exp_c3tek_loc: "District 10, Ho Chi Minh City",
+  exp_medical_loc: "Ho Chi Minh City",
+  exp_chatbot_loc: "Ho Chi Minh City",
+  exp_c3tek_desc: {
+    vi: "Vai trò full-time xây dựng và duy trì nền tảng quản lý bất động sản phục vụ quản lý và chủ nhà.",
+    en: "Full-time role building and maintaining a property management platform used by property managers and rental owners.",
+  },
+  exp_medical_desc: {
+    vi: "Nền tảng đặt lịch khám y tế full-stack với backend Spring Boot và frontend React, tích hợp thanh toán VNPay.",
+    en: "Full-stack medical appointment booking platform with Spring Boot backend and React frontend, featuring secure payment integration.",
+  },
+  exp_chatbot_desc: {
+    vi: "Ứng dụng Android AI hội thoại xây dựng với Kotlin, tái hiện các tính năng tương tác của ChatGPT với Firebase.",
+    en: "Android conversational AI application replicating core interactive features of ChatGPT, built with Kotlin and Firebase.",
   },
   projects: {
     eyebrow: "Projects",

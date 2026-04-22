@@ -1,16 +1,15 @@
 "use client";
 
-import React from "react";
-import { ButtonHTMLAttributes, forwardRef } from "react";
+import React, { forwardRef } from "react";
 import { LucideIcon } from "lucide-react";
 
-type ButtonVariant = "terracotta" | "warm-sand" | "dark" | "ghost" | "outline";
+type ButtonVariant = "terracotta" | "warm-sand" | "dark" | "ghost" | "outline" | "social-github" | "social-linkedin";
 type ButtonSize = "sm" | "md" | "lg";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  icon?: LucideIcon;
+  icon?: LucideIcon | React.ComponentType<{ size?: number; className?: string }>;
   iconPosition?: "left" | "right";
   loading?: boolean;
   fullWidth?: boolean;
@@ -26,6 +25,10 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-charcoal-warm hover:bg-warm-sand",
   outline:
     "bg-transparent text-terracotta border border-[1.5px] border-terracotta hover:bg-terracotta hover:text-ivory",
+  "social-github":
+    "bg-[#24292e] text-white shadow-[0px_0px_0px_1px_#1b1f23] hover:bg-[#2f363d] hover:shadow-[0_4px_16px_rgba(36,41,46,0.25)]",
+  "social-linkedin":
+    "bg-[#0a66c2] text-white shadow-[0px_0px_0px_1px_#004182] hover:bg-[#0958a8] hover:shadow-[0_4px_16px_rgba(10,102,194,0.25)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -51,6 +54,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const isDisabled = disabled || loading;
+    const iconSize = size === "sm" ? 14 : size === "lg" ? 20 : 16;
 
     return (
       <button
@@ -96,13 +100,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         ) : (
           <>
-            {Icon && iconPosition === "left" && (
-              <Icon size={size === "sm" ? 14 : size === "lg" ? 20 : 16} />
-            )}
+            {Icon && iconPosition === "left" && <Icon size={iconSize} />}
             <span>{children}</span>
-            {Icon && iconPosition === "right" && (
-              <Icon size={size === "sm" ? 14 : size === "lg" ? 20 : 16} />
-            )}
+            {Icon && iconPosition === "right" && <Icon size={iconSize} />}
           </>
         )}
       </button>

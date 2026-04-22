@@ -20,14 +20,14 @@ export default function InputField({
   type = "text",
   placeholder,
   value,
-  name,
   onChange,
   required = false,
   className = "",
   rows = 4,
   disabled = false,
-}: InputFieldProps) {
+}: Omit<InputFieldProps, "name"> & { name?: string }) {
   const id = label.toLowerCase().replace(/\s+/g, "-");
+  const nameAttr = label.toLowerCase().replace(/\s+/g, "_");
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
@@ -42,6 +42,7 @@ export default function InputField({
       {type === "text-area" ? (
         <textarea
           id={id}
+          name={nameAttr}
           rows={rows}
           placeholder={placeholder}
           value={value}
@@ -65,6 +66,7 @@ export default function InputField({
       ) : (
         <input
           id={id}
+          name={nameAttr}
           type={type}
           placeholder={placeholder}
           value={value}

@@ -32,6 +32,7 @@ export default function SectionWrapper({
         w-full
         ${theme === "dark" ? "bg-near-black" : "bg-parchment"}
         ${paddingMap[py]}
+        ${id ? "scroll-mt-16 md:scroll-mt-[72px]" : ""}
         ${className}
       `}
     >

@@ -15,29 +15,23 @@ const STORAGE_KEY = "portfolio-language";
 
 const dictionaries: Record<Language, Dictionary> = { vi, en };
 
-function getBrowserLanguage(): Language {
+function getInitialLanguage(): Language {
+  if (typeof window === "undefined") return "en";
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "vi" || stored === "en") return stored;
-  } catch {
-    // SSR or storage blocked
-  }
-  if (typeof navigator !== "undefined") {
     const browserLang = navigator.language.toLowerCase();
     if (browserLang.startsWith("vi")) return "vi";
+  } catch {
+    // SSR or storage blocked
   }
   return "en";
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
-  const [ready, setReady] = useState(false);
+  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
 
   useEffect(() => {
-    const lang = getBrowserLanguage();
-    setLanguageState(lang);
-    setReady(true);
-
     const handleStorage = () => {
       try {
         const stored = localStorage.getItem(STORAGE_KEY);

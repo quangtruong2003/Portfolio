@@ -1,18 +1,19 @@
 "use client";
 
 import React from "react";
-import { Mail, Phone, ExternalLink, CircleUser } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
+import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const socialLinks = [
   {
-    icon: ExternalLink,
+    icon: GitHubIcon,
     label: "GitHub",
     href: "https://github.com/quangtruong2003",
     color: "hover:text-near-black",
   },
   {
-    icon: CircleUser,
+    icon: LinkedInIcon,
     label: "LinkedIn",
     href: "https://www.linkedin.com/in/quangtruong2003",
     color: "hover:text-[#0A66C2]",
@@ -32,9 +33,8 @@ const socialLinks = [
 ];
 
 export default function Footer() {
-  const { dictionary, language } = useLanguage();
+  const { dictionary } = useLanguage();
   const { footer: t, nav: navT } = dictionary;
-  const year = new Date().getFullYear();
 
   const navItems = [
     { key: "about" as const, label: navT.about },
