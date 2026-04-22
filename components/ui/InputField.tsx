@@ -53,7 +53,7 @@ export default function InputField({
             w-full
             bg-dark-surface
             border border-[#30302e]
-            rounded-[12px]
+            rounded-generous
             px-4 py-3
             font-sans text-ivory placeholder:text-stone-gray
             text-base leading-relaxed
@@ -77,7 +77,7 @@ export default function InputField({
             w-full
             bg-dark-surface
             border border-[#30302e]
-            rounded-[12px]
+            rounded-generous
             px-4 py-3
             font-sans text-ivory placeholder:text-stone-gray
             text-base

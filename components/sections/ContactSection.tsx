@@ -17,6 +17,7 @@ export default function ContactSection() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const formDisabled = true;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -130,7 +131,7 @@ export default function ContactSection() {
                 key={labelKey}
                 className="
                   bg-dark-surface border border-[#30302e]
-                  rounded-[16px] p-4
+                  rounded-very p-4
                   flex items-center gap-4
                   hover:border-[#3d3d3a] transition-colors duration-300
                 "
@@ -138,7 +139,7 @@ export default function ContactSection() {
                 <div
                   className="
                     w-10 h-10 rounded-[10px] flex items-center justify-center
-                    flex-shrink-0
+                    shrink-0
                   "
                   style={{
                     backgroundColor: `${color}15`,
@@ -205,60 +206,76 @@ export default function ContactSection() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <>
+                {formDisabled && (
+                  <div className="mb-4 px-4 py-3 rounded-generous bg-border-warm/10 border border-border-warm/20 text-sm text-stone-gray font-sans">
+                    {language === "vi"
+                      ? "Chức năng đang được hoàn thiện."
+                      : "Feature under development."}
+                  </div>
+                )}
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5" aria-disabled={formDisabled}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <InputField
+                      label={t.nameLabel}
+                      type="text"
+                      placeholder={t.namePlaceholder}
+                      name="name"
+                      value={form.name}
+                      onChange={handleChange}
+                      required
+                      disabled={formDisabled}
+                    />
+                    <InputField
+                      label={t.emailLabel}
+                      type="email"
+                      placeholder={t.emailPlaceholder}
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
+                      disabled={formDisabled}
+                    />
+                  </div>
                   <InputField
-                    label={t.nameLabel}
-                    type="text"
-                    placeholder={t.namePlaceholder}
-                    name="name"
-                    value={form.name}
+                    label={t.messageLabel}
+                    type="text-area"
+                    placeholder={t.messagePlaceholder}
+                    name="message"
+                    value={form.message}
                     onChange={handleChange}
                     required
+                    rows={5}
+                    disabled={formDisabled}
                   />
-                  <InputField
-                    label={t.emailLabel}
-                    type="email"
-                    placeholder={t.emailPlaceholder}
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <InputField
-                  label={t.messageLabel}
-                  type="text-area"
-                  placeholder={t.messagePlaceholder}
-                  name="message"
-                  value={form.message}
-                  onChange={handleChange}
-                  required
-                  rows={5}
-                />
 
-                {error ? (
-              <div className="flex items-center gap-2 px-4 py-3 rounded-[12px] bg-error-crimson/10 border border-error-crimson/20 text-sm text-coral">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
-                {error}
-              </div>
-            ) : null}
-                <div className="flex justify-end pt-2">
-                  <Button
-                    type="submit"
-                    variant="terracotta"
-                    size="lg"
-                    icon={Send}
-                    loading={submitting}
-                  >
-                    {submitting ? t.sending : t.sendMessage}
-                  </Button>
-                </div>
-              </form>
+                  {error ? (
+                    <div className="flex items-center gap-2 px-4 py-3 rounded-generous bg-error-crimson/10 border border-error-crimson/20 text-sm text-coral">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                      {error}
+                    </div>
+                  ) : null}
+                  <div className="flex justify-end pt-2">
+                    <Button
+                      type="submit"
+                      variant="terracotta"
+                      size="lg"
+                      icon={formDisabled ? undefined : Send}
+                      loading={submitting}
+                      disabled={formDisabled}
+                    >
+                      {formDisabled
+                        ? (language === "vi" ? "Gửi tin nhắn" : "Send message")
+                        : (submitting ? t.sending : t.sendMessage)
+                      }
+                    </Button>
+                  </div>
+                </form>
+              </>
             )}
           </div>
         </FadeIn>
