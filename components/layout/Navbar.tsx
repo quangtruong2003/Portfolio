@@ -183,8 +183,7 @@ export default function Navbar() {
                 type="button"
                 onClick={toggleLanguage}
                 aria-label="Toggle language"
-                className="
-                  flex items-center gap-1.5
+                className="flex items-center gap-1.5
                   px-2.5 py-1.5 rounded-comfortable
                   text-xs font-medium font-mono
                   border border-border-warm
@@ -203,8 +202,7 @@ export default function Navbar() {
                 type="button"
                 onClick={(e) => { e.stopPropagation(); toggleLanguage(); }}
                 aria-label="Toggle language"
-                className="
-                  flex items-center gap-1
+                className="flex items-center gap-1
                   px-2 py-1 rounded-subtle
                   text-xs font-medium font-mono
                   border border-border-warm
@@ -213,7 +211,7 @@ export default function Navbar() {
                 "
               >
                 <Globe size={12} />
-                {language === "vi" ? "VI" : "EN"}
+                <span>{language === "vi" ? "VI" : "EN"}</span>
               </button>
 
               <button

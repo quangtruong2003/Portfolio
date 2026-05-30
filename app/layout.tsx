@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -74,11 +75,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const savedLang = cookieStore.get("portfolio-language")?.value;
+  const initialLanguage =
+    savedLang === "vi" || savedLang === "en" ? savedLang : "en";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -106,7 +111,7 @@ export default function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang={initialLanguage}
       suppressHydrationWarning
       className={`${playfair.variable} ${inter.variable} ${jetbrains.variable}`}
     >
@@ -117,7 +122,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col antialiased">
-        <LanguageProvider>
+        <LanguageProvider initialLanguage={initialLanguage}>
           {children}
         </LanguageProvider>
       </body>

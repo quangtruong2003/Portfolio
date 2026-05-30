@@ -15,21 +15,25 @@ const STORAGE_KEY = "portfolio-language";
 
 const dictionaries: Record<Language, Dictionary> = { vi, en };
 
-function getInitialLanguage(): Language {
-  if (typeof window === "undefined") return "en";
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "vi" || stored === "en") return stored;
-    const browserLang = navigator.language.toLowerCase();
-    if (browserLang.startsWith("vi")) return "vi";
-  } catch {
-    // SSR or storage blocked
-  }
-  return "en";
-}
+export function LanguageProvider({
+  children,
+  initialLanguage = "en",
+}: {
+  children: React.ReactNode;
+  initialLanguage?: Language;
+}) {
+  const [language, setLanguageState] = useState<Language>(initialLanguage);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(getInitialLanguage);
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if ((stored === "vi" || stored === "en") && stored !== initialLanguage) {
+        setLanguageState(stored);
+      }
+    } catch {
+      // SSR or storage blocked
+    }
+  }, [initialLanguage]);
 
   useEffect(() => {
     const handleStorage = () => {
@@ -48,6 +52,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguageState(lang);
     try {
       localStorage.setItem(STORAGE_KEY, lang);
+      document.cookie = `${STORAGE_KEY}=${lang}; path=/; max-age=31536000; SameSite=Lax`;
     } catch {
       // ignore
     }

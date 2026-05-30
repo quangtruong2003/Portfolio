@@ -124,8 +124,18 @@ export default function OpenSourceSection() {
           />
         </FadeIn>
 
-        {/* Repos Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Repos Grid — responsive cols, centered margins for 1–2 items */}
+        <div
+          className={`
+            grid gap-5
+            ${repos.length === 1
+              ? "grid-cols-1 max-w-sm mx-auto"
+              : repos.length === 2
+                ? "grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }
+          `}
+        >
           {repos.map((repo, i) => (
             <RepoCard key={repo.id} repo={repo} index={i} />
           ))}
