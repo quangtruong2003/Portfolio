@@ -65,6 +65,12 @@ export interface Dictionary {
     viewAll: string;
     seeMore: string;
   };
+  openSource: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    viewAll: string;
+  };
   contact: {
     eyebrow: string;
     title: string;
@@ -168,6 +174,12 @@ export const vi: Dictionary = {
     viewAll: "Xem Tất Cả trên GitHub",
     seeMore: "Muốn xem thêm?",
   },
+  openSource: {
+    eyebrow: "Open Source",
+    title: "Trên GitHub",
+    subtitle: "Những repo nguồn mở của tôi — thả sao, fork, và contributing.",
+    viewAll: "Xem Tất Cả trên GitHub",
+  },
   contact: {
     eyebrow: "Liên Hệ",
     title: "Hãy Xây Dựng Điều Gì Đó Cùng Nhau",
@@ -270,6 +282,12 @@ export const en: Dictionary = {
     subtitle: "From production systems to passion projects — each one pushed me to learn something new and ship something I'm proud of.",
     viewAll: "View All on GitHub",
     seeMore: "Want to see more of my work?",
+  },
+  openSource: {
+    eyebrow: "Open Source",
+    title: "On GitHub",
+    subtitle: "My open-source work — starring, forking, and contributing.",
+    viewAll: "View All on GitHub",
   },
   contact: {
     eyebrow: "Get in Touch",

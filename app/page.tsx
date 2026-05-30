@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import LocaleHandler from "@/components/layout/LocaleHandler";
 import ScrollProgress from "@/components/animations/ScrollProgress";
+import OpenSourceSection from "@/components/sections/OpenSourceSection";
 import HeroSection from "@/components/sections/HeroSection";
 import AboutSection from "@/components/sections/AboutSection";
 import SkillsSection from "@/components/sections/SkillsSection";
@@ -18,6 +19,7 @@ export default function Home() {
 
       <main>
         <HeroSection />
+        <OpenSourceSection />
         <AboutSection />
         <SkillsSection />
         <ExperienceSection />

@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
 import { ArrowRight, Download, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useGitHubStats } from "@/hooks/useGitHubStats";
 
 const containerVariants = {
   hidden: {},
@@ -29,6 +30,7 @@ const itemVariants = {
 export default function HeroSection() {
   const { dictionary, language } = useLanguage();
   const { hero: t } = dictionary;
+  const { stats: ghStats } = useGitHubStats();
 
   return (
     <section
@@ -220,26 +222,34 @@ export default function HeroSection() {
             </motion.div>
 
             {/* Stats Row */}
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-wrap justify-center gap-6 sm:gap-8 pt-4 border-t border-[#e8e6dc]"
-            >
-              {[
-                { value: t.yearsExp, label: language === "vi" ? "Năm Kinh Nghiệm" : "Years Experience" },
-                { value: t.projectsBuilt, label: language === "vi" ? "Dự Án" : "Projects Built" },
-                { value: t.technologies, label: language === "vi" ? "Công Nghệ" : "Technologies" },
-              ].map(({ value, label }) => (
-                <div key={label} className="flex flex-col gap-0.5 text-center">
-                  <span
-                    className="font-serif font-medium text-terracotta"
-                    style={{ fontSize: "1.75rem" }}
-                  >
-                    {value}
-                  </span>
-                  <span className="font-sans text-xs text-stone-gray">{label}</span>
-                </div>
-              ))}
-            </motion.div>
+            {ghStats && (
+              <motion.div
+                variants={itemVariants}
+                className="flex flex-wrap justify-center gap-6 sm:gap-8 pt-4 border-t border-[#e8e6dc]"
+              >
+                {[
+                  {
+                    value: ghStats.totalStars.toString(),
+                    label: "Stars",
+                    prefix: "★",
+                  },
+                  { value: t.yearsExp, label: language === "vi" ? "Năm Kinh Nghiệm" : "Years Experience" },
+                  { value: t.projectsBuilt, label: language === "vi" ? "Dự Án" : "Projects Built" },
+                  { value: t.technologies, label: language === "vi" ? "Công Nghệ" : "Technologies" },
+                ].map(({ value, label, prefix }) => (
+                  <div key={label} className="flex flex-col gap-0.5 text-center">
+                    <span
+                      className="font-serif font-medium text-terracotta"
+                      style={{ fontSize: "1.75rem" }}
+                    >
+                      {prefix && <span className="mr-0.5">{prefix}</span>}
+                      {value}
+                    </span>
+                    <span className="font-sans text-xs text-stone-gray">{label}</span>
+                  </div>
+                ))}
+              </motion.div>
+            )}
           </motion.div>
         </motion.div>
       </div>
