@@ -100,25 +100,6 @@ const projects: Project[] = [
     ],
     featured: true,
   },
-  {
-    title: "ChatBot (ChatGPT Clone)",
-    subtitle: "Android Personal Project",
-    description:
-      "Android conversational AI app built with Kotlin, replicating ChatGPT's interactive experience with Firebase-powered real-time sync.",
-    longDescription:
-      "A native Android application that brings conversational AI to mobile devices. Built with Kotlin and Firebase, featuring real-time message synchronization, cloud storage for conversation history, and a polished Material Design UI optimized for smooth, low-latency interactions.",
-    technologies: ["Kotlin", "Firebase", "Android SDK", "Material Design", "REST API"],
-    role: "Android Developer",
-    type: "personal",
-    github: "https://github.com/quangtruong2003/ChatBot",
-    highlights: [
-      "Real-time data sync",
-      "Firebase BaaS",
-      "Material Design UI",
-      "Low-latency streaming",
-    ],
-    featured: true,
-  },
 ];
 
 export default function ProjectsSection() {
@@ -145,7 +126,7 @@ export default function ProjectsSection() {
             {projects
               .filter((p) => p.featured)
               .map((project, i) => (
-                <FadeIn key={project.title} delay={i * 0.1} direction="up">
+                <FadeIn key={`${project.title}-${i}`} delay={i * 0.1} direction="up">
                   <ProjectCard project={project} large />
                 </FadeIn>
               ))}
