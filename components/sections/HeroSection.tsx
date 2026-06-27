@@ -179,8 +179,48 @@ export default function HeroSection() {
               variants={itemVariants}
               className="flex items-center gap-3"
             >
-              <span className="font-sans text-base md:text-lg font-medium text-olive-gray">
-                {t.role}
+              <span className="relative font-sans text-base md:text-lg font-medium text-olive-gray">
+                {/* Shimmer effect */}
+                <span
+                  className="relative z-10 bg-clip-text"
+                  style={{
+                    backgroundImage: "linear-gradient(90deg, #5e5d59 0%, #8b8680 25%, #c96442 50%, #8b8680 75%, #5e5d59 100%)",
+                    backgroundSize: "200% 100%",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  <motion.span
+                    animate={{
+                      backgroundPosition: ["200% 0", "-200% 0"],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    style={{
+                      backgroundImage: "linear-gradient(90deg, #5e5d59 0%, #8b8680 25%, #c96442 50%, #8b8680 75%, #5e5d59 100%)",
+                      backgroundSize: "200% 100%",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    {t.role}
+                  </motion.span>
+                </span>
+                {/* Glow underline */}
+                <motion.span
+                  className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-terracotta/60 to-transparent"
+                  initial={{ scaleX: 0, opacity: 0 }}
+                  animate={{ scaleX: [0, 1, 0], opacity: [0, 0.6, 0] }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  style={{ transformOrigin: "center" }}
+                />
               </span>
             </motion.div>
 
