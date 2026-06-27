@@ -98,7 +98,26 @@ const projects: Project[] = [
       "Material Design UI",
       "Low-latency streaming",
     ],
-    featured: false,
+    featured: true,
+  },
+  {
+    title: "ChatBot (ChatGPT Clone)",
+    subtitle: "Android Personal Project",
+    description:
+      "Android conversational AI app built with Kotlin, replicating ChatGPT's interactive experience with Firebase-powered real-time sync.",
+    longDescription:
+      "A native Android application that brings conversational AI to mobile devices. Built with Kotlin and Firebase, featuring real-time message synchronization, cloud storage for conversation history, and a polished Material Design UI optimized for smooth, low-latency interactions.",
+    technologies: ["Kotlin", "Firebase", "Android SDK", "Material Design", "REST API"],
+    role: "Android Developer",
+    type: "personal",
+    github: "https://github.com/quangtruong2003/ChatBot",
+    highlights: [
+      "Real-time data sync",
+      "Firebase BaaS",
+      "Material Design UI",
+      "Low-latency streaming",
+    ],
+    featured: true,
   },
 ];
 
@@ -121,7 +140,7 @@ export default function ProjectsSection() {
 
         {/* Projects Grid */}
         <div className="flex flex-col gap-8">
-          {/* Featured projects (2-column on desktop) */}
+          {/* All projects in 2x2 grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {projects
               .filter((p) => p.featured)
@@ -131,15 +150,6 @@ export default function ProjectsSection() {
                 </FadeIn>
               ))}
           </div>
-
-          {/* Other projects */}
-          {projects
-            .filter((p) => !p.featured)
-            .map((project, i) => (
-              <FadeIn key={project.title} delay={i * 0.1} direction="up">
-                <ProjectCard project={project} />
-              </FadeIn>
-            ))}
         </div>
 
         {/* GitHub CTA */}
