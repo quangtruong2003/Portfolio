@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import ContextMenuProvider from "@/components/ui/ContextMenuProvider";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -28,18 +29,19 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nguyen Quang Truong — Junior PHP Developer",
+  title: "Nguyen Quang Truong — Software Engineer",
   description:
-    "Portfolio of Nguyen Quang Truong — Junior PHP Developer specializing in Laravel, RESTful APIs, and scalable backend systems. Based in Ho Chi Minh City.",
+    "Portfolio of Nguyen Quang Truong — Software Engineer specializing in Laravel, AI Automation, N8N, RESTful APIs, and scalable backend systems. Based in Ho Chi Minh City.",
   keywords: [
     "Nguyen Quang Truong",
+    "Software Engineer",
     "PHP Developer",
     "Laravel Developer",
     "Backend Developer",
+    "AI Automation",
+    "N8N",
     "Ho Chi Minh City",
-    "Junior Developer",
     "Vietnam",
-    "Junior PHP",
     "Laravel 12",
     "RESTful API",
     "MySQL",
@@ -48,9 +50,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Nguyen Quang Truong" }],
   creator: "Nguyen Quang Truong",
   openGraph: {
-    title: "Nguyen Quang Truong — Junior PHP Developer",
+    title: "Nguyen Quang Truong — Software Engineer",
     description:
-      "Junior PHP Developer specializing in Laravel, RESTful APIs, and scalable backend systems.",
+      "Software Engineer specializing in Laravel, AI Automation, N8N, RESTful APIs, and scalable backend systems.",
     url: "https://quangtruong.dev",
     siteName: "Nguyen Quang Truong Portfolio",
     locale: "en_US",
@@ -58,9 +60,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nguyen Quang Truong — Junior PHP Developer",
+    title: "Nguyen Quang Truong — Software Engineer",
     description:
-      "Junior PHP Developer specializing in Laravel, RESTful APIs, and scalable backend systems.",
+      "Software Engineer specializing in Laravel, AI Automation, N8N, RESTful APIs, and scalable backend systems.",
   },
   robots: {
     index: true,
@@ -88,7 +90,7 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Nguyen Quang Truong",
-    jobTitle: "Junior PHP Developer",
+    jobTitle: "Software Engineer",
     url: "https://quangtruong.dev",
     email: "nguyentruongk530042003@gmail.com",
     address: {
@@ -103,8 +105,11 @@ export default async function RootLayout({
     knowsAbout: [
       "PHP",
       "Laravel",
+      "AI Automation",
+      "N8N",
       "RESTful API",
       "MySQL",
+      "Software Engineering",
       "Backend Development",
     ],
   };
@@ -123,7 +128,9 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col antialiased">
         <LanguageProvider initialLanguage={initialLanguage}>
-          {children}
+          <ContextMenuProvider>
+            {children}
+          </ContextMenuProvider>
         </LanguageProvider>
       </body>
     </html>

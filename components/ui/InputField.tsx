@@ -59,8 +59,7 @@ export default function InputField({
             text-base leading-relaxed
             resize-none
             transition-all duration-200
-            focus:outline-none focus:border-terracotta focus:shadow-[0px_0px_0px_1.5px_#c96442]
-            disabled:opacity-50 disabled:cursor-not-allowed
+            focus:outline-none focus:border-terracotta focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed
           "
         />
       ) : (
@@ -82,8 +81,7 @@ export default function InputField({
             font-sans text-ivory placeholder:text-stone-gray
             text-base
             transition-all duration-200
-            focus:outline-none focus:border-terracotta focus:shadow-[0px_0px_0px_1.5px_#c96442]
-            disabled:opacity-50 disabled:cursor-not-allowed
+            focus:outline-none focus:border-terracotta focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed
           "
         />
       )}

@@ -114,12 +114,6 @@ body {
   background: var(--stone-gray);
 }
 
-/* Focus visible */
-:focus-visible {
-  outline: 2px solid var(--focus-blue);
-  outline-offset: 2px;
-}
-
 /* ============================================
    TYPOGRAPHY UTILITIES
    ============================================ */

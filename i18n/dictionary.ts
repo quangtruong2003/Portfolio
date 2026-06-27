@@ -16,7 +16,7 @@ export interface Dictionary {
     role: string;
     bio: string;
     viewProjects: string;
-    downloadCV: string;
+    viewCV: string;
     yearsExp: string;
     projectsBuilt: string;
     technologies: string;
@@ -55,9 +55,11 @@ export interface Dictionary {
   exp_c3tek_loc: string;
   exp_medical_loc: string;
   exp_chatbot_loc: string;
+  exp_ssmooth_loc: string;
   exp_c3tek_desc: { vi: string; en: string };
   exp_medical_desc: { vi: string; en: string };
   exp_chatbot_desc: { vi: string; en: string };
+  exp_ssmooth_desc: { vi: string; en: string };
   projects: {
     eyebrow: string;
     title: string;
@@ -113,26 +115,26 @@ export const vi: Dictionary = {
     eyebrow: "Đang tìm cơ hội",
     greeting: "Xin chào,",
     name: "Nguyễn Quang Trường",
-    role: "Junior PHP Developer",
+    role: "Software Engineer",
     bio: "Chuyên gia backend với niềm đam mê kiến trúc hệ thống scalable, xây dựng API mạnh mẽ bằng Laravel và PHP 8+. Tôi tin rằng code sạch là nền tảng của mọi sản phẩm xuất sắc.",
     viewProjects: "Xem Dự Án",
-    downloadCV: "Tải CV",
+    viewCV: "Xem CV",
     yearsExp: "1+",
-    projectsBuilt: "3+",
+    projectsBuilt: "4+",
     technologies: "10+",
     scroll: "Cuộn xuống",
   },
   about: {
     eyebrow: "Về Tôi",
     title: "Viết Code với Mục Đích",
-    subtitle: "Tôi là một lập trình viên backend với niềm đam mê xây dựng hệ thống không chỉ hoạt động tốt mà còn thanh lịch — kiến trúc mở rộng được và code mà người khác thích đọc.",
-    bio1: "Đang theo học Công nghệ Thông tin tại Đại học Công nghệ Sài Gòn, tôi chuyên về phát triển backend với PHP và Laravel. Hành trình bắt đầu từ sự tò mò về cách hệ thống vận hành bên trong, và sự tò mò đó đã phát triển thành niềm đam mê thực sự với việc xây dựng kiến trúc server-side mạnh mẽ, có thể bảo trì.",
-    bio2: "Tôi đã làm việc qua toàn bộ vòng đời của các ứng dụng thực tế — từ thiết kế database schema đến viết RESTful APIs, triển khai authentication, billing workflows và tự động tạo document. Dù là hệ thống đặt lịch khám với tích hợp thanh toán VNPay hay nền tảng quản lý bất động sản với nhiều role người dùng, tôi tiếp cận mỗi dự án như một tác phẩm đáng để làm đúng.",
+    subtitle: "Tôi là một Software Engineer với niềm đam mê xây dựng hệ thống không chỉ hoạt động tốt mà còn thanh lịch — kiến trúc mở rộng được và code mà người khác thích đọc.",
+    bio1: "Đang theo học Công nghệ Thông tin tại Đại học Công nghệ Sài Gòn, tôi chuyên về Backend Development với Laravel và AI Automation với N8N. Hành trình bắt đầu từ sự tò mò về cách hệ thống vận hành bên trong, và sự tò mò đó đã phát triển thành niềm đam mê thực sự với việc xây dựng kiến trúc server-side mạnh mẽ, có thể bảo trì.",
+    bio2: "Tôi đã làm việc qua toàn bộ vòng đời của các ứng dụng thực tế — từ thiết kế database schema đến viết RESTful APIs, triển khai AI automation workflows, authentication, billing workflows và tự động tạo document. Dù là hệ thống đặt lịch khám với tích hợp thanh toán VNPay hay nền tảng quản lý bất động sản với nhiều role người dùng, tôi tiếp cận mỗi dự án như một tác phẩm đáng để làm đúng.",
     years: "1+",
     yearsLabel: "Năm Xây Dựng",
-    projects: "3+",
+    projects: "4+",
     projectsLabel: "Dự Án Lớn",
-    tech: "10+",
+    tech: "15+",
     techLabel: "Công Nghệ",
     languages: "2",
     languagesLabel: "Ngôn Ngữ",
@@ -155,6 +157,11 @@ export const vi: Dictionary = {
   exp_c3tek_loc: "Quận 10, TP. Hồ Chí Minh",
   exp_medical_loc: "TP. Hồ Chí Minh",
   exp_chatbot_loc: "TP. Hồ Chí Minh",
+  exp_ssmooth_loc: "TP. Hồ Chí Minh",
+  exp_ssmooth_desc: {
+    vi: "Ứng dụng smooth scrolling native cho Windows và macOS sử dụng Rust và Tauri 2, với tích hợp Windows API.",
+    en: "Native smooth scrolling application for Windows and macOS using Rust and Tauri 2 with Windows API integration.",
+  },
   exp_c3tek_desc: {
     vi: "Vai trò full-time xây dựng và duy trì nền tảng quản lý bất động sản phục vụ quản lý và chủ nhà.",
     en: "Full-time role building and maintaining a property management platform used by property managers and rental owners.",
@@ -202,7 +209,7 @@ export const vi: Dictionary = {
     orFind: "Hoặc tìm tôi tại",
   },
   footer: {
-    tagline: "Junior PHP Developer xây dựng hệ thống backend scalable với Laravel. Đến từ TP. Hồ Chí Minh, Việt Nam.",
+    tagline: "Software Engineer xây dựng hệ thống scalable với Laravel. Đến từ TP. Hồ Chí Minh, Việt Nam.",
     navigate: "Điều hướng",
     getInTouch: "Liên hệ",
     copyright: "© 2026 Nguyễn Quang Trường. Làm với tâm.",
@@ -222,26 +229,26 @@ export const en: Dictionary = {
     eyebrow: "Open to opportunities",
     greeting: "Hello,",
     name: "Nguyen Quang Truong",
-    role: "Junior PHP Developer",
+    role: "Software Engineer",
     bio: "Backend specialist with a passion for scalable system architecture, building robust APIs with Laravel and PHP 8+. I believe clean code is the foundation of every great product.",
     viewProjects: "View Projects",
-    downloadCV: "Download CV",
+    viewCV: "View CV",
     yearsExp: "1+",
-    projectsBuilt: "3+",
+    projectsBuilt: "4+",
     technologies: "10+",
     scroll: "Scroll",
   },
   about: {
     eyebrow: "About Me",
     title: "Crafting Code with Purpose",
-    subtitle: "I'm a backend-focused developer with a deep love for building systems that are not just functional, but elegant — architecture that scales and code that others enjoy reading.",
-    bio1: "Currently studying Information Technology at SaiGon Technology University, I specialize in backend development with PHP and Laravel. My journey started with curiosity about how systems work under the hood, and that curiosity has grown into a genuine passion for building robust, maintainable server-side architecture.",
-    bio2: "I've worked across the full lifecycle of real applications — from designing database schemas and writing RESTful APIs, to implementing authentication, billing workflows, and automated document generation. Whether it's a medical booking system integrated with VNPay or a property management platform serving multiple user roles, I approach each project as a craft worth doing right.",
+    subtitle: "I'm a software engineer with a deep love for building systems that are not just functional, but elegant — architecture that scales and code that others enjoy reading.",
+    bio1: "Currently studying Information Technology at SaiGon Technology University, I specialize in Backend Development with Laravel and AI Automation with N8N. My journey started with curiosity about how systems work under the hood, and that curiosity has grown into a genuine passion for building robust, maintainable server-side architecture.",
+    bio2: "I've worked across the full lifecycle of real applications — from designing database schemas and writing RESTful APIs, to implementing AI automation workflows, authentication, billing workflows and automated document generation. Whether it's a medical booking system integrated with VNPay or a property management platform serving multiple user roles, I approach each project as a craft worth doing right.",
     years: "1+",
     yearsLabel: "Years Building",
-    projects: "3+",
+    projects: "4+",
     projectsLabel: "Major Projects",
-    tech: "10+",
+    tech: "15+",
     techLabel: "Technologies",
     languages: "2",
     languagesLabel: "Languages",
@@ -264,6 +271,11 @@ export const en: Dictionary = {
   exp_c3tek_loc: "District 10, Ho Chi Minh City",
   exp_medical_loc: "Ho Chi Minh City",
   exp_chatbot_loc: "Ho Chi Minh City",
+  exp_ssmooth_loc: "Ho Chi Minh City",
+  exp_ssmooth_desc: {
+    vi: "Ứng dụng smooth scrolling native cho Windows và macOS sử dụng Rust và Tauri 2, với tích hợp Windows API.",
+    en: "Native smooth scrolling application for Windows and macOS using Rust and Tauri 2 with Windows API integration.",
+  },
   exp_c3tek_desc: {
     vi: "Vai trò full-time xây dựng và duy trì nền tảng quản lý bất động sản phục vụ quản lý và chủ nhà.",
     en: "Full-time role building and maintaining a property management platform used by property managers and rental owners.",
@@ -311,7 +323,7 @@ export const en: Dictionary = {
     orFind: "Or find me on",
   },
   footer: {
-    tagline: "Junior PHP Developer crafting scalable backend systems with Laravel. Based in Ho Chi Minh City, Vietnam.",
+    tagline: "Software Engineer crafting scalable systems with Laravel. Based in Ho Chi Minh City, Vietnam.",
     navigate: "Navigate",
     getInTouch: "Get in Touch",
     copyright: "© 2026 Nguyen Quang Truong. Crafted with care.",

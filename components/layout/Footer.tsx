@@ -101,7 +101,7 @@ export default function Footer() {
                 (094) 789 0450
               </a>
               <p className="font-sans text-sm text-stone-gray">
-                Binh Thanh, Ho Chi Minh City
+                Ho Chi Minh City
               </p>
             </div>
           </div>

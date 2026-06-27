@@ -13,6 +13,8 @@ import {
   Database,
   Shield,
   Globe,
+  Workflow,
+  Cpu,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -26,6 +28,19 @@ interface SkillCategory {
 }
 
 const skillCategories: SkillCategory[] = [
+  {
+    icon: Workflow,
+    title: "AI Automation & Workflows",
+    description: "Building automated workflows and AI integrations",
+    color: "#7c3aed",
+    skills: [
+      { name: "N8N", level: "core" },
+      { name: "AI Automation", level: "core" },
+      { name: "Claude API", level: "core" },
+      { name: "OpenAI API", level: "familiar" },
+      { name: "Workflow Design", level: "core" },
+    ],
+  },
   {
     icon: Server,
     title: "Backend Development",
@@ -58,9 +73,22 @@ const skillCategories: SkillCategory[] = [
     color: "#e8a87c",
     skills: [
       { name: "React", level: "familiar" },
+      { name: "TypeScript", level: "core" },
       { name: "Git", level: "core" },
       { name: "Cursor / Claude Code", level: "core" },
       { name: "Firebase", level: "familiar" },
+    ],
+  },
+  {
+    icon: Cpu,
+    title: "Desktop & Systems",
+    description: "Native applications and system-level programming",
+    color: "#0891b2",
+    skills: [
+      { name: "Rust", level: "core" },
+      { name: "Tauri 2", level: "core" },
+      { name: "Windows API", level: "familiar" },
+      { name: "macOS Development", level: "familiar" },
     ],
   },
   {

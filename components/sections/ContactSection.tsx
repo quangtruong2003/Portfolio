@@ -7,7 +7,7 @@ import FadeIn from "@/components/animations/FadeIn";
 import Button from "@/components/ui/Button";
 import InputField from "@/components/ui/InputField";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
-import { Mail, Phone, Send, MapPin } from "lucide-react";
+import { Mail, Phone, Send } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function ContactSection() {
@@ -17,7 +17,7 @@ export default function ContactSection() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const formDisabled = true;
+  const formDisabled = false;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -119,13 +119,6 @@ export default function ContactSection() {
                 href: "https://github.com/quangtruong2003",
                 color: "#24292f",
               },
-              {
-                icon: MapPin,
-                labelKey: "location" as const,
-                value: "Binh Thanh, Ho Chi Minh City",
-                href: null,
-                color: "#87867f",
-              },
             ].map(({ icon: Icon, labelKey, value, href, color }) => (
               <div
                 key={labelKey}
@@ -206,15 +199,7 @@ export default function ContactSection() {
                 </div>
               </div>
             ) : (
-              <>
-                {formDisabled && (
-                  <div className="mb-4 px-4 py-3 rounded-generous bg-border-warm/10 border border-border-warm/20 text-sm text-stone-gray font-sans">
-                    {language === "vi"
-                      ? "Chức năng đang được hoàn thiện."
-                      : "Feature under development."}
-                  </div>
-                )}
-                <form onSubmit={handleSubmit} className="flex flex-col gap-5" aria-disabled={formDisabled}>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <InputField
                       label={t.nameLabel}
@@ -224,7 +209,6 @@ export default function ContactSection() {
                       value={form.name}
                       onChange={handleChange}
                       required
-                      disabled={formDisabled}
                     />
                     <InputField
                       label={t.emailLabel}
@@ -234,7 +218,6 @@ export default function ContactSection() {
                       value={form.email}
                       onChange={handleChange}
                       required
-                      disabled={formDisabled}
                     />
                   </div>
                   <InputField
@@ -246,7 +229,6 @@ export default function ContactSection() {
                     onChange={handleChange}
                     required
                     rows={5}
-                    disabled={formDisabled}
                   />
 
                   {error ? (
@@ -264,18 +246,13 @@ export default function ContactSection() {
                       type="submit"
                       variant="terracotta"
                       size="lg"
-                      icon={formDisabled ? undefined : Send}
+                      icon={Send}
                       loading={submitting}
-                      disabled={formDisabled}
                     >
-                      {formDisabled
-                        ? (language === "vi" ? "Gửi tin nhắn" : "Send message")
-                        : (submitting ? t.sending : t.sendMessage)
-                      }
+                      {submitting ? t.sending : t.sendMessage}
                     </Button>
                   </div>
                 </form>
-              </>
             )}
           </div>
         </FadeIn>

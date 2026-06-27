@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
-import { ArrowRight, Download, ChevronDown } from "lucide-react";
+import { ArrowRight, Eye, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useGitHubStats } from "@/hooks/useGitHubStats";
+import CVModal from "@/components/ui/CVModal";
 
 const containerVariants = {
   hidden: {},
@@ -27,7 +28,28 @@ const itemVariants = {
   },
 };
 
+const waveVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.04, delayChildren: 0.3 },
+  },
+};
+
+const waveItemVariants = {
+  hidden: { y: 0 },
+  visible: (i: number) => ({
+    y: [0, -8, 0, -4, 0],
+    transition: {
+      duration: 0.8,
+      repeat: Infinity,
+      repeatDelay: 2 + i * 0.15,
+      ease: "easeInOut" as const,
+    },
+  }),
+};
+
 export default function HeroSection() {
+  const [isCVOpen, setIsCVOpen] = useState(false);
   const { dictionary, language } = useLanguage();
   const { hero: t } = dictionary;
   const { stats: ghStats } = useGitHubStats();
@@ -110,24 +132,42 @@ export default function HeroSection() {
                   {language === "vi" ? "tôi là" : "I'm"}
                 </span>
               </div>
-              {/* Row 2: name with underline */}
+              {/* Row 2: name with wave animation */}
               <div className="flex justify-center">
                 <span className="relative inline-block">
-                  <span className="relative z-10 text-terracotta">
-                    {language === "vi" ? "Nguyễn Quang Trường" : "Nguyen Quang Truong"}
-                  </span>
+                  <motion.span
+                    className="relative z-10 text-terracotta inline-flex"
+                    variants={waveVariants}
+                    initial="hidden"
+                    animate="visible"
+                  >
+                    {(language === "vi" ? "Nguyễn Quang Trường" : "Nguyen Quang Truong").split("").map((char, i) => (
+                      <motion.span
+                        key={i}
+                        className="inline-block"
+                        variants={waveItemVariants}
+                        custom={i}
+                      >
+                        {char === " " ? "\u00A0" : char}
+                      </motion.span>
+                    ))}
+                  </motion.span>
                   <svg
                     className="absolute -bottom-1.5 left-0 w-full"
                     viewBox="0 0 200 8"
                     fill="none"
                     aria-hidden="true"
                   >
-                    <path
+                    <motion.path
                       d="M2 6 C 40 2, 80 2, 120 5 C 150 7, 180 4, 198 5"
                       stroke="#c96442"
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       opacity="0.35"
+                      pathLength={0}
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }}
                     />
                   </svg>
                 </span>
@@ -178,16 +218,10 @@ export default function HeroSection() {
                 <Button
                   variant="warm-sand"
                   size="lg"
-                  icon={Download}
-                  onClick={() => {
-                    window.open(
-                      "https://drive.google.com/file/d/1GC2Dq9sRW0eUNLd8nwJL7oGeVbtoYHAT/view?usp=sharing",
-                      "_blank",
-                      "noopener,noreferrer"
-                    );
-                  }}
+                  icon={Eye}
+                  onClick={() => setIsCVOpen(true)}
                 >
-                  {t.downloadCV}
+                  {t.viewCV}
                 </Button>
               </div>
 
@@ -273,6 +307,9 @@ export default function HeroSection() {
           <ChevronDown size={18} />
         </motion.div>
       </motion.div>
+
+      {/* CV Modal */}
+      <CVModal isOpen={isCVOpen} onClose={() => setIsCVOpen(false)} />
     </section>
   );
 }

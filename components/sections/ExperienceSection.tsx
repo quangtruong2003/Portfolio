@@ -22,7 +22,7 @@ interface ExperienceItem {
 const experiences: ExperienceItem[] = [
   {
     company: "C3TEK Digital Marketing Solutions",
-    role: "Junior PHP Developer",
+    role: "Software Engineer",
     period: "Feb 2025 — Present",
     locationKey: "exp_c3tek_loc",
     type: "work",
@@ -36,6 +36,23 @@ const experiences: ExperienceItem[] = [
       "Collaborated within an agile 6-member cross-functional team delivering a scalable platform with online room booking and integrated payment tracking.",
     ],
     technologies: ["Laravel 12", "PHP 8+", "MySQL", "Filament", "RESTful API", "Eloquent ORM", "RBAC", "PDF Generation"],
+  },
+  {
+    company: "SmoothScroll",
+    role: "Desktop Developer — Open Source",
+    period: "Jun 2025 — Present",
+    locationKey: "exp_ssmooth_loc",
+    type: "project",
+    descriptionKey: "exp_ssmooth_desc",
+    bullets: [
+      "Built a native smooth scrolling application for Windows and macOS using Rust and Tauri 2.",
+      "Implemented low-level input interception using Windows API for precise mouse-wheel control.",
+      "Designed frame-perfect easing curves for smooth scrolling animations across applications.",
+      "Built per-app exclusion system allowing users to disable smoothing for specific applications.",
+      "Created React-based settings UI with real-time configuration preview.",
+    ],
+    technologies: ["Rust", "Tauri 2", "React", "TypeScript", "Windows API", "macOS Development"],
+    link: "https://github.com/quangtruong2003/SmoothScroll",
   },
   {
     company: "Medical Appointment Booking System",
