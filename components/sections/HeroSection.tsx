@@ -120,7 +120,7 @@ export default function HeroSection() {
             <motion.h1
               variants={itemVariants}
               className="
-                font-serif font-medium leading-[1.08]
+                font-serif font-medium leading-[1.3]
                 text-near-black
               "
               style={{ fontSize: "clamp(2rem, 5vw, 4.25rem)" }}
@@ -259,7 +259,7 @@ export default function HeroSection() {
             {ghStats && (
               <motion.div
                 variants={itemVariants}
-                className="flex flex-wrap justify-center gap-6 sm:gap-8 pt-4 border-t border-[#e8e6dc]"
+                className="flex flex-wrap justify-center gap-6 sm:gap-8 pt-4 border-t border-[#d4d2c8]"
               >
                 {[
                   {
