@@ -119,7 +119,7 @@ export default function Navbar() {
           fixed top-0 left-0 right-0 z-50
           transition-all duration-300
           ${scrolled
-            ? "bg-parchment/95 backdrop-blur-md shadow-[0_1px_0_0_#e8e6dc]"
+            ? "bg-parchment/95 backdrop-blur-lg backdrop-saturate-150 shadow-[0_1px_0_0_#d4d2c8,0_4px_16px_rgba(0,0,0,0.05)]"
             : "bg-transparent"
           }
         `}
