@@ -49,13 +49,13 @@ export default function IntroPage() {
             }}
             type="button"
           >
-            START ANIMATING
+            START
           </button>
         </div>
       </div>
 
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         * {
           margin: 0;
@@ -69,7 +69,7 @@ export default function IntroPage() {
           left: 0;
           width: 100vw;
           height: 100vh;
-          background: #0a0a0b;
+          background: #f5f4f0;
           overflow: hidden;
           display: flex;
           align-items: center;
@@ -100,6 +100,14 @@ export default function IntroPage() {
           gap: 2rem;
           text-align: center;
           padding: 2rem;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.1s ease, visibility 0.1s ease;
+        }
+
+        .frame.intro.visible .content-wrapper {
+          opacity: 1;
+          visibility: visible;
         }
 
         .tagline-container {
@@ -108,10 +116,10 @@ export default function IntroPage() {
 
         .tagline-line {
           display: block;
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
           font-size: clamp(0.75rem, 1.5vw, 1rem);
-          font-weight: 500;
-          letter-spacing: 0.4em;
+          font-weight: 600;
+          letter-spacing: 0.35em;
           color: #c96442;
           text-transform: uppercase;
           opacity: 0;
@@ -126,12 +134,12 @@ export default function IntroPage() {
         .main-heading {
           display: flex;
           flex-direction: column;
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
           font-size: clamp(2.5rem, 8vw, 6rem);
-          font-weight: 800;
-          line-height: 1;
-          color: #ffffff;
-          letter-spacing: -0.02em;
+          font-weight: 600;
+          line-height: 1.15;
+          color: #1a1a1a;
+          letter-spacing: 0.04em;
         }
 
         .heading-line {
@@ -154,11 +162,11 @@ export default function IntroPage() {
         }
 
         .subtitle {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
           font-size: clamp(0.875rem, 1.5vw, 1.125rem);
-          font-weight: 400;
+          font-weight: 500;
           letter-spacing: 0.25em;
-          color: #666666;
+          color: #5a5a52;
           opacity: 0;
           transform: translateY(20px);
           animation: slideUp 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.2s forwards;
@@ -174,16 +182,16 @@ export default function IntroPage() {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
           font-size: 0.875rem;
           font-weight: 600;
-          letter-spacing: 0.15em;
+          letter-spacing: 0.1em;
           text-decoration: none;
-          color: #ffffff;
+          color: #f5f4f0;
           background: #c96442;
-          border: none;
-          border-radius: 4px;
+          border: 1px solid #c96442;
+          border-radius: 2px;
           cursor: pointer;
           opacity: 0;
           transform: scale(0.8);
-          transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+          transition: all 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940);
           animation: scaleInCenter 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) 2s forwards;
         }
 
@@ -192,9 +200,10 @@ export default function IntroPage() {
         }
 
         .cta-button:hover {
-          background: #d97757;
-          transform: scale(1.05);
-          box-shadow: 0 8px 30px rgba(201, 100, 66, 0.4);
+          background: transparent;
+          color: #c96442;
+          transform: scale(1.02);
+          box-shadow: 0 4px 20px rgba(201, 100, 66, 0.25);
         }
 
         .cta-button:active {
