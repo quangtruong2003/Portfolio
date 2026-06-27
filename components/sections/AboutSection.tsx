@@ -62,19 +62,24 @@ export default function AboutSection() {
             <h3 className="font-sans text-xs font-medium uppercase tracking-[0.12em] text-stone-gray">
               {t.softSkills}
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {softSkills.map((skill) => (
-                <span
+                <div
                   key={skill}
                   className="
-                    px-3.5 py-1.5 rounded-full
+                    group px-4 py-3 rounded-[12px]
                     bg-dark-surface border border-[#30302e]
-                    font-sans text-sm text-warm-silver
-                    hover:border-terracotta/40 hover:text-ivory transition-all duration-200
+                    hover:border-terracotta/40
+                    transition-all duration-200
                   "
                 >
-                  {skill}
-                </span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-terracotta" />
+                    <span className="font-sans text-sm text-warm-silver group-hover:text-ivory transition-colors duration-200">
+                      {skill}
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
