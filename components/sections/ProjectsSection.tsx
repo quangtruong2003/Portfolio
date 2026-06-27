@@ -220,20 +220,12 @@ function ProjectCard({ project, large = false }: { project: Project; large?: boo
 
       {/* Title + Subtitle */}
       <div className="flex flex-col gap-1">
-        <div className="flex items-start justify-between gap-3">
-          <h3
-            className="
-              font-serif font-medium leading-tight text-near-black
-            "
-            style={{ fontSize: large ? "clamp(1.3rem, 2vw, 1.6rem)" : "clamp(1.1rem, 1.5vw, 1.25rem)" }}
-          >
-            {project.title}
-          </h3>
-          <ArrowUpRight
-            size={18}
-            className="text-stone-gray flex-shrink-0 mt-1"
-          />
-        </div>
+        <h3
+          className="font-serif font-medium leading-tight text-near-black"
+          style={{ fontSize: large ? "clamp(1.3rem, 2vw, 1.6rem)" : "clamp(1.1rem, 1.5vw, 1.25rem)" }}
+        >
+          {project.title}
+        </h3>
         <p className="font-sans text-xs text-stone-gray font-medium">
           {project.subtitle}
         </p>
