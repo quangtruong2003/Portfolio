@@ -38,11 +38,11 @@ const waveVariants = {
 const waveItemVariants = {
   hidden: { y: 0 },
   visible: (i: number) => ({
-    y: [0, -8, 0, -4, 0],
+    y: [0, -4, 0, -2, 0],
     transition: {
-      duration: 0.8,
+      duration: 1.2,
       repeat: Infinity,
-      repeatDelay: 2 + i * 0.15,
+      repeatDelay: 3 + i * 0.2,
       ease: "easeInOut" as const,
     },
   }),
