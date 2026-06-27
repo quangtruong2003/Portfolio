@@ -44,6 +44,25 @@ const projects: Project[] = [
     featured: true,
   },
   {
+    title: "SmoothScroll",
+    subtitle: "Open Source — Desktop App",
+    description:
+      "A native smooth scrolling application for Windows and macOS with per-app exclusion and real-time configuration.",
+    longDescription:
+      "A cross-platform smooth scrolling utility built with Rust and Tauri 2. Intercepts low-level mouse input to provide frame-perfect smooth scrolling across all applications. Features per-app exclusion rules, customizable easing curves, and a React-based settings UI with live preview. Supports both Windows and macOS.",
+    technologies: ["Rust", "Tauri 2", "React", "TypeScript", "Windows API", "macOS Development"],
+    role: "Desktop Developer",
+    type: "personal",
+    github: "https://github.com/quangtruong2003/SmoothScroll",
+    highlights: [
+      "Low-level input interception",
+      "Frame-perfect easing curves",
+      "Per-app exclusion system",
+      "React settings UI",
+    ],
+    featured: true,
+  },
+  {
     title: "Medical Appointment Booking",
     subtitle: "Thesis Project",
     description:
