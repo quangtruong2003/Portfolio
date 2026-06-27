@@ -172,10 +172,17 @@ function ProjectCard({ project, large = false }: { project: Project; large?: boo
     <GlassCard
       hoverable
       className={`
-        flex flex-col gap-5
-        ${large ? "min-h-[320px]" : "min-h-[220px]"}
+        flex flex-col h-full gap-5
+        ${large ? "min-h-[320px]" : "min-h-[260px]"}
       `}
     >
+      {/* Project Image Placeholder */}
+      {large && (
+        <div className="h-32 -mx-6 -mt-6 md:-mx-8 md:-mt-8 rounded-t-[20px] bg-gradient-to-br from-terracotta/20 via-warm-sand/30 to-terracotta/10 flex items-center justify-center">
+          <span className="font-sans text-xs text-stone-gray/70">Screenshot coming soon</span>
+        </div>
+      )}
+
       {/* Top: Type + Links */}
       <div className="flex items-center justify-between">
         <span className={`px-2.5 py-1 rounded-full text-xs font-sans font-medium ${typeColors[project.type]}`}>
@@ -189,8 +196,10 @@ function ProjectCard({ project, large = false }: { project: Project; large?: boo
               rel="noopener noreferrer"
               aria-label="GitHub"
               className="
+                p-1.5 rounded-lg
                 text-stone-gray hover:text-near-black
-                transition-colors duration-200
+                hover:bg-warm-sand/50
+                transition-all duration-200
               "
             >
               <ExternalLink size={17} />
