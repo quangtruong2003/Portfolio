@@ -131,7 +131,7 @@ export default function HeroSection() {
             <motion.h1
               variants={itemVariants}
               className="
-                font-serif font-medium leading-[1.3]
+                font-serif font-semibold leading-[1.3]
                 text-near-black
               "
               style={{ fontSize: "clamp(2rem, 5vw, 4.25rem)" }}
@@ -190,7 +190,7 @@ export default function HeroSection() {
               variants={itemVariants}
               className="flex items-center gap-3"
             >
-              <span className="relative z-10 font-sans text-base md:text-lg font-medium">
+              <span className="relative z-10 font-sans text-base md:text-lg font-semibold">
                 <motion.span
                   animate={{
                     backgroundPosition: ["200% 0", "-200% 0"],
@@ -218,7 +218,7 @@ export default function HeroSection() {
               variants={itemVariants}
               className="
                 font-sans text-base leading-[1.7]
-                text-olive-gray max-w-2xl
+                text-charcoal-warm max-w-2xl
               "
             >
               {t.bio}
@@ -302,13 +302,13 @@ export default function HeroSection() {
                 ].map(({ value, label, prefix }) => (
                   <div key={label} className="flex flex-col gap-0.5 text-center">
                     <span
-                      className="font-serif font-medium text-terracotta"
+                      className="font-serif font-semibold text-terracotta"
                       style={{ fontSize: "1.75rem" }}
                     >
                       {prefix && <span className="mr-0.5">{prefix}</span>}
                       {value}
                     </span>
-                    <span className="font-sans text-xs text-stone-gray">{label}</span>
+                    <span className="font-sans text-xs font-medium text-olive-gray">{label}</span>
                   </div>
                 ))}
               </motion.div>
