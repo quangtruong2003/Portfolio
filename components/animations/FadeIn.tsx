@@ -40,6 +40,15 @@ export default function FadeIn({
     }
   }, [isInView, controls, once]);
 
+  // Safari pageshow: re-trigger animation when page restored from bfcache
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) controls.start("visible");
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, [controls]);
+
   return (
     <motion.div
       ref={ref}

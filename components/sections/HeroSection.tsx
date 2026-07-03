@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
@@ -54,6 +54,16 @@ export default function HeroSection() {
   const { hero: t } = dictionary;
   const { stats: ghStats } = useGitHubStats();
 
+  // Safari pageshow: re-trigger animations when page restored from bfcache
+  const [animationKey, setAnimationKey] = useState(0);
+  useEffect(() => {
+    const handlePageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setAnimationKey(k => k + 1);
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, []);
+
   return (
     <section
       id="hero"
@@ -75,6 +85,7 @@ export default function HeroSection() {
       {/* Main Content */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 lg:px-8 w-full pt-16 sm:pt-20 lg:pt-0">
         <motion.div
+          key={animationKey}
           variants={containerVariants}
           initial="hidden"
           animate="visible"
