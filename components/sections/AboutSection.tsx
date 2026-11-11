@@ -1,108 +1,28 @@
 "use client";
 
-import React from "react";
 import SectionWrapper from "@/components/layout/SectionWrapper";
 import SectionTitle from "@/components/ui/SectionTitle";
 import FadeIn from "@/components/animations/FadeIn";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const softSkills = [
-  "Problem Solving",
-  "Agile Collaboration",
-  "Clean Code",
-  "API Design",
-  "Documentation",
-  "Code Review",
-];
-
-const languages = [
-  { name: "Vietnamese", level: "Native" },
-  { name: "English", level: "Professional" },
-];
-
 export default function AboutSection() {
   const { dictionary } = useLanguage();
-  const { about: t } = dictionary;
+  const text = dictionary.about;
 
   return (
-    <SectionWrapper id="about" theme="dark" py="xl">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-terracotta/5 blur-[100px]" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-coral/4 blur-[80px]" />
-      </div>
-
-      <div className="relative z-10 max-w-3xl mx-auto flex flex-col gap-16">
-        {/* Header */}
-        <FadeIn>
-          <SectionTitle
-            eyebrow={t.eyebrow}
-            title={t.title}
-            theme="dark"
-            align="center"
-            subtitle={t.subtitle}
-          />
-        </FadeIn>
-
-        {/* Bio */}
-        <FadeIn delay={0.1}>
-          <div className="flex flex-col gap-6">
-            <p className="font-sans text-base leading-[1.75] text-warm-silver">
-              {t.bio1}
-            </p>
-            <p className="font-sans text-base leading-[1.75] text-warm-silver">
-              {t.bio2}
-            </p>
+    <SectionWrapper id="about" py="xl">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-10">
+        <div className="md:col-span-5">
+          <SectionTitle title={text.title} subtitle={text.subtitle} />
+        </div>
+        <FadeIn className="md:col-span-6 md:col-start-7">
+          <div className="space-y-6 text-base leading-[1.75] text-charcoal-warm">
+            <p>{text.bio1}</p>
+            <p>{text.bio2}</p>
           </div>
-        </FadeIn>
-
-        {/* Soft Skills */}
-        <FadeIn delay={0.25}>
-          <div className="flex flex-col gap-4">
-            <h3 className="font-sans text-xs font-medium uppercase tracking-[0.12em] text-stone-gray">
-              {t.softSkills}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {softSkills.map((skill) => (
-                <div
-                  key={skill}
-                  className="
-                    group px-4 py-3 rounded-[12px]
-                    bg-dark-surface border border-[#30302e]
-                    hover:border-terracotta/40
-                    transition-all duration-200
-                  "
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-terracotta" />
-                    <span className="font-sans text-sm text-warm-silver group-hover:text-ivory transition-colors duration-200">
-                      {skill}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </FadeIn>
-
-        {/* Languages */}
-        <FadeIn delay={0.3}>
-          <div className="flex flex-col gap-4">
-            <h3 className="font-sans text-xs font-medium uppercase tracking-[0.12em] text-stone-gray">
-              {t.languagesLabel}
-            </h3>
-            <div className="flex flex-wrap gap-4">
-              {languages.map(({ name, level }) => (
-                <div key={name} className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-terracotta" />
-                  <div>
-                    <div className="font-sans text-sm font-medium text-ivory">{name}</div>
-                    <div className="font-sans text-xs text-stone-gray">{level}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <p className="mt-9 border-t border-border-warm pt-4 font-mono text-[0.68rem] uppercase leading-relaxed tracking-[0.05em] text-olive-gray">
+            {text.education}
+          </p>
         </FadeIn>
       </div>
     </SectionWrapper>

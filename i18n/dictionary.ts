@@ -2,48 +2,37 @@ export type Language = "vi" | "en";
 
 export interface Dictionary {
   nav: {
+    skip: string;
+    openMenu: string;
+    closeMenu: string;
+    work: string;
     about: string;
-    skills: string;
+    capabilities: string;
     experience: string;
-    projects: string;
+    openSource: string;
     contact: string;
     available: string;
   };
   hero: {
-    eyebrow: string;
-    greeting: string;
-    name: string;
     role: string;
+    location: string;
+    headlineStart: string;
+    headlineAccent: string;
     bio: string;
     viewProjects: string;
     viewCV: string;
-    yearsExp: string;
-    projectsBuilt: string;
-    technologies: string;
-    scroll: string;
+    availability: string;
   };
   about: {
-    eyebrow: string;
     title: string;
     subtitle: string;
     bio1: string;
     bio2: string;
-    years: string;
-    yearsLabel: string;
-    projects: string;
-    projectsLabel: string;
-    tech: string;
-    techLabel: string;
-    languages: string;
-    languagesLabel: string;
-    softSkills: string;
+    education: string;
   };
   skills: {
-    eyebrow: string;
     title: string;
     subtitle: string;
-    coreLabel: string;
-    familiarLabel: string;
   };
   experience: {
     eyebrow: string;
@@ -51,26 +40,30 @@ export interface Dictionary {
     subtitle: string;
     work: string;
     project: string;
+    thesis: string;
+    viewSource: string;
   };
-  exp_c3tek_loc: string;
-  exp_medical_loc: string;
-  exp_chatbot_loc: string;
-  exp_ssmooth_loc: string;
-  exp_c3tek_desc: { vi: string; en: string };
-  exp_medical_desc: { vi: string; en: string };
-  exp_chatbot_desc: { vi: string; en: string };
-  exp_ssmooth_desc: { vi: string; en: string };
   projects: {
     eyebrow: string;
     title: string;
     subtitle: string;
-    viewAll: string;
     seeMore: string;
+    viewAll: string;
+    viewSource: string;
+    category: {
+      work: string;
+      thesis: string;
+      personal: string;
+    };
   };
   openSource: {
-    eyebrow: string;
     title: string;
     subtitle: string;
+    loading: string;
+    error: string;
+    empty: string;
+    stars: string;
+    forks: string;
     viewAll: string;
   };
   contact: {
@@ -92,240 +85,208 @@ export interface Dictionary {
     sending: string;
     sent: string;
     sentMessage: string;
+    mailFallback: string;
+    sendError: string;
     orFind: string;
   };
   footer: {
     tagline: string;
     navigate: string;
-    getInTouch: string;
     copyright: string;
+    backToTop: string;
   };
 }
 
 export const vi: Dictionary = {
   nav: {
-    about: "Giới Thiệu",
-    skills: "Kỹ Năng",
-    experience: "Kinh Nghiệm",
-    projects: "Dự Án",
-    contact: "Liên Hệ",
-    available: "Đang tìm cơ hội",
+    skip: "Bỏ qua đến nội dung",
+    openMenu: "Mở menu điều hướng",
+    closeMenu: "Đóng menu điều hướng",
+    work: "Dự án",
+    about: "Giới thiệu",
+    capabilities: "Năng lực",
+    experience: "Kinh nghiệm",
+    openSource: "Mã nguồn mở",
+    contact: "Liên hệ",
+    available: "Sẵn sàng đón nhận cơ hội",
   },
   hero: {
-    eyebrow: "Đang tìm cơ hội",
-    greeting: "Xin chào,",
-    name: "Nguyễn Quang Trường",
-    role: "Software Engineer",
-    bio: "Chuyên gia backend với niềm đam mê kiến trúc hệ thống scalable, xây dựng API mạnh mẽ bằng Laravel và PHP 8+. Tôi tin rằng code sạch là nền tảng của mọi sản phẩm xuất sắc.",
-    viewProjects: "Xem Dự Án",
+    role: "Kỹ sư phần mềm",
+    location: "TP. Hồ Chí Minh, Việt Nam",
+    headlineStart: "Phần mềm,",
+    headlineAccent: "làm thật kỹ.",
+    bio: "Tập trung vào hệ thống backend, tự động hóa hữu ích và phần mềm desktop, với sự chăm chút cho từng chi tiết.",
+    viewProjects: "Xem dự án tiêu biểu",
     viewCV: "Xem CV",
-    yearsExp: "1+",
-    projectsBuilt: "4+",
-    technologies: "10+",
-    scroll: "Cuộn xuống",
+    availability: "Sẵn sàng đón nhận cơ hội",
   },
   about: {
-    eyebrow: "Về Tôi",
-    title: "Viết Code với Mục Đích",
-    subtitle: "Tôi là một Software Engineer với niềm đam mê xây dựng hệ thống không chỉ hoạt động tốt mà còn thanh lịch — kiến trúc mở rộng được và code mà người khác thích đọc.",
-    bio1: "Đang theo học Công nghệ Thông tin tại Đại học Công nghệ Sài Gòn, tôi chuyên về Backend Development với Laravel và AI Automation với N8N. Hành trình bắt đầu từ sự tò mò về cách hệ thống vận hành bên trong, và sự tò mò đó đã phát triển thành niềm đam mê thực sự với việc xây dựng kiến trúc server-side mạnh mẽ, có thể bảo trì.",
-    bio2: "Tôi đã làm việc qua toàn bộ vòng đời của các ứng dụng thực tế — từ thiết kế database schema đến viết RESTful APIs, triển khai AI automation workflows, authentication, billing workflows và tự động tạo document. Dù là hệ thống đặt lịch khám với tích hợp thanh toán VNPay hay nền tảng quản lý bất động sản với nhiều role người dùng, tôi tiếp cận mỗi dự án như một tác phẩm đáng để làm đúng.",
-    years: "1+",
-    yearsLabel: "Năm Xây Dựng",
-    projects: "4+",
-    projectsLabel: "Dự Án Lớn",
-    tech: "15+",
-    techLabel: "Công Nghệ",
-    languages: "2",
-    languagesLabel: "Ngôn Ngữ",
-    softSkills: "Kỹ Năng Mềm",
+    title: "Làm kỹ, làm có chủ đích.",
+    subtitle: "Tôi xây dựng phần mềm hướng đến sự rõ ràng, tin cậy và hữu ích trong sử dụng hằng ngày.",
+    bio1: "Tôi tốt nghiệp ngành Công nghệ Thông tin tại Đại học Công nghệ Sài Gòn (2021–2025). Công việc của tôi trải rộng từ hệ thống backend với Laravel, thiết kế API và cơ sở dữ liệu đến ứng dụng desktop viết bằng Rust.",
+    bio2: "Tại C3TEK, tôi tham gia phát triển các luồng quản lý hợp đồng, hóa đơn và phân quyền cho nền tảng bất động sản. Ngoài công việc, tôi xây dựng SmoothScroll, một tiện ích desktop đa nền tảng. Trước đó, tôi thực hiện hệ thống đặt lịch khám và ứng dụng chatbot Android.",
+    education: "Công nghệ Thông tin · Đại học Công nghệ Sài Gòn · 2021–2025",
   },
   skills: {
-    eyebrow: "Kỹ Năng Kỹ Thuật",
-    title: "Những Công Cụ Tôi Sử Dụng",
-    subtitle: "Một stack tập trung vào backend. Mỗi công cụ được chọn vì lý do — không chỉ để biết nó.",
-    coreLabel: "Công nghệ cốt lõi",
-    familiarLabel: "Đã dùng trong sản xuất",
+    title: "Năng lực kỹ thuật",
+    subtitle: "Những lĩnh vực tôi đã làm việc qua các sản phẩm thực tế và dự án cá nhân.",
   },
   experience: {
-    eyebrow: "Kinh Nghiệm",
-    title: "Nơi Tôi Đã Làm Việc & Xây Dựng",
-    subtitle: "Từ enterprise Laravel backends đến các thí nghiệm Android cá nhân — mỗi dự án dạy tôi điều mới về việc xây dựng phần mềm có ý nghĩa.",
-    work: "Toàn thời gian",
-    project: "Dự Án Cá Nhân",
-  },
-  exp_c3tek_loc: "Quận 10, TP. Hồ Chí Minh",
-  exp_medical_loc: "TP. Hồ Chí Minh",
-  exp_chatbot_loc: "TP. Hồ Chí Minh",
-  exp_ssmooth_loc: "TP. Hồ Chí Minh",
-  exp_ssmooth_desc: {
-    vi: "Ứng dụng smooth scrolling native cho Windows và macOS sử dụng Rust và Tauri 2, với tích hợp Windows API.",
-    en: "Native smooth scrolling application for Windows and macOS using Rust and Tauri 2 with Windows API integration.",
-  },
-  exp_c3tek_desc: {
-    vi: "Vai trò full-time xây dựng và duy trì nền tảng quản lý bất động sản phục vụ quản lý và chủ nhà.",
-    en: "Full-time role building and maintaining a property management platform used by property managers and rental owners.",
-  },
-  exp_medical_desc: {
-    vi: "Nền tảng đặt lịch khám y tế full-stack với backend Spring Boot và frontend React, tích hợp thanh toán VNPay.",
-    en: "Full-stack medical appointment booking platform with Spring Boot backend and React frontend, featuring secure payment integration.",
-  },
-  exp_chatbot_desc: {
-    vi: "Ứng dụng Android AI hội thoại xây dựng với Kotlin, tái hiện các tính năng tương tác của ChatGPT với Firebase.",
-    en: "Android conversational AI application replicating core interactive features of ChatGPT, built with Kotlin and Firebase.",
+    eyebrow: "Kinh nghiệm",
+    title: "Công việc và dự án",
+    subtitle: "Các vai trò và sản phẩm tôi đã tham gia xây dựng trong backend, desktop và ứng dụng di động.",
+    work: "Công việc",
+    project: "Dự án cá nhân",
+    thesis: "Đồ án",
+    viewSource: "Xem mã nguồn",
   },
   projects: {
-    eyebrow: "Dự Án",
-    title: "Những Thứ Tôi Đã Xây Dựng",
-    subtitle: "Từ hệ thống production đến các dự án đam mê — mỗi cái đều đẩy tôi học điều mới và ship thứ tôi tự hào.",
-    viewAll: "Xem Tất Cả trên GitHub",
-    seeMore: "Muốn xem thêm?",
+    eyebrow: "Dự án",
+    title: "Một số sản phẩm tiêu biểu",
+    subtitle: "Từ nền tảng quản lý đến tiện ích desktop, mỗi dự án giải quyết một nhu cầu cụ thể.",
+    seeMore: "Xem thêm hoạt động mã nguồn mở",
+    viewAll: "Mở GitHub",
+    viewSource: "Xem mã nguồn",
+    category: {
+      work: "Công việc",
+      thesis: "Đồ án",
+      personal: "Cá nhân",
+    },
   },
   openSource: {
-    eyebrow: "Open Source",
-    title: "Trên GitHub",
-    subtitle: "Những repo nguồn mở của tôi — thả sao, fork, và contributing.",
-    viewAll: "Xem Tất Cả trên GitHub",
+    title: "Mã nguồn mở",
+    subtitle: "Một vài repository công khai gần đây trên GitHub.",
+    loading: "Đang tải repository…",
+    error: "Chưa thể tải repository. Bạn vẫn có thể xem trực tiếp trên GitHub.",
+    empty: "Hiện chưa có repository công khai để hiển thị.",
+    stars: "sao",
+    forks: "fork",
+    viewAll: "Xem GitHub",
   },
   contact: {
-    eyebrow: "Liên Hệ",
-    title: "Hãy Xây Dựng Điều Gì Đó Cùng Nhau",
-    subtitle: "Dù bạn có dự án trong đầu, muốn hợp tác, hay chỉ muốn chào hỏi — hộp thư của tôi luôn mở.",
+    eyebrow: "Liên hệ",
+    title: "Cùng xây điều gì đó hữu ích.",
+    subtitle: "Nếu bạn muốn trao đổi về một dự án, công việc hoặc ý tưởng, hãy gửi lời nhắn.",
     email: "Email",
     phone: "Điện thoại",
     linkedin: "LinkedIn",
     github: "GitHub",
-    location: "Địa chỉ",
-    sendMessage: "Gửi Tin Nhắn",
+    location: "Địa điểm",
+    sendMessage: "Gửi tin nhắn",
     nameLabel: "Tên",
     emailLabel: "Email",
     messageLabel: "Nội dung",
     namePlaceholder: "Tên của bạn",
     emailPlaceholder: "email@cuaban.com",
-    messagePlaceholder: "Kể về dự án, ý tưởng, hoặc chỉ là chào hỏi...",
-    sending: "Đang gửi...",
-    sent: "Đã gửi!",
+    messagePlaceholder: "Bạn muốn trao đổi về điều gì?",
+    sending: "Đang gửi…",
+    sent: "Đã gửi tin nhắn",
     sentMessage: "Cảm ơn bạn đã liên hệ. Tôi sẽ phản hồi sớm nhất có thể.",
-    orFind: "Hoặc tìm tôi tại",
+    mailFallback: "Ứng dụng email của bạn sẽ mở cùng nội dung đã soạn. Nếu không, hãy gửi email trực tiếp đến địa chỉ bên cạnh.",
+    sendError: "Gửi chưa thành công. Vui lòng thử lại hoặc liên hệ trực tiếp qua email.",
+    orFind: "Hoặc kết nối qua",
   },
   footer: {
-    tagline: "Software Engineer xây dựng hệ thống scalable với Laravel. Đến từ TP. Hồ Chí Minh, Việt Nam.",
+    tagline: "Kỹ sư phần mềm làm việc với hệ thống backend và ứng dụng desktop, tại TP. Hồ Chí Minh.",
     navigate: "Điều hướng",
-    getInTouch: "Liên hệ",
-    copyright: "© 2026 Nguyễn Quang Trường. Làm với tâm.",
+    copyright: "© 2026 Nguyễn Quang Trường",
+    backToTop: "Lên đầu trang",
   },
 };
 
 export const en: Dictionary = {
   nav: {
+    skip: "Skip to content",
+    openMenu: "Open navigation menu",
+    closeMenu: "Close navigation menu",
+    work: "Work",
     about: "About",
-    skills: "Skills",
+    capabilities: "Capabilities",
     experience: "Experience",
-    projects: "Projects",
+    openSource: "Open source",
     contact: "Contact",
     available: "Open to opportunities",
   },
   hero: {
-    eyebrow: "Open to opportunities",
-    greeting: "Hello,",
-    name: "Nguyen Quang Truong",
     role: "Software Engineer",
-    bio: "Backend specialist with a passion for scalable system architecture, building robust APIs with Laravel and PHP 8+. I believe clean code is the foundation of every great product.",
-    viewProjects: "View Projects",
+    location: "Ho Chi Minh City, Vietnam",
+    headlineStart: "Software,",
+    headlineAccent: "made with care.",
+    bio: "Focused on backend systems, practical automation, and desktop software, with care for the details.",
+    viewProjects: "Explore selected work",
     viewCV: "View CV",
-    yearsExp: "1+",
-    projectsBuilt: "4+",
-    technologies: "10+",
-    scroll: "Scroll",
+    availability: "Open to opportunities",
   },
   about: {
-    eyebrow: "About Me",
-    title: "Crafting Code with Purpose",
-    subtitle: "I'm a software engineer with a deep love for building systems that are not just functional, but elegant — architecture that scales and code that others enjoy reading.",
-    bio1: "Currently studying Information Technology at SaiGon Technology University, I specialize in Backend Development with Laravel and AI Automation with N8N. My journey started with curiosity about how systems work under the hood, and that curiosity has grown into a genuine passion for building robust, maintainable server-side architecture.",
-    bio2: "I've worked across the full lifecycle of real applications — from designing database schemas and writing RESTful APIs, to implementing AI automation workflows, authentication, billing workflows and automated document generation. Whether it's a medical booking system integrated with VNPay or a property management platform serving multiple user roles, I approach each project as a craft worth doing right.",
-    years: "1+",
-    yearsLabel: "Years Building",
-    projects: "4+",
-    projectsLabel: "Major Projects",
-    tech: "15+",
-    techLabel: "Technologies",
-    languages: "2",
-    languagesLabel: "Languages",
-    softSkills: "Soft Skills",
+    title: "Built with intention.",
+    subtitle: "I work toward software that is clear, dependable, and useful in everyday use.",
+    bio1: "I studied Information Technology at SaiGon Technology University (2021–2025). My work spans Laravel backend systems, API and database design, and desktop software built with Rust.",
+    bio2: "At C3TEK, I helped build contract, billing, and access-control workflows for a property platform. Outside work, I build SmoothScroll, a cross-platform desktop utility. Earlier projects include a medical booking system and an Android chatbot.",
+    education: "Information Technology · SaiGon Technology University · 2021–2025",
   },
   skills: {
-    eyebrow: "Technical Skills",
-    title: "The Tools I Work With",
-    subtitle: "A focused stack centered on backend excellence. Every tool is chosen for a reason — not just for the sake of knowing it.",
-    coreLabel: "Core technologies I use daily",
-    familiarLabel: "Familiar — used in production",
+    title: "Technical capabilities",
+    subtitle: "Areas I have worked in across shipped products and personal projects.",
   },
   experience: {
     eyebrow: "Experience",
-    title: "Where I've Worked & Built",
-    subtitle: "From enterprise Laravel backends to personal Android experiments — each project taught me something new about building software that matters.",
-    work: "Full-time",
-    project: "Personal Project",
-  },
-  exp_c3tek_loc: "District 10, Ho Chi Minh City",
-  exp_medical_loc: "Ho Chi Minh City",
-  exp_chatbot_loc: "Ho Chi Minh City",
-  exp_ssmooth_loc: "Ho Chi Minh City",
-  exp_ssmooth_desc: {
-    vi: "Ứng dụng smooth scrolling native cho Windows và macOS sử dụng Rust và Tauri 2, với tích hợp Windows API.",
-    en: "Native smooth scrolling application for Windows and macOS using Rust and Tauri 2 with Windows API integration.",
-  },
-  exp_c3tek_desc: {
-    vi: "Vai trò full-time xây dựng và duy trì nền tảng quản lý bất động sản phục vụ quản lý và chủ nhà.",
-    en: "Full-time role building and maintaining a property management platform used by property managers and rental owners.",
-  },
-  exp_medical_desc: {
-    vi: "Nền tảng đặt lịch khám y tế full-stack với backend Spring Boot và frontend React, tích hợp thanh toán VNPay.",
-    en: "Full-stack medical appointment booking platform with Spring Boot backend and React frontend, featuring secure payment integration.",
-  },
-  exp_chatbot_desc: {
-    vi: "Ứng dụng Android AI hội thoại xây dựng với Kotlin, tái hiện các tính năng tương tác của ChatGPT với Firebase.",
-    en: "Android conversational AI application replicating core interactive features of ChatGPT, built with Kotlin and Firebase.",
+    title: "Work and projects",
+    subtitle: "Selected roles and products across backend engineering, desktop software, and mobile applications.",
+    work: "Work",
+    project: "Personal project",
+    thesis: "Thesis",
+    viewSource: "View source",
   },
   projects: {
     eyebrow: "Projects",
-    title: "Things I've Built",
-    subtitle: "From production systems to passion projects — each one pushed me to learn something new and ship something I'm proud of.",
-    viewAll: "View All on GitHub",
-    seeMore: "Want to see more of my work?",
+    title: "Selected work",
+    subtitle: "From a property platform to a desktop utility, each project addresses a specific need.",
+    seeMore: "Explore more open-source work",
+    viewAll: "Open GitHub",
+    viewSource: "View source",
+    category: {
+      work: "Work",
+      thesis: "Thesis",
+      personal: "Personal",
+    },
   },
   openSource: {
-    eyebrow: "Open Source",
-    title: "On GitHub",
-    subtitle: "My open-source work — starring, forking, and contributing.",
-    viewAll: "View All on GitHub",
+    title: "Open source",
+    subtitle: "A few recent public repositories from GitHub.",
+    loading: "Loading repositories…",
+    error: "Repositories are unavailable right now. You can still visit GitHub directly.",
+    empty: "There are no public repositories to show yet.",
+    stars: "stars",
+    forks: "forks",
+    viewAll: "View GitHub",
   },
   contact: {
-    eyebrow: "Get in Touch",
-    title: "Let's Build Something Together",
-    subtitle: "Whether you have a project in mind, want to collaborate, or just want to say hello — my inbox is always open.",
+    eyebrow: "Contact",
+    title: "Let’s build something useful.",
+    subtitle: "For a project, a role, or an idea you would like to discuss, send me a note.",
     email: "Email",
     phone: "Phone",
     linkedin: "LinkedIn",
     github: "GitHub",
     location: "Location",
-    sendMessage: "Send Message",
+    sendMessage: "Send message",
     nameLabel: "Name",
     emailLabel: "Email",
     messageLabel: "Message",
     namePlaceholder: "Your name",
-    emailPlaceholder: "your@email.com",
-    messagePlaceholder: "Tell me about your project, idea, or just say hello...",
-    sending: "Sending...",
-    sent: "Message Sent!",
-    sentMessage: "Thank you for reaching out. I'll get back to you soon.",
-    orFind: "Or find me on",
+    emailPlaceholder: "you@example.com",
+    messagePlaceholder: "What would you like to discuss?",
+    sending: "Sending…",
+    sent: "Message sent",
+    sentMessage: "Thank you for reaching out. I’ll reply as soon as I can.",
+    mailFallback: "Your email app should open with the message drafted. If it does not, email me directly at the address shown beside the form.",
+    sendError: "Your message could not be sent. Please try again or contact me by email.",
+    orFind: "Or connect on",
   },
   footer: {
-    tagline: "Software Engineer crafting scalable systems with Laravel. Based in Ho Chi Minh City, Vietnam.",
+    tagline: "Software engineer working across backend systems and desktop software, based in Ho Chi Minh City.",
     navigate: "Navigate",
-    getInTouch: "Get in Touch",
-    copyright: "© 2026 Nguyen Quang Truong. Crafted with care.",
+    copyright: "© 2026 Nguyen Quang Truong",
+    backToTop: "Back to top",
   },
 };

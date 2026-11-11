@@ -25,17 +25,6 @@ export function LanguageProvider({
   const [language, setLanguageState] = useState<Language>(initialLanguage);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if ((stored === "vi" || stored === "en") && stored !== initialLanguage) {
-        setLanguageState(stored);
-      }
-    } catch {
-      // SSR or storage blocked
-    }
-  }, [initialLanguage]);
-
-  useEffect(() => {
     const handleStorage = () => {
       try {
         const stored = localStorage.getItem(STORAGE_KEY);

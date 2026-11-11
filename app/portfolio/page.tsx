@@ -1,33 +1,5 @@
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import LocaleHandler from "@/components/layout/LocaleHandler";
-import ScrollProgress from "@/components/animations/ScrollProgress";
-import OpenSourceSection from "@/components/sections/OpenSourceSection";
-import HeroSection from "@/components/sections/HeroSection";
-import AboutSection from "@/components/sections/AboutSection";
-import SkillsSection from "@/components/sections/SkillsSection";
-import ExperienceSection from "@/components/sections/ExperienceSection";
-import ProjectsSection from "@/components/sections/ProjectsSection";
-import ContactSection from "@/components/sections/ContactSection";
+import { permanentRedirect } from "next/navigation";
 
-export default function Portfolio() {
-  return (
-    <>
-      <LocaleHandler />
-      <ScrollProgress />
-      <Navbar />
-
-      <main>
-        <HeroSection />
-        <OpenSourceSection />
-        <AboutSection />
-        <SkillsSection />
-        <ExperienceSection />
-        <ProjectsSection />
-        <ContactSection />
-      </main>
-
-      <Footer />
-    </>
-  );
+export default function PortfolioCompatibilityPage() {
+  permanentRedirect("/");
 }

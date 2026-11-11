@@ -1,296 +1,128 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { ArrowUpRight, Mail, Phone, Send } from "lucide-react";
+import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
 import SectionWrapper from "@/components/layout/SectionWrapper";
 import SectionTitle from "@/components/ui/SectionTitle";
-import FadeIn from "@/components/animations/FadeIn";
 import Button from "@/components/ui/Button";
 import InputField from "@/components/ui/InputField";
-import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
-import { Mail, Phone, Send } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
+const EMAIL = "nguyentruongk530042003@gmail.com";
+
 export default function ContactSection() {
-  const { dictionary, language } = useLanguage();
-  const { contact: t } = dictionary;
+  const { dictionary } = useLanguage();
+  const text = dictionary.contact;
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const formDisabled = false;
+  const [mailFallback, setMailFallback] = useState(false);
+  const [error, setError] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setError(null);
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+    setError(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setSubmitting(true);
-    setError(null);
+    setError(false);
+    setMailFallback(false);
 
-    const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-    const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-    const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-      const mailtoBody = `Name: ${form.name}%0D%0AEmail: ${form.email}%0D%0A%0D%0AMessage:%0D%0A${encodeURIComponent(form.message)}`;
-      window.location.href = `mailto:nguyentruongk530042003@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(form.name)}&body=${mailtoBody}`;
-
+    if (!serviceId || !templateId || !publicKey) {
+      const query = new URLSearchParams({
+        subject: `Portfolio message from ${form.name}`,
+        body: `Name: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`,
+      });
+      window.location.href = `mailto:${EMAIL}?${query.toString()}`;
+      setMailFallback(true);
       setSubmitting(false);
-      setSubmitted(true);
-      setForm({ name: "", email: "", message: "" });
-      setTimeout(() => setSubmitted(false), 4000);
       return;
     }
 
     try {
       const { default: emailjs } = await import("@emailjs/browser");
       await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          from_email: form.email,
-          message: form.message,
-        },
-        EMAILJS_PUBLIC_KEY
+        serviceId,
+        templateId,
+        { from_name: form.name, from_email: form.email, message: form.message },
+        publicKey
       );
       setSubmitted(true);
       setForm({ name: "", email: "", message: "" });
-      setTimeout(() => setSubmitted(false), 4000);
+      window.setTimeout(() => setSubmitted(false), 5000);
     } catch {
-      setError(language === "vi"
-        ? "Gửi thất bại. Vui lòng thử lại hoặc liên hệ trực tiếp qua email."
-        : "Failed to send. Please try again or contact directly via email."
-      );
+      setError(true);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <SectionWrapper id="contact" theme="dark" py="xl">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-terracotta/5 blur-[120px]" />
-      </div>
-
-      <div className="relative z-10 max-w-3xl mx-auto flex flex-col gap-16">
-        {/* Header */}
-        <FadeIn>
-          <SectionTitle
-            eyebrow={t.eyebrow}
-            title={t.title}
-            theme="dark"
-            subtitle={t.subtitle}
-          />
-        </FadeIn>
-
-        {/* Contact Links */}
-        <FadeIn delay={0.1}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              {
-                icon: Mail,
-                labelKey: "email" as const,
-                value: "nguyentruongk530042003@gmail.com",
-                href: "mailto:nguyentruongk530042003@gmail.com",
-                color: "#c96442",
-              },
-              {
-                icon: Phone,
-                labelKey: "phone" as const,
-                value: "(094) 789 0450",
-                href: "tel:+84947890450",
-                color: "#d97757",
-              },
-              {
-                icon: LinkedInIcon,
-                labelKey: "linkedin" as const,
-                value: "quangtruong2003",
-                href: "https://www.linkedin.com/in/quangtruong2003",
-                color: "#0A66C2",
-              },
-              {
-                icon: GitHubIcon,
-                labelKey: "github" as const,
-                value: "quangtruong2003",
-                href: "https://github.com/quangtruong2003",
-                color: "#24292f",
-              },
-            ].map(({ icon: Icon, labelKey, value, href, color }) => (
-              <div
-                key={labelKey}
-                className="
-                  bg-dark-surface border border-[#30302e]
-                  rounded-very p-4
-                  flex items-center gap-4
-                  hover:border-[#3d3d3a] transition-colors duration-300
-                "
-              >
-                <div
-                  className="
-                    w-10 h-10 rounded-[10px] flex items-center justify-center
-                    shrink-0
-                  "
-                  style={{
-                    backgroundColor: `${color}15`,
-                    color: color === "#24292f" ? "#f0eee6" : color === "#0A66C2" ? "#70B5F9" : color,
-                  }}
-                >
-                  <Icon size={18} />
-                </div>
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <span className="font-sans text-xs text-stone-gray">{t[labelKey]}</span>
-                  {href ? (
-                    <a
-                      href={href}
-                      target={href.startsWith("mailto") || href.startsWith("tel") ? undefined : "_blank"}
-                      rel="noopener noreferrer"
-                      className="
-                        font-sans text-sm font-medium text-warm-silver
-                        hover:text-ivory transition-colors duration-200
-                        truncate
-                      "
-                    >
-                      {value}
-                    </a>
-                  ) : (
-                    <span className="font-sans text-sm font-medium text-warm-silver truncate">
-                      {value}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </FadeIn>
-
-        {/* Contact Form */}
-        <FadeIn delay={0.2}>
-          <div
-            className="
-              bg-dark-surface border border-[#30302e]
-              rounded-[20px] p-6 md:p-8
-            "
-          >
-            <h3 className="font-serif font-medium text-xl text-ivory mb-6">
-              {t.sendMessage}
-            </h3>
-
-            {submitted ? (
-              <div className="flex flex-col items-center gap-4 py-8 text-center">
-                <div
-                  className="
-                    w-14 h-14 rounded-full bg-terracotta/15
-                    flex items-center justify-center
-                  "
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c96442" strokeWidth="2" aria-hidden="true">
-                    <path d="M20 6L9 17l-5-5" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="font-serif font-medium text-lg text-ivory">{t.sent}</p>
-                  <p className="font-sans text-sm text-warm-silver mt-1">
-                    {t.sentMessage}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <InputField
-                      label={t.nameLabel}
-                      type="text"
-                      placeholder={t.namePlaceholder}
-                      name="name"
-                      value={form.name}
-                      onChange={handleChange}
-                      required
-                    />
-                    <InputField
-                      label={t.emailLabel}
-                      type="email"
-                      placeholder={t.emailPlaceholder}
-                      name="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <InputField
-                    label={t.messageLabel}
-                    type="text-area"
-                    placeholder={t.messagePlaceholder}
-                    name="message"
-                    value={form.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                  />
-
-                  {error ? (
-                    <div className="flex items-center gap-2 px-4 py-3 rounded-generous bg-error-crimson/10 border border-error-crimson/20 text-sm text-coral">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="8" x2="12" y2="12" />
-                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                      </svg>
-                      {error}
-                    </div>
-                  ) : null}
-                  <div className="flex justify-end pt-2">
-                    <Button
-                      type="submit"
-                      variant="terracotta"
-                      size="lg"
-                      icon={Send}
-                      loading={submitting}
-                    >
-                      {submitting ? t.sending : t.sendMessage}
-                    </Button>
-                  </div>
-                </form>
-            )}
-          </div>
-        </FadeIn>
-
-        {/* Social Row */}
-        <FadeIn delay={0.3}>
-          <div className="flex flex-col items-center gap-4 text-center">
-            <p className="font-sans text-xs text-stone-gray uppercase tracking-widest">
-              {t.orFind}
+    <SectionWrapper id="contact" py="xl">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
+        <div className="md:col-span-5">
+          <SectionTitle eyebrow={text.eyebrow} title={text.title} subtitle={text.subtitle} />
+          <address className="not-italic">
+            <a
+              href={`mailto:${EMAIL}`}
+              className="inline-flex min-h-11 items-center gap-2 break-all text-base font-medium text-near-black underline decoration-border-warm underline-offset-4 transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue"
+            >
+              <Mail size={16} aria-hidden="true" />
+              {EMAIL}
+            </a>
+            <p className="mt-5 flex items-center gap-2 text-sm text-olive-gray">
+              <Phone size={15} aria-hidden="true" />
+              <a className="min-h-10 content-center hover:text-terracotta" href="tel:+84947890450">(094) 789 0450</a>
             </p>
-            <div className="flex items-center gap-5">
-              {[
-                { icon: GitHubIcon, href: "https://github.com/quangtruong2003", label: "GitHub" },
-                { icon: LinkedInIcon, href: "https://www.linkedin.com/in/quangtruong2003", label: "LinkedIn" },
-                { icon: Mail, href: "mailto:nguyentruongk530042003@gmail.com", label: "Email" },
-              ].map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target={href.startsWith("mailto") ? undefined : "_blank"}
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="
-                    w-10 h-10 rounded-full
-                    bg-dark-surface border border-[#30302e]
-                    flex items-center justify-center
-                    text-stone-gray
-                    hover:text-terracotta hover:border-terracotta/30
-                    transition-all duration-200
-                    hover:-translate-y-0.5
-                  "
-                >
-                  <Icon size={16} />
-                </a>
-              ))}
-            </div>
+            <p className="mt-3 font-mono text-xs text-olive-gray">{text.location}: {dictionary.hero.location}</p>
+          </address>
+
+          <p className="mt-7 border-t border-border-warm pt-4 font-mono text-[0.68rem] uppercase tracking-[0.06em] text-olive-gray">{text.orFind}</p>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <a className="inline-flex min-h-11 items-center gap-2 text-sm text-near-black transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue" href="https://github.com/quangtruong2003" target="_blank" rel="noopener noreferrer">
+              <GitHubIcon size={16} aria-hidden="true" /> {text.github} <ArrowUpRight size={13} aria-hidden="true" />
+            </a>
+            <a className="inline-flex min-h-11 items-center gap-2 text-sm text-near-black transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue" href="https://www.linkedin.com/in/quangtruong2003" target="_blank" rel="noopener noreferrer">
+              <LinkedInIcon size={16} aria-hidden="true" /> {text.linkedin} <ArrowUpRight size={13} aria-hidden="true" />
+            </a>
           </div>
-        </FadeIn>
+        </div>
+
+        <div className="md:col-span-6 md:col-start-7">
+          <h3 className="mb-6 font-serif text-2xl text-near-black">{text.sendMessage}</h3>
+
+          {submitted ? (
+            <div className="border-y border-border-warm py-6" role="status" aria-live="polite">
+              <p className="font-serif text-xl text-near-black">{text.sent}</p>
+              <p className="mt-2 text-sm leading-relaxed text-olive-gray">{text.sentMessage}</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} aria-busy={submitting} className="flex flex-col gap-5">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <InputField label={text.nameLabel} name="name" value={form.name} onChange={handleChange} placeholder={text.namePlaceholder} required />
+                <InputField label={text.emailLabel} name="email" type="email" value={form.email} onChange={handleChange} placeholder={text.emailPlaceholder} required />
+              </div>
+              <InputField label={text.messageLabel} name="message" type="text-area" value={form.message} onChange={handleChange} placeholder={text.messagePlaceholder} rows={5} required />
+
+              {error && <p role="alert" className="text-sm leading-relaxed text-error-crimson">{text.sendError}</p>}
+              {mailFallback && <p role="status" aria-live="polite" className="text-sm leading-relaxed text-olive-gray">{text.mailFallback}</p>}
+
+              <div className="flex justify-start pt-1">
+                <Button type="submit" variant="terracotta" icon={Send} loading={submitting}>
+                  {submitting ? text.sending : text.sendMessage}
+                </Button>
+              </div>
+            </form>
+          )}
+        </div>
       </div>
     </SectionWrapper>
   );

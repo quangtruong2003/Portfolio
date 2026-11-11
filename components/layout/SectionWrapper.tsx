@@ -1,44 +1,28 @@
-"use client";
-
-import React, { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface SectionWrapperProps {
   children: ReactNode;
-  theme?: "light" | "dark";
-  id?: string;
+  id: string;
   className?: string;
-  py?: "sm" | "md" | "lg" | "xl" | "2xl";
+  py?: "sm" | "md" | "lg" | "xl";
 }
 
 const paddingMap = {
-  sm: "py-12 md:py-16",
-  md: "py-16 md:py-20",
+  sm: "py-14 md:py-20",
+  md: "py-18 md:py-24",
   lg: "py-20 md:py-28",
-  xl: "py-24 md:py-36",
-  "2xl": "py-28 md:py-44",
+  xl: "py-24 md:py-32",
 };
 
 export default function SectionWrapper({
   children,
-  theme = "light",
   id,
   className = "",
   py = "lg",
 }: SectionWrapperProps) {
   return (
-    <section
-      id={id}
-      className={`
-        w-full
-        ${theme === "dark" ? "bg-near-black" : "bg-parchment"}
-        ${paddingMap[py]}
-        ${id ? "scroll-mt-16 md:scroll-mt-[72px]" : ""}
-        ${className}
-      `}
-    >
-      <div className="max-w-6xl mx-auto px-6 lg:px-10">
-        {children}
-      </div>
+    <section id={id} className={`scroll-mt-20 border-t hairline ${paddingMap[py]} ${className}`}>
+      <div className="site-container">{children}</div>
     </section>
   );
 }

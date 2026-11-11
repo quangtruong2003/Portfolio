@@ -1,18 +1,16 @@
 "use client";
 
-import React from "react";
+import type { ChangeEvent } from "react";
 
 interface InputFieldProps {
   label: string;
   type?: "text" | "email" | "text-area";
   placeholder?: string;
-  value?: string;
-  name?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  value: string;
+  name: string;
+  onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   required?: boolean;
-  className?: string;
   rows?: number;
-  disabled?: boolean;
 }
 
 export default function InputField({
@@ -20,69 +18,42 @@ export default function InputField({
   type = "text",
   placeholder,
   value,
+  name,
   onChange,
   required = false,
-  className = "",
   rows = 4,
-  disabled = false,
-}: Omit<InputFieldProps, "name"> & { name?: string }) {
-  const id = label.toLowerCase().replace(/\s+/g, "-");
-  const nameAttr = label.toLowerCase().replace(/\s+/g, "_");
+}: InputFieldProps) {
+  const id = `contact-${name}`;
+  const className = "w-full rounded-[4px] border border-border-warm bg-ivory px-3.5 py-3 font-sans text-base text-near-black placeholder:text-olive-gray focus:border-terracotta focus:outline-2 focus:outline-offset-2 focus:outline-focus-blue disabled:opacity-50";
 
   return (
-    <div className={`flex flex-col gap-2 ${className}`}>
-      <label
-        htmlFor={id}
-        className="font-sans text-sm font-medium text-warm-silver"
-      >
+    <div className="flex flex-col gap-2">
+      <label htmlFor={id} className="font-sans text-sm font-medium text-near-black">
         {label}
-        {required && <span className="text-coral ml-0.5">*</span>}
+        {required && <span className="ml-1 text-terracotta">*</span>}
       </label>
-
       {type === "text-area" ? (
         <textarea
           id={id}
-          name={nameAttr}
+          name={name}
           rows={rows}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           required={required}
-          disabled={disabled}
-          className="
-            w-full
-            bg-dark-surface
-            border border-[#30302e]
-            rounded-generous
-            px-4 py-3
-            font-sans text-ivory placeholder:text-stone-gray
-            text-base leading-relaxed
-            resize-none
-            transition-all duration-200
-            focus:outline-none focus:border-terracotta focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed
-          "
+          className={`${className} resize-y`}
         />
       ) : (
         <input
           id={id}
-          name={nameAttr}
+          name={name}
           type={type}
+          autoComplete={name === "name" ? "name" : name === "email" ? "email" : undefined}
           placeholder={placeholder}
           value={value}
           onChange={onChange}
           required={required}
-          disabled={disabled}
-          className="
-            w-full
-            bg-dark-surface
-            border border-[#30302e]
-            rounded-generous
-            px-4 py-3
-            font-sans text-ivory placeholder:text-stone-gray
-            text-base
-            transition-all duration-200
-            focus:outline-none focus:border-terracotta focus:ring-0 disabled:opacity-50 disabled:cursor-not-allowed
-          "
+          className={className}
         />
       )}
     </div>

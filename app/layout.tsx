@@ -1,80 +1,65 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
-import { Playfair_Display, Inter, JetBrains_Mono } from "next/font/google";
+import { DM_Sans, IBM_Plex_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import ContextMenuProvider from "@/components/ui/ContextMenuProvider";
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-playfair",
+const newsreader = Newsreader({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-newsreader",
   display: "swap",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-inter",
+const dmSans = DM_Sans({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-jetbrains",
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500"],
+  variable: "--font-ibm-plex-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Nguyen Quang Truong — Software Engineer",
+  metadataBase: new URL("https://quangtruong.dev"),
+  title: "Nguyen Quang Truong | Software Engineer",
   description:
-    "Portfolio of Nguyen Quang Truong — Software Engineer specializing in Laravel, AI Automation, N8N, RESTful APIs, and scalable backend systems. Based in Ho Chi Minh City.",
+    "Portfolio of Nguyen Quang Truong, a software engineer working across backend systems, practical automation, and desktop software.",
   keywords: [
     "Nguyen Quang Truong",
     "Software Engineer",
     "PHP Developer",
     "Laravel Developer",
     "Backend Developer",
-    "AI Automation",
-    "N8N",
+    "Rust",
+    "Tauri",
     "Ho Chi Minh City",
     "Vietnam",
-    "Laravel 12",
-    "RESTful API",
-    "MySQL",
-    "PHP 8",
   ],
   authors: [{ name: "Nguyen Quang Truong" }],
   creator: "Nguyen Quang Truong",
   openGraph: {
-    title: "Nguyen Quang Truong — Software Engineer",
+    title: "Nguyen Quang Truong | Software Engineer",
     description:
-      "Software Engineer specializing in Laravel, AI Automation, N8N, RESTful APIs, and scalable backend systems.",
+      "Software engineer working across backend systems, practical automation, and desktop software.",
     url: "https://quangtruong.dev",
-    siteName: "Nguyen Quang Truong Portfolio",
+    siteName: "Nguyen Quang Truong",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nguyen Quang Truong — Software Engineer",
+    title: "Nguyen Quang Truong | Software Engineer",
     description:
-      "Software Engineer specializing in Laravel, AI Automation, N8N, RESTful APIs, and scalable backend systems.",
+      "Software engineer working across backend systems, practical automation, and desktop software.",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: "https://quangtruong.dev",
-  },
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: "https://quangtruong.dev" },
+  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
 export default async function RootLayout({
@@ -82,10 +67,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const savedLang = cookieStore.get("portfolio-language")?.value;
+  const savedLanguage = (await cookies()).get("portfolio-language")?.value;
   const initialLanguage =
-    savedLang === "vi" || savedLang === "en" ? savedLang : "en";
+    savedLanguage === "vi" || savedLanguage === "en" ? savedLanguage : "en";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -105,12 +90,12 @@ export default async function RootLayout({
     knowsAbout: [
       "PHP",
       "Laravel",
+      "Rust",
+      "Tauri",
       "AI Automation",
-      "N8N",
-      "RESTful API",
+      "RESTful APIs",
       "MySQL",
       "Software Engineering",
-      "Backend Development",
     ],
   };
 
@@ -118,7 +103,7 @@ export default async function RootLayout({
     <html
       lang={initialLanguage}
       suppressHydrationWarning
-      className={`${playfair.variable} ${inter.variable} ${jetbrains.variable}`}
+      className={`${newsreader.variable} ${dmSans.variable} ${ibmPlexMono.variable}`}
     >
       <head>
         <script
@@ -126,11 +111,9 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col antialiased">
+      <body className="min-h-[100dvh] antialiased">
         <LanguageProvider initialLanguage={initialLanguage}>
-          <ContextMenuProvider>
-            {children}
-          </ContextMenuProvider>
+          {children}
         </LanguageProvider>
       </body>
     </html>
