@@ -11,7 +11,6 @@ export interface Dictionary {
     experience: string;
     openSource: string;
     contact: string;
-    available: string;
   };
   hero: {
     role: string;
@@ -21,7 +20,7 @@ export interface Dictionary {
     bio: string;
     viewProjects: string;
     viewCV: string;
-    availability: string;
+    focus: string;
   };
   about: {
     title: string;
@@ -50,6 +49,7 @@ export interface Dictionary {
     seeMore: string;
     viewAll: string;
     viewSource: string;
+    viewWebsite: string;
     category: {
       work: string;
       thesis: string;
@@ -108,28 +108,27 @@ export const vi: Dictionary = {
     experience: "Kinh nghiệm",
     openSource: "Mã nguồn mở",
     contact: "Liên hệ",
-    available: "Sẵn sàng đón nhận cơ hội",
   },
   hero: {
-    role: "Kỹ sư phần mềm",
+    role: "Kỹ sư PHP",
     location: "TP. Hồ Chí Minh, Việt Nam",
     headlineStart: "Phần mềm,",
     headlineAccent: "làm thật kỹ.",
-    bio: "Tập trung vào hệ thống backend, tự động hóa hữu ích và phần mềm desktop, với sự chăm chút cho từng chi tiết.",
+    bio: "Tập trung vào backend PHP với Laravel, API tin cậy và tối ưu cơ sở dữ liệu. Ngoài công việc, tôi phát triển tiện ích desktop cho Windows.",
     viewProjects: "Xem dự án tiêu biểu",
     viewCV: "Xem CV",
-    availability: "Sẵn sàng đón nhận cơ hội",
+    focus: "PHP 8+ · Laravel 12 · MySQL · Redis",
   },
   about: {
     title: "Làm kỹ, làm có chủ đích.",
-    subtitle: "Tôi xây dựng phần mềm hướng đến sự rõ ràng, tin cậy và hữu ích trong sử dụng hằng ngày.",
-    bio1: "Tôi tốt nghiệp ngành Công nghệ Thông tin tại Đại học Công nghệ Sài Gòn (2021–2025). Công việc của tôi trải rộng từ hệ thống backend với Laravel, thiết kế API và cơ sở dữ liệu đến ứng dụng desktop viết bằng Rust.",
-    bio2: "Tại C3TEK, tôi tham gia phát triển các luồng quản lý hợp đồng, hóa đơn và phân quyền cho nền tảng bất động sản. Ngoài công việc, tôi xây dựng SmoothScroll, một tiện ích desktop đa nền tảng. Trước đó, tôi thực hiện hệ thống đặt lịch khám và ứng dụng chatbot Android.",
+    subtitle: "Tôi tập trung vào backend PHP, API dễ bảo trì và hiệu năng dữ liệu.",
+    bio1: "Tôi tốt nghiệp ngành Công nghệ Thông tin tại Đại học Công nghệ Sài Gòn (2021–2025). Công việc của tôi tập trung vào PHP 8+, Laravel 12, RESTful API và cơ sở dữ liệu quan hệ, đồng thời áp dụng Clean Code và SOLID vào nghiệp vụ backend.",
+    bio2: "Tại Penalty, tôi bảo trì ứng dụng PHP/Laravel và xây dựng hệ thống tải sản phẩm hàng loạt tích hợp WordPress. Trước đó tại C3TEK, tôi phát triển quy trình hợp đồng, xử lý hóa đơn qua Laravel Queues, và tối ưu MySQL bằng eager loading, composite index và Redis. SmoothScroll, tiện ích cuộn chuột Windows mã nguồn mở do tôi phát triển, đã vượt 30.000 lượt tải.",
     education: "Công nghệ Thông tin · Đại học Công nghệ Sài Gòn · 2021–2025",
   },
   skills: {
     title: "Năng lực kỹ thuật",
-    subtitle: "Những lĩnh vực tôi đã làm việc qua các sản phẩm thực tế và dự án cá nhân.",
+    subtitle: "Backend là trọng tâm, cùng các kỹ năng full-stack và ứng dụng desktop trong công việc và dự án cá nhân.",
   },
   experience: {
     eyebrow: "Kinh nghiệm",
@@ -147,6 +146,7 @@ export const vi: Dictionary = {
     seeMore: "Xem thêm hoạt động mã nguồn mở",
     viewAll: "Mở GitHub",
     viewSource: "Xem mã nguồn",
+    viewWebsite: "Mở website",
     category: {
       work: "Công việc",
       thesis: "Đồ án",
@@ -187,7 +187,7 @@ export const vi: Dictionary = {
     orFind: "Hoặc kết nối qua",
   },
   footer: {
-    tagline: "Kỹ sư phần mềm làm việc với hệ thống backend và ứng dụng desktop, tại TP. Hồ Chí Minh.",
+    tagline: "Kỹ sư PHP tập trung vào backend Laravel, API và hiệu năng dữ liệu, tại TP. Hồ Chí Minh.",
     navigate: "Điều hướng",
     copyright: "© 2026 Nguyễn Quang Trường",
     backToTop: "Lên đầu trang",
@@ -205,28 +205,27 @@ export const en: Dictionary = {
     experience: "Experience",
     openSource: "Open source",
     contact: "Contact",
-    available: "Open to opportunities",
   },
   hero: {
-    role: "Software Engineer",
+    role: "PHP Engineer",
     location: "Ho Chi Minh City, Vietnam",
     headlineStart: "Software,",
     headlineAccent: "made with care.",
-    bio: "Focused on backend systems, practical automation, and desktop software, with care for the details.",
+    bio: "Focused on PHP backends with Laravel, reliable APIs, and database optimization. Outside work, I build Windows desktop software.",
     viewProjects: "Explore selected work",
     viewCV: "View CV",
-    availability: "Open to opportunities",
+    focus: "PHP 8+ · Laravel 12 · MySQL · Redis",
   },
   about: {
     title: "Built with intention.",
-    subtitle: "I work toward software that is clear, dependable, and useful in everyday use.",
-    bio1: "I studied Information Technology at SaiGon Technology University (2021–2025). My work spans Laravel backend systems, API and database design, and desktop software built with Rust.",
-    bio2: "At C3TEK, I helped build contract, billing, and access-control workflows for a property platform. Outside work, I build SmoothScroll, a cross-platform desktop utility. Earlier projects include a medical booking system and an Android chatbot.",
+    subtitle: "I focus on PHP backends, maintainable APIs, and data performance.",
+    bio1: "I studied Information Technology at SaiGon Technology University (2021–2025). My work centers on PHP 8+, Laravel 12, RESTful APIs, and relational databases, with Clean Code and SOLID principles applied to backend workflows.",
+    bio2: "At Penalty, I maintained PHP/Laravel applications and built a bulk product upload system integrated with WordPress. Before that, at C3TEK, I developed contract workflows, queued invoice processing, and optimized MySQL with eager loading, composite indexes, and Redis. SmoothScroll, my open-source Windows scrolling utility, has passed 30,000 downloads.",
     education: "Information Technology · SaiGon Technology University · 2021–2025",
   },
   skills: {
     title: "Technical capabilities",
-    subtitle: "Areas I have worked in across shipped products and personal projects.",
+    subtitle: "Backend engineering first, supported by full-stack work and desktop applications.",
   },
   experience: {
     eyebrow: "Experience",
@@ -244,6 +243,7 @@ export const en: Dictionary = {
     seeMore: "Explore more open-source work",
     viewAll: "Open GitHub",
     viewSource: "View source",
+    viewWebsite: "Visit website",
     category: {
       work: "Work",
       thesis: "Thesis",
@@ -284,7 +284,7 @@ export const en: Dictionary = {
     orFind: "Or connect on",
   },
   footer: {
-    tagline: "Software engineer working across backend systems and desktop software, based in Ho Chi Minh City.",
+    tagline: "PHP engineer focused on Laravel backends, APIs, and data performance, based in Ho Chi Minh City.",
     navigate: "Navigate",
     copyright: "© 2026 Nguyen Quang Truong",
     backToTop: "Back to top",

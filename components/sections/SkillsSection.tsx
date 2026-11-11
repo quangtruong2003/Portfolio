@@ -15,50 +15,50 @@ const capabilities: Array<{
   {
     title: { en: "Backend and APIs", vi: "Backend và API" },
     description: {
-      en: "Business logic, service boundaries, and APIs that support day-to-day workflows.",
-      vi: "Nghiệp vụ, ranh giới dịch vụ và API phục vụ các quy trình sử dụng hằng ngày.",
+      en: "PHP backends, RESTful APIs, and domain logic built for maintainable workflows.",
+      vi: "Backend PHP, RESTful API và nghiệp vụ được xây dựng theo hướng dễ bảo trì.",
     },
-    technologies: ["PHP", "Laravel", "Spring Boot", "RESTful APIs", "OOP"],
+    technologies: ["PHP 8+", "Laravel 12", "Spring Boot", "Python", "TypeScript", "RESTful APIs", "Laravel Queues"],
   },
   {
     title: { en: "Data and persistence", vi: "Dữ liệu và lưu trữ" },
     description: {
-      en: "Relational schemas and ORM relationships shaped around clear, maintainable data flows.",
-      vi: "Lược đồ quan hệ và ORM được thiết kế cho luồng dữ liệu rõ ràng, dễ bảo trì.",
+      en: "Schema design, query optimization, and caching for data-heavy workflows.",
+      vi: "Thiết kế schema, tối ưu truy vấn và caching cho các luồng xử lý dữ liệu lớn.",
     },
-    technologies: ["MySQL", "Eloquent ORM"],
+    technologies: ["MySQL", "Redis", "Eloquent ORM", "Query optimization", "Database schema"],
   },
   {
-    title: { en: "Automation and AI", vi: "Tự động hóa và AI" },
+    title: { en: "Full-stack integrations", vi: "Tích hợp Full Stack" },
     description: {
-      en: "Practical workflows that connect services and reduce repetitive manual steps.",
-      vi: "Quy trình kết nối các dịch vụ và giảm bớt thao tác lặp lại.",
+      en: "Product interfaces and service connections across web, admin, and payment workflows.",
+      vi: "Giao diện sản phẩm và kết nối dịch vụ cho web, trang quản trị và quy trình thanh toán.",
     },
-    technologies: ["n8n", "Claude API", "OpenAI API"],
+    technologies: ["React", "Filament", "WordPress", "VNPay", "Firebase", "PDF"],
   },
   {
-    title: { en: "Frontend and product UI", vi: "Frontend và giao diện sản phẩm" },
+    title: { en: "Security and architecture", vi: "Bảo mật và kiến trúc" },
     description: {
-      en: "Interfaces and admin tools that make underlying workflows understandable to people.",
-      vi: "Giao diện và công cụ quản trị giúp người dùng nắm rõ các quy trình phía sau.",
+      en: "Access control and design principles applied to backend application structure.",
+      vi: "Phân quyền và nguyên tắc thiết kế được áp dụng trong cấu trúc ứng dụng backend.",
     },
-    technologies: ["React", "TypeScript", "Filament", "Blade", "Tailwind CSS"],
+    technologies: ["RBAC", "OOP", "SOLID", "System architecture"],
   },
   {
     title: { en: "Desktop and systems", vi: "Desktop và hệ thống" },
     description: {
-      en: "Native desktop behavior and system-level integrations across Windows and macOS.",
-      vi: "Tương tác desktop native và tích hợp hệ thống trên Windows và macOS.",
+      en: "Native input handling and desktop application development for Windows.",
+      vi: "Xử lý input native và phát triển ứng dụng desktop cho Windows.",
     },
-    technologies: ["Rust", "Tauri 2", "Windows API", "macOS"],
+    technologies: ["Rust", "Tauri 2", "Windows API", "Windows"],
   },
   {
-    title: { en: "Security and integrations", vi: "Bảo mật và tích hợp" },
+    title: { en: "Developer tools", vi: "Công cụ phát triển" },
     description: {
-      en: "Access control, authentication, payments, and external service connections.",
-      vi: "Phân quyền, xác thực, thanh toán và kết nối dịch vụ bên ngoài.",
+      en: "Tools used for version control, API testing, dependency management, and daily development.",
+      vi: "Công cụ dùng cho quản lý phiên bản, kiểm thử API, quản lý dependency và phát triển hằng ngày.",
     },
-    technologies: ["RBAC", "JWT", "Spring Security", "Clerk", "VNPay", "Firebase"],
+    technologies: ["Git", "GitLab", "Composer", "Postman", "Cursor", "Claude Code"],
   },
 ];
 

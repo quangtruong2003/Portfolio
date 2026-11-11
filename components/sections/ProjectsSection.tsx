@@ -17,6 +17,7 @@ interface Project {
   description: LocalizedText;
   technologies: string[];
   href?: string;
+  website?: string;
 }
 
 const projects: Project[] = [
@@ -26,22 +27,23 @@ const projects: Project[] = [
     period: { en: "2025–2026", vi: "2025–2026" },
     role: { en: "PHP Developer", vi: "Lập trình viên PHP" },
     description: {
-      en: "Property management workflows for rental contracts, monthly invoices, utility calculations, and role-based access.",
-      vi: "Các luồng quản lý hợp đồng thuê, hóa đơn hằng tháng, phí tiện ích và phân quyền người dùng.",
+      en: "Laravel contract workflows, queued invoice and utility jobs, MySQL query optimization, and access control across four roles.",
+      vi: "Quy trình hợp đồng Laravel, tác vụ hóa đơn và tiện ích chạy nền, tối ưu truy vấn MySQL và phân quyền bốn vai trò.",
     },
-    technologies: ["Laravel 12", "PHP 8+", "MySQL", "Filament", "RBAC"],
+    technologies: ["Laravel 12", "PHP 8+", "MySQL", "Redis", "Laravel Queues", "RBAC"],
   },
   {
     title: "SmoothScroll",
     category: "personal",
     period: { en: "2026–Present", vi: "2026–nay" },
-    role: { en: "Desktop utility", vi: "Tiện ích desktop" },
+    role: { en: "Windows desktop utility", vi: "Tiện ích desktop Windows" },
     description: {
-      en: "A Windows and macOS desktop app with native input interception, custom scroll easing, and per-app exclusions.",
-      vi: "Ứng dụng desktop cho Windows và macOS, với xử lý đầu vào native, hiệu ứng cuộn tùy chỉnh và danh sách loại trừ theo ứng dụng.",
+      en: "An open-source Windows mouse-wheel utility with native input hooks, custom easing, and per-app exclusions. The project has passed 30,000 downloads.",
+      vi: "Tiện ích mã nguồn mở cho chuột Windows, có input hook native, hiệu ứng cuộn tùy chỉnh và danh sách loại trừ theo ứng dụng. Dự án đã vượt 30.000 lượt tải.",
     },
     technologies: ["Rust", "Tauri 2", "React", "TypeScript"],
     href: "https://github.com/quangtruong2003/SmoothScroll",
+    website: "https://smoothscroll.top/",
   },
   {
     title: "Medical Appointment Booking",
@@ -107,18 +109,32 @@ export default function ProjectsSection() {
                 <p className="text-left font-mono text-[0.68rem] leading-relaxed text-olive-gray md:text-right">
                   {project.technologies.join(" · ")}
                 </p>
-                {project.href && (
-                  <a
-                    href={project.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-terracotta underline decoration-border-warm underline-offset-4 transition-colors duration-200 hover:text-near-black focus-visible:outline-2 focus-visible:outline-focus-blue"
-                  >
-                    {text.viewSource}
-                    <ArrowUpRight size={15} aria-hidden="true" />
-                    <span className="sr-only">: {project.title}</span>
-                  </a>
-                )}
+                <div className="flex flex-wrap gap-x-4">
+                  {project.href && (
+                    <a
+                      href={project.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-terracotta underline decoration-border-warm underline-offset-4 transition-colors duration-200 hover:text-near-black focus-visible:outline-2 focus-visible:outline-focus-blue"
+                    >
+                      {text.viewSource}
+                      <ArrowUpRight size={15} aria-hidden="true" />
+                      <span className="sr-only">: {project.title}</span>
+                    </a>
+                  )}
+                  {project.website && (
+                    <a
+                      href={project.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-terracotta underline decoration-border-warm underline-offset-4 transition-colors duration-200 hover:text-near-black focus-visible:outline-2 focus-visible:outline-focus-blue"
+                    >
+                      {text.viewWebsite}
+                      <ArrowUpRight size={15} aria-hidden="true" />
+                      <span className="sr-only">: {project.title}</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </article>
           </FadeIn>

@@ -42,7 +42,7 @@ export default function HeroSection() {
         <aside className="flex flex-col justify-end gap-8 border-t border-border-warm pt-6 md:col-span-3 md:border-l md:border-t-0 md:pl-6 md:pt-0">
           <p className="max-w-[34ch] text-base leading-relaxed text-olive-gray">{hero.bio}</p>
           <p className="border-t border-border-warm pt-4 font-mono text-xs leading-relaxed text-near-black">
-            {hero.availability}
+            {hero.focus}
           </p>
         </aside>
       </div>

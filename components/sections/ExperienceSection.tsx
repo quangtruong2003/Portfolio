@@ -23,25 +23,47 @@ interface ExperienceItem {
 const experiences: ExperienceItem[] = [
   {
     company: "SmoothScroll",
-    role: { en: "Desktop utility", vi: "Tiện ích desktop" },
+    role: { en: "Windows desktop utility", vi: "Tiện ích desktop Windows" },
     period: { en: "May 2026–Present", vi: "Tháng 5/2026–nay" },
     type: "personal",
     summary: {
-      en: "Cross-platform desktop utility for smoother mouse-wheel scrolling.",
-      vi: "Tiện ích desktop đa nền tảng giúp thao tác cuộn chuột mượt mà hơn.",
+      en: "Open-source Windows mouse-wheel utility with more than 30,000 downloads.",
+      vi: "Tiện ích chuột Windows mã nguồn mở với hơn 30.000 lượt tải.",
     },
     contributions: [
       {
-        en: "Built native input interception and a custom easing engine in Rust.",
-        vi: "Xây dựng cơ chế bắt sự kiện đầu vào native và bộ easing tùy chỉnh bằng Rust.",
+        en: "Built low-level input hooks and a custom scrolling animation engine in Rust.",
+        vi: "Xây dựng input hook mức thấp và bộ animation cuộn tùy chỉnh bằng Rust.",
       },
       {
-        en: "Added per-app exclusions and a settings interface with live configuration.",
-        vi: "Thêm danh sách loại trừ theo ứng dụng và giao diện cài đặt cập nhật trực tiếp.",
+        en: "Added per-app exclusions and maintained the project through GitHub issues and community feedback.",
+        vi: "Thêm danh sách loại trừ theo ứng dụng, xử lý issue và tiếp nhận phản hồi từ cộng đồng.",
       },
     ],
     technologies: ["Rust", "Tauri 2", "React", "TypeScript"],
     href: "https://github.com/quangtruong2003/SmoothScroll",
+  },
+  {
+    company: "Penalty Co., Ltd.",
+    role: { en: "Full Stack Developer", vi: "Lập trình viên Full Stack" },
+    period: { en: "Apr–Sep 2026", vi: "Tháng 4–9/2026" },
+    type: "work",
+    summary: {
+      en: "Maintained and upgraded internal PHP/Laravel applications, focusing on performance and maintainability.",
+      vi: "Bảo trì và nâng cấp ứng dụng PHP/Laravel nội bộ, tập trung vào hiệu năng và khả năng bảo trì.",
+    },
+    contributions: [
+      {
+        en: "Modernized administrative UI and workflows, and built a bulk product upload flow integrated with WordPress inventory.",
+        vi: "Hiện đại hóa giao diện quản trị và xây dựng luồng tải sản phẩm hàng loạt, đồng bộ tồn kho với WordPress.",
+      },
+      {
+        en: "Optimized database queries and backend processing for large imports.",
+        vi: "Tối ưu truy vấn cơ sở dữ liệu và xử lý backend cho các đợt nhập dữ liệu lớn.",
+      },
+    ],
+    technologies: ["PHP 8+", "Laravel", "WordPress", "MySQL"],
+    location: { en: "District 10, Ho Chi Minh City", vi: "Quận 10, TP. Hồ Chí Minh" },
   },
   {
     company: "C3TEK Digital Marketing Solutions",
@@ -58,8 +80,12 @@ const experiences: ExperienceItem[] = [
         vi: "Phát triển API Laravel và quy trình hợp đồng, từ khởi tạo, kết thúc đến theo dõi vòng đời.",
       },
       {
-        en: "Automated monthly invoices and utility calculations, with access control across four roles.",
-        vi: "Tự động hóa hóa đơn hằng tháng, tính phí tiện ích và phân quyền cho bốn vai trò người dùng.",
+        en: "Moved invoice generation and tiered utility calculations to Laravel queues and background jobs; implemented access control across four roles.",
+        vi: "Chuyển việc lập hóa đơn và tính phí tiện ích theo bậc sang Laravel Queues và background jobs; triển khai phân quyền bốn vai trò.",
+      },
+      {
+        en: "Fixed N+1 queries with eager loading, composite indexes, and Redis caching; added PDF export for contracts and billing statements.",
+        vi: "Xử lý truy vấn N+1 bằng eager loading, composite index và Redis; bổ sung xuất PDF cho hợp đồng và hóa đơn.",
       },
     ],
     technologies: ["Laravel 12", "PHP 8+", "MySQL", "Filament", "RBAC", "PDF"],

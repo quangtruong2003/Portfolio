@@ -26,15 +26,21 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://quangtruong.dev"),
-  title: "Nguyen Quang Truong | Software Engineer",
+  title: "Nguyen Quang Truong | PHP Engineer",
   description:
-    "Portfolio of Nguyen Quang Truong, a software engineer working across backend systems, practical automation, and desktop software.",
+    "Portfolio of Nguyen Quang Truong, a PHP engineer focused on Laravel, RESTful APIs, MySQL, Redis, and Windows desktop software.",
   keywords: [
     "Nguyen Quang Truong",
-    "Software Engineer",
+    "PHP Engineer",
     "PHP Developer",
     "Laravel Developer",
     "Backend Developer",
+    "Laravel 12",
+    "MySQL",
+    "Redis",
+    "RESTful APIs",
+    "Python",
+    "TypeScript",
     "Rust",
     "Tauri",
     "Ho Chi Minh City",
@@ -43,9 +49,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Nguyen Quang Truong" }],
   creator: "Nguyen Quang Truong",
   openGraph: {
-    title: "Nguyen Quang Truong | Software Engineer",
+    title: "Nguyen Quang Truong | PHP Engineer",
     description:
-      "Software engineer working across backend systems, practical automation, and desktop software.",
+      "PHP engineer focused on Laravel backends, reliable APIs, MySQL, Redis, and desktop software.",
     url: "https://quangtruong.dev",
     siteName: "Nguyen Quang Truong",
     locale: "en_US",
@@ -53,9 +59,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nguyen Quang Truong | Software Engineer",
+    title: "Nguyen Quang Truong | PHP Engineer",
     description:
-      "Software engineer working across backend systems, practical automation, and desktop software.",
+      "PHP engineer focused on Laravel backends, reliable APIs, MySQL, Redis, and desktop software.",
   },
   robots: { index: true, follow: true },
   alternates: { canonical: "https://quangtruong.dev" },
@@ -75,7 +81,7 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Nguyen Quang Truong",
-    jobTitle: "Software Engineer",
+    jobTitle: "PHP Engineer",
     url: "https://quangtruong.dev",
     email: "nguyentruongk530042003@gmail.com",
     address: {
@@ -90,12 +96,14 @@ export default async function RootLayout({
     knowsAbout: [
       "PHP",
       "Laravel",
-      "Rust",
-      "Tauri",
-      "AI Automation",
       "RESTful APIs",
       "MySQL",
-      "Software Engineering",
+      "Redis",
+      "Python",
+      "TypeScript",
+      "System Architecture",
+      "Rust",
+      "Tauri",
     ],
   };
 

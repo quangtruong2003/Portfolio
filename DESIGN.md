@@ -2,7 +2,7 @@
 
 ## Direction
 
-**The Quiet Craft** is an editorial portfolio for a software engineer. It uses considered typography, an asymmetric 12-column grid, generous spacing, and fine rules to make real work easy to read. The page keeps one paper-toned theme throughout. The written brief is the visual reference; no Recto image or authentic project screenshots were present in the workspace.
+**The Quiet Craft** is an editorial portfolio for a PHP engineer. It uses considered typography, an asymmetric 12-column grid, generous spacing, and fine rules to make real work easy to read. The page keeps one paper-toned theme throughout. The written brief is the visual reference; no Recto image or authentic project screenshots were present in the workspace.
 
 The design does not use gradients, glass effects, generic stock imagery, fake product screenshots, decorative status dots, or repeated cards. Project entries use their verified descriptions, technologies, dates, and source links.
 
@@ -64,11 +64,12 @@ The home route is `/`. `/portfolio` permanently redirects to `/`. Existing secti
 
 ## Content and evidence
 
-- Project and experience copy is based on the existing site and its CV PDF.
-- C3TEK experience is dated February 2025 to April 2026. SmoothScroll begins May 2026.
+- Project and experience copy is based on the latest supplied CV and verified public links.
+- Penalty Co. experience is dated April to September 2026. C3TEK is dated February 2025 to April 2026. SmoothScroll begins May 2026.
 - The property platform has no verified public repository, so it has no project source link.
 - SmoothScroll, the medical booking system, and ChatBot links were confirmed as public repositories.
-- No business results, performance metrics, user counts, or project screenshots are inferred.
+- The 30,000+ SmoothScroll download figure is reported in the supplied CV and has not been independently audited.
+- No other business results, user counts, or project screenshots are inferred.
 
 ## Implementation
 
