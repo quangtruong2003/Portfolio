@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 
 const GITHUB_USERNAME = "quangtruong2003";
-const CACHE_KEY = "gh_repos";
+const CACHE_KEY = "gh_repos_curated";
 const CACHE_TTL_MS = 60 * 60 * 1000;
+const FEATURED_REPOSITORIES = ["SmoothScroll", "luanvan-fullstack", "ChatBot"];
 
 export interface GitHubRepo {
   id: number;
@@ -38,29 +39,36 @@ function getCached(): GitHubRepo[] | null {
 
 async function fetchGitHubRepos(): Promise<GitHubRepo[]> {
   const response = await fetch(
-    `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`,
+    "https://api.github.com/users/" + GITHUB_USERNAME + "/repos?per_page=100&sort=updated",
     { headers: { Accept: "application/vnd.github+json" } }
   );
   if (!response.ok) throw new Error("GitHub repositories could not be loaded");
 
   const repos = await response.json() as Array<GitHubRepo & { fork?: boolean }>;
-  return repos.filter((repo) => !repo.fork).slice(0, 4);
+  const publicRepos = new Map(
+    repos.filter((repo) => !repo.fork).map((repo) => [repo.name, repo])
+  );
+  return FEATURED_REPOSITORIES.flatMap((name) => {
+    const repo = publicRepos.get(name);
+    return repo ? [repo] : [];
+  });
 }
 
 export function useGitHubRepos() {
   const [repos, setRepos] = useState<GitHubRepo[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     const loadRepos = async () => {
       const cached = getCached();
       if (cached) {
-        await Promise.resolve();
         if (!cancelled) {
           setRepos(cached);
           setLoading(false);
+          setError(false);
         }
         return;
       }
@@ -85,7 +93,13 @@ export function useGitHubRepos() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [retryCount]);
 
-  return { repos, loading, error };
+  const retry = () => {
+    setError(false);
+    setLoading(true);
+    setRetryCount((count) => count + 1);
+  };
+
+  return { repos, loading, error, retry };
 }

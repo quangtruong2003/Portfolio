@@ -16,7 +16,7 @@ export default function SectionTitle({
   children,
 }: SectionTitleProps) {
   return (
-    <header className={`mb-12 flex flex-col gap-5 md:mb-16 ${align === "center" ? "items-center text-center" : "items-start text-left"}`}>
+    <header className={`mb-8 flex flex-col gap-4 md:mb-12 md:gap-5 ${align === "center" ? "items-center text-center" : "items-start text-left"}`}>
       {eyebrow && <p className="section-kicker">{eyebrow}</p>}
       <h2 className="section-heading">{title}</h2>
       {subtitle && <p className="section-copy">{subtitle}</p>}

@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://quangtruong.dev"),
   title: "Nguyen Quang Truong | PHP Engineer",
   description:
-    "Portfolio of Nguyen Quang Truong, a PHP engineer focused on Laravel, RESTful APIs, MySQL, Redis, and Windows desktop software.",
+    "Portfolio of Nguyen Quang Truong, a PHP engineer building maintainable Laravel APIs, data workflows, and Windows desktop software.",
   keywords: [
     "Nguyen Quang Truong",
     "PHP Engineer",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nguyen Quang Truong | PHP Engineer",
     description:
-      "PHP engineer focused on Laravel backends, reliable APIs, MySQL, Redis, and desktop software.",
+      "PHP engineer building Laravel backends, data workflows, and Windows desktop software.",
     url: "https://quangtruong.dev",
     siteName: "Nguyen Quang Truong",
     locale: "en_US",

@@ -24,7 +24,7 @@ export default function InputField({
   rows = 4,
 }: InputFieldProps) {
   const id = `contact-${name}`;
-  const className = "w-full rounded-[4px] border border-border-warm bg-ivory px-3.5 py-3 font-sans text-base text-near-black placeholder:text-olive-gray focus:border-terracotta focus:outline-2 focus:outline-offset-2 focus:outline-focus-blue disabled:opacity-50";
+  const className = "w-full rounded-[4px] border border-border-warm bg-ivory px-3.5 py-3 font-sans text-base text-near-black placeholder:text-olive-gray focus:border-terracotta focus:outline-none disabled:opacity-50";
 
   return (
     <div className="flex flex-col gap-2">

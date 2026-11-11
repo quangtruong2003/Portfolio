@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -45,18 +46,22 @@ export default function Navbar() {
         menuButtonRef.current?.focus();
       }
     };
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-      if (!menuRef.current?.contains(target) && !menuButtonRef.current?.contains(target)) {
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (
+        target instanceof Node &&
+        !menuRef.current?.contains(target) &&
+        !menuButtonRef.current?.contains(target)
+      ) {
         setIsOpen(false);
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("click", handleClick);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("click", handleClick);
     };
   }, [isOpen]);
 
@@ -74,66 +79,67 @@ export default function Navbar() {
   return (
     <>
       <a className="skip-link" href="#main-content">{dictionary.nav.skip}</a>
-      <header className="sticky top-0 z-40 border-b border-border-warm bg-parchment/95 backdrop-blur-sm">
-      <nav className="site-container flex min-h-16 items-center justify-between gap-4" aria-label={language === "vi" ? "Điều hướng chính" : "Main navigation"}>
-        <a href="#hero" className="shrink-0 font-serif text-lg tracking-[-0.03em] text-near-black sm:text-xl">
-          Nguyen Quang Truong
-        </a>
+      <header className="sticky top-0 z-40 border-b border-border-warm bg-parchment/95">
+        <nav className="site-container flex min-h-16 items-center justify-between gap-4" aria-label={language === "vi" ? "Điều hướng chính" : "Main navigation"}>
+          <a href="#hero" className="inline-flex shrink-0 items-center gap-2.5 font-serif text-lg tracking-[-0.03em] text-near-black sm:text-xl">
+            <Image src="/favicon.svg" alt="" width={28} height={28} />
+            <span>Nguyen Quang Truong</span>
+          </a>
 
-        <div className="hidden items-center lg:flex">
-          <div className="flex items-center gap-5 xl:gap-7">
+          <div className="hidden items-center gap-4 lg:flex">
+            <div className="flex items-center gap-4 xl:gap-6">
+              {NAV_LINKS.map(({ key, id }) => (
+                <a
+                  key={id}
+                  href={"#" + id}
+                  aria-current={activeSection === id ? "location" : undefined}
+                  className={"relative flex min-h-11 items-center text-sm transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue " + (activeSection === id ? "text-terracotta" : "text-olive-gray")}
+                >
+                  {dictionary.nav[key]}
+                  <span className={"absolute inset-x-0 -bottom-px h-px bg-terracotta transition-transform duration-200 " + (activeSection === id ? "scale-x-100" : "scale-x-0")} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+            {languageButton}
+          </div>
+
+          <div className="flex items-center lg:hidden">
+            {languageButton}
+            <button
+              ref={menuButtonRef}
+              type="button"
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
+              aria-label={isOpen ? dictionary.nav.closeMenu : dictionary.nav.openMenu}
+              onClick={() => setIsOpen((open) => !open)}
+              className="flex min-h-11 min-w-11 items-center justify-center text-near-black focus-visible:outline-2 focus-visible:outline-focus-blue"
+            >
+              {isOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
+            </button>
+          </div>
+        </nav>
+
+        <nav
+          id="mobile-navigation"
+          ref={menuRef}
+          aria-label={language === "vi" ? "Điều hướng di động" : "Mobile navigation"}
+          hidden={!isOpen}
+          className="absolute inset-x-0 top-full z-20 border-t border-border-warm bg-parchment px-4 pb-4 pt-2 lg:hidden"
+        >
+          <div className="site-container flex flex-col">
             {NAV_LINKS.map(({ key, id }) => (
               <a
                 key={id}
-                href={`#${id}`}
+                href={"#" + id}
                 aria-current={activeSection === id ? "location" : undefined}
-                className={`relative min-h-11 content-center text-sm transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue ${activeSection === id ? "text-terracotta" : "text-olive-gray"}`}
+                onClick={() => setIsOpen(false)}
+                className="flex min-h-12 items-center border-b border-border-cream text-sm text-near-black transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue"
               >
                 {dictionary.nav[key]}
-                <span className={`absolute inset-x-0 -bottom-px h-px bg-terracotta transition-transform duration-200 ${activeSection === id ? "scale-x-100" : "scale-x-0"}`} aria-hidden="true" />
               </a>
             ))}
           </div>
-          {languageButton}
-        </div>
-
-        <div className="flex items-center lg:hidden">
-          {languageButton}
-          <button
-            ref={menuButtonRef}
-            type="button"
-            aria-expanded={isOpen}
-            aria-controls="mobile-navigation"
-            aria-label={isOpen ? dictionary.nav.closeMenu : dictionary.nav.openMenu}
-            onClick={() => setIsOpen((open) => !open)}
-            className="flex min-h-11 min-w-11 items-center justify-center text-near-black focus-visible:outline-2 focus-visible:outline-focus-blue"
-          >
-            {isOpen ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
-          </button>
-        </div>
-      </nav>
-
-      <nav
-        id="mobile-navigation"
-        ref={menuRef}
-        aria-label={language === "vi" ? "Điều hướng di động" : "Mobile navigation"}
-        hidden={!isOpen}
-        className="border-t border-border-warm bg-parchment px-6 pb-4 pt-2 lg:hidden"
-      >
-        <div className="site-container flex flex-col">
-          {NAV_LINKS.map(({ key, id }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              aria-current={activeSection === id ? "location" : undefined}
-              onClick={() => setIsOpen(false)}
-              className="flex min-h-12 items-center border-b border-border-cream text-sm text-near-black transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue"
-            >
-              {dictionary.nav[key]}
-            </a>
-          ))}
-        </div>
-      </nav>
+        </nav>
       </header>
     </>
   );

@@ -8,10 +8,10 @@ interface SectionWrapperProps {
 }
 
 const paddingMap = {
-  sm: "py-14 md:py-20",
-  md: "py-18 md:py-24",
-  lg: "py-20 md:py-28",
-  xl: "py-24 md:py-32",
+  sm: "py-10 md:py-12",
+  md: "py-12 md:py-16",
+  lg: "py-14 md:py-20",
+  xl: "py-16 md:py-24",
 };
 
 export default function SectionWrapper({
@@ -21,7 +21,7 @@ export default function SectionWrapper({
   py = "lg",
 }: SectionWrapperProps) {
   return (
-    <section id={id} className={`scroll-mt-20 border-t hairline ${paddingMap[py]} ${className}`}>
+    <section id={id} className={["border-t", "hairline", paddingMap[py], className].filter(Boolean).join(" ")}>
       <div className="site-container">{children}</div>
     </section>
   );

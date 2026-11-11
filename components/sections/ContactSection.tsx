@@ -38,12 +38,12 @@ export default function ContactSection() {
 
     if (!serviceId || !templateId || !publicKey) {
       const query = new URLSearchParams({
-        subject: `Portfolio message from ${form.name}`,
-        body: `Name: ${form.name}\nEmail: ${form.email}\n\nMessage:\n${form.message}`,
+        subject: "Portfolio message from " + form.name,
+        body: "Name: " + form.name + "\nEmail: " + form.email + "\n\nMessage:\n" + form.message,
       });
-      window.location.href = `mailto:${EMAIL}?${query.toString()}`;
       setMailFallback(true);
       setSubmitting(false);
+      window.location.href = "mailto:" + EMAIL + "?" + query.toString();
       return;
     }
 
@@ -67,20 +67,22 @@ export default function ContactSection() {
 
   return (
     <SectionWrapper id="contact" py="xl">
-      <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
-        <div className="md:col-span-5">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
+        <div className="lg:col-span-5">
           <SectionTitle eyebrow={text.eyebrow} title={text.title} subtitle={text.subtitle} />
           <address className="not-italic">
             <a
-              href={`mailto:${EMAIL}`}
+              href={"mailto:" + EMAIL}
               className="inline-flex min-h-11 items-center gap-2 break-all text-base font-medium text-near-black underline decoration-border-warm underline-offset-4 transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue"
             >
               <Mail size={16} aria-hidden="true" />
               {EMAIL}
             </a>
-            <p className="mt-5 flex items-center gap-2 text-sm text-olive-gray">
+            <p className="mt-4 flex items-center gap-2 text-sm text-olive-gray">
               <Phone size={15} aria-hidden="true" />
-              <a className="min-h-10 content-center hover:text-terracotta" href="tel:+84947890450">(094) 789 0450</a>
+              <a className="min-h-11 content-center hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue" href="tel:+84947890450">
+                (094) 789 0450
+              </a>
             </p>
             <p className="mt-3 font-mono text-xs text-olive-gray">{text.location}: {dictionary.hero.location}</p>
           </address>
@@ -88,15 +90,15 @@ export default function ContactSection() {
           <p className="mt-7 border-t border-border-warm pt-4 font-mono text-[0.68rem] uppercase tracking-[0.06em] text-olive-gray">{text.orFind}</p>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <a className="inline-flex min-h-11 items-center gap-2 text-sm text-near-black transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue" href="https://github.com/quangtruong2003" target="_blank" rel="noopener noreferrer">
-              <GitHubIcon size={16} aria-hidden="true" /> {text.github} <ArrowUpRight size={13} aria-hidden="true" />
+              <GitHubIcon size={16} aria-hidden="true" />{text.github}<ArrowUpRight size={13} aria-hidden="true" />
             </a>
             <a className="inline-flex min-h-11 items-center gap-2 text-sm text-near-black transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue" href="https://www.linkedin.com/in/quangtruong2003" target="_blank" rel="noopener noreferrer">
-              <LinkedInIcon size={16} aria-hidden="true" /> {text.linkedin} <ArrowUpRight size={13} aria-hidden="true" />
+              <LinkedInIcon size={16} aria-hidden="true" />{text.linkedin}<ArrowUpRight size={13} aria-hidden="true" />
             </a>
           </div>
         </div>
 
-        <div className="md:col-span-6 md:col-start-7">
+        <div className="lg:col-span-6 lg:col-start-7">
           <h3 className="mb-6 font-serif text-2xl text-near-black">{text.sendMessage}</h3>
 
           {submitted ? (

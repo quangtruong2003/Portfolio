@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Mail, Phone } from "lucide-react";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -28,7 +29,10 @@ export default function Footer() {
       <div className="site-container">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-4">
-            <a href="#hero" className="font-serif text-2xl tracking-[-0.03em] text-near-black">NQT</a>
+            <a href="#hero" className="inline-flex min-h-11 items-center gap-2.5 font-serif text-xl tracking-[-0.03em] text-near-black">
+              <Image src="/favicon.svg" alt="" width={28} height={28} />
+              <span>Nguyen Quang Truong</span>
+            </a>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-olive-gray">{footer.tagline}</p>
           </div>
 

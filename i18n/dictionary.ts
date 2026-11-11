@@ -20,7 +20,9 @@ export interface Dictionary {
     bio: string;
     viewProjects: string;
     viewCV: string;
-    focus: string;
+    proofLabel: string;
+    proofCaption: string;
+    viewProject: string;
   };
   about: {
     title: string;
@@ -38,16 +40,13 @@ export interface Dictionary {
     title: string;
     subtitle: string;
     work: string;
-    project: string;
-    thesis: string;
-    viewSource: string;
   };
   projects: {
     eyebrow: string;
     title: string;
     subtitle: string;
+    processLabel: string;
     seeMore: string;
-    viewAll: string;
     viewSource: string;
     viewWebsite: string;
     category: {
@@ -65,6 +64,7 @@ export interface Dictionary {
     stars: string;
     forks: string;
     viewAll: string;
+    retry: string;
   };
   contact: {
     eyebrow: string;
@@ -112,39 +112,38 @@ export const vi: Dictionary = {
   hero: {
     role: "Kỹ sư PHP",
     location: "TP. Hồ Chí Minh, Việt Nam",
-    headlineStart: "Phần mềm,",
-    headlineAccent: "làm thật kỹ.",
-    bio: "Tập trung vào backend PHP với Laravel, API tin cậy và tối ưu cơ sở dữ liệu. Ngoài công việc, tôi phát triển tiện ích desktop cho Windows.",
+    headlineStart: "Backend PHP.",
+    headlineAccent: "Tiện ích Windows.",
+    bio: "Tôi xây dựng API Laravel dễ bảo trì, tối ưu quy trình dữ liệu và phát triển tiện ích Windows bằng Rust.",
     viewProjects: "Xem dự án tiêu biểu",
     viewCV: "Xem CV",
-    focus: "PHP 8+ · Laravel 12 · MySQL · Redis",
+    proofLabel: "Dự án mã nguồn mở",
+    proofCaption: "lượt tải",
+    viewProject: "Xem dự án",
   },
   about: {
-    title: "Làm kỹ, làm có chủ đích.",
-    subtitle: "Tôi tập trung vào backend PHP, API dễ bảo trì và hiệu năng dữ liệu.",
-    bio1: "Tôi tốt nghiệp ngành Công nghệ Thông tin tại Đại học Công nghệ Sài Gòn (2021–2025). Công việc của tôi tập trung vào PHP 8+, Laravel 12, RESTful API và cơ sở dữ liệu quan hệ, đồng thời áp dụng Clean Code và SOLID vào nghiệp vụ backend.",
+    title: "Tư duy sản phẩm, nền tảng backend.",
+    subtitle: "Tôi quan tâm đến API đáng tin cậy, luồng dữ liệu và công cụ giải quyết việc cụ thể.",
+    bio1: "Công việc của tôi xoay quanh PHP 8+, Laravel, REST API, MySQL và Redis. Tôi tập trung vào những phần ít thấy nhưng quyết định độ tin cậy: tác vụ nền, phân quyền và hiệu năng dữ liệu.",
     bio2: "Tại Penalty, tôi bảo trì ứng dụng PHP/Laravel và xây dựng hệ thống tải sản phẩm hàng loạt tích hợp WordPress. Trước đó tại C3TEK, tôi phát triển quy trình hợp đồng, xử lý hóa đơn qua Laravel Queues, và tối ưu MySQL bằng eager loading, composite index và Redis. SmoothScroll, tiện ích cuộn chuột Windows mã nguồn mở do tôi phát triển, đã vượt 30.000 lượt tải.",
     education: "Công nghệ Thông tin · Đại học Công nghệ Sài Gòn · 2021–2025",
   },
   skills: {
     title: "Năng lực kỹ thuật",
-    subtitle: "Backend là trọng tâm, cùng các kỹ năng full-stack và ứng dụng desktop trong công việc và dự án cá nhân.",
+    subtitle: "Từ API và dữ liệu đến tích hợp sản phẩm và phần mềm desktop.",
   },
   experience: {
-    eyebrow: "Kinh nghiệm",
-    title: "Công việc và dự án",
-    subtitle: "Các vai trò và sản phẩm tôi đã tham gia xây dựng trong backend, desktop và ứng dụng di động.",
+    eyebrow: "Vai trò đã đảm nhiệm",
+    title: "Kinh nghiệm làm việc",
+    subtitle: "Hai vai trò tập trung vào ứng dụng PHP và quy trình dữ liệu.",
     work: "Công việc",
-    project: "Dự án cá nhân",
-    thesis: "Đồ án",
-    viewSource: "Xem mã nguồn",
   },
   projects: {
     eyebrow: "Dự án",
-    title: "Một số sản phẩm tiêu biểu",
-    subtitle: "Từ nền tảng quản lý đến tiện ích desktop, mỗi dự án giải quyết một nhu cầu cụ thể.",
+    title: "Sản phẩm và hệ thống backend",
+    subtitle: "Tiện ích Windows, nền tảng quản lý bất động sản, hệ thống đặt lịch khám và ứng dụng Android.",
+    processLabel: "Luồng xử lý cuộn",
     seeMore: "Xem thêm hoạt động mã nguồn mở",
-    viewAll: "Mở GitHub",
     viewSource: "Xem mã nguồn",
     viewWebsite: "Mở website",
     category: {
@@ -155,18 +154,19 @@ export const vi: Dictionary = {
   },
   openSource: {
     title: "Mã nguồn mở",
-    subtitle: "Một vài repository công khai gần đây trên GitHub.",
+    subtitle: "Một số dự án được chọn từ GitHub.",
     loading: "Đang tải repository…",
     error: "Chưa thể tải repository. Bạn vẫn có thể xem trực tiếp trên GitHub.",
     empty: "Hiện chưa có repository công khai để hiển thị.",
     stars: "sao",
     forks: "fork",
     viewAll: "Xem GitHub",
+    retry: "Thử tải lại",
   },
   contact: {
     eyebrow: "Liên hệ",
-    title: "Cùng xây điều gì đó hữu ích.",
-    subtitle: "Nếu bạn muốn trao đổi về một dự án, công việc hoặc ý tưởng, hãy gửi lời nhắn.",
+    title: "Bạn đang cần cải thiện một hệ thống?",
+    subtitle: "Trao đổi về backend, một vai trò mới hoặc một công cụ hữu ích.",
     email: "Email",
     phone: "Điện thoại",
     linkedin: "LinkedIn",
@@ -187,7 +187,7 @@ export const vi: Dictionary = {
     orFind: "Hoặc kết nối qua",
   },
   footer: {
-    tagline: "Kỹ sư PHP tập trung vào backend Laravel, API và hiệu năng dữ liệu, tại TP. Hồ Chí Minh.",
+    tagline: "Kỹ sư PHP xây dựng backend Laravel, API và quy trình dữ liệu tại TP. Hồ Chí Minh.",
     navigate: "Điều hướng",
     copyright: "© 2026 Nguyễn Quang Trường",
     backToTop: "Lên đầu trang",
@@ -209,39 +209,38 @@ export const en: Dictionary = {
   hero: {
     role: "PHP Engineer",
     location: "Ho Chi Minh City, Vietnam",
-    headlineStart: "Software,",
-    headlineAccent: "made with care.",
-    bio: "Focused on PHP backends with Laravel, reliable APIs, and database optimization. Outside work, I build Windows desktop software.",
+    headlineStart: "PHP backends.",
+    headlineAccent: "Windows tools.",
+    bio: "I build maintainable Laravel APIs, optimize data workflows, and develop Windows utilities in Rust.",
     viewProjects: "Explore selected work",
     viewCV: "View CV",
-    focus: "PHP 8+ · Laravel 12 · MySQL · Redis",
+    proofLabel: "Open-source project",
+    proofCaption: "downloads",
+    viewProject: "View project",
   },
   about: {
-    title: "Built with intention.",
-    subtitle: "I focus on PHP backends, maintainable APIs, and data performance.",
-    bio1: "I studied Information Technology at SaiGon Technology University (2021–2025). My work centers on PHP 8+, Laravel 12, RESTful APIs, and relational databases, with Clean Code and SOLID principles applied to backend workflows.",
+    title: "Product thinking, backend foundations.",
+    subtitle: "I care about reliable APIs, data workflows, and tools that solve a specific job.",
+    bio1: "My work centers on PHP 8+, Laravel, REST APIs, MySQL, and Redis. I focus on the parts users rarely see but rely on: background jobs, access boundaries, and data performance.",
     bio2: "At Penalty, I maintained PHP/Laravel applications and built a bulk product upload system integrated with WordPress. Before that, at C3TEK, I developed contract workflows, queued invoice processing, and optimized MySQL with eager loading, composite indexes, and Redis. SmoothScroll, my open-source Windows scrolling utility, has passed 30,000 downloads.",
     education: "Information Technology · SaiGon Technology University · 2021–2025",
   },
   skills: {
     title: "Technical capabilities",
-    subtitle: "Backend engineering first, supported by full-stack work and desktop applications.",
+    subtitle: "From APIs and data to product integrations and desktop software.",
   },
   experience: {
-    eyebrow: "Experience",
-    title: "Work and projects",
-    subtitle: "Selected roles and products across backend engineering, desktop software, and mobile applications.",
+    eyebrow: "Selected roles",
+    title: "Work experience",
+    subtitle: "Two roles focused on PHP applications and data-heavy workflows.",
     work: "Work",
-    project: "Personal project",
-    thesis: "Thesis",
-    viewSource: "View source",
   },
   projects: {
     eyebrow: "Projects",
-    title: "Selected work",
-    subtitle: "From a property platform to a desktop utility, each project addresses a specific need.",
+    title: "Products and backend systems",
+    subtitle: "A Windows utility, a property platform, a healthcare booking system, and an Android app.",
+    processLabel: "Scroll pipeline",
     seeMore: "Explore more open-source work",
-    viewAll: "Open GitHub",
     viewSource: "View source",
     viewWebsite: "Visit website",
     category: {
@@ -252,18 +251,19 @@ export const en: Dictionary = {
   },
   openSource: {
     title: "Open source",
-    subtitle: "A few recent public repositories from GitHub.",
+    subtitle: "A selected set of projects from GitHub.",
     loading: "Loading repositories…",
     error: "Repositories are unavailable right now. You can still visit GitHub directly.",
     empty: "There are no public repositories to show yet.",
     stars: "stars",
     forks: "forks",
     viewAll: "View GitHub",
+    retry: "Try again",
   },
   contact: {
     eyebrow: "Contact",
-    title: "Let’s build something useful.",
-    subtitle: "For a project, a role, or an idea you would like to discuss, send me a note.",
+    title: "Working on a system that needs improving?",
+    subtitle: "Reach out about backend work, a role, or a useful tool idea.",
     email: "Email",
     phone: "Phone",
     linkedin: "LinkedIn",
@@ -284,7 +284,7 @@ export const en: Dictionary = {
     orFind: "Or connect on",
   },
   footer: {
-    tagline: "PHP engineer focused on Laravel backends, APIs, and data performance, based in Ho Chi Minh City.",
+    tagline: "PHP engineer building Laravel backends, APIs, and data workflows in Ho Chi Minh City.",
     navigate: "Navigate",
     copyright: "© 2026 Nguyen Quang Truong",
     backToTop: "Back to top",
