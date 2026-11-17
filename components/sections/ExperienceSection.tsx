@@ -1,97 +1,97 @@
 "use client";
 
-import { useLanguage } from "@/i18n/LanguageContext";
-import SectionWrapper from "@/components/layout/SectionWrapper";
 import SectionTitle from "@/components/ui/SectionTitle";
-
-type LocalizedText = Record<"vi" | "en", string>;
-
-const experience = [
-  {
-    company: "Penalty Co., Ltd.",
-    role: { en: "Full Stack Developer", vi: "Lập trình viên Full Stack" },
-    period: { en: "Apr–Sep 2026", vi: "Tháng 4–9/2026" },
-    summary: {
-      en: "Maintained internal PHP/Laravel applications and improved performance and maintainability.",
-      vi: "Bảo trì ứng dụng PHP/Laravel nội bộ, tập trung vào hiệu năng và khả năng bảo trì.",
-    },
-    contributions: [
-      {
-        en: "Built a bulk product upload flow integrated with WordPress inventory.",
-        vi: "Xây dựng luồng tải sản phẩm hàng loạt, tích hợp với tồn kho WordPress.",
-      },
-      {
-        en: "Optimized database queries and backend processing for large imports.",
-        vi: "Tối ưu truy vấn cơ sở dữ liệu và xử lý backend cho các đợt nhập dữ liệu lớn.",
-      },
-    ],
-    technologies: ["PHP 8+", "Laravel", "WordPress", "MySQL"],
-  },
-  {
-    company: "C3TEK Digital Marketing Solutions",
-    role: { en: "PHP Developer", vi: "Lập trình viên PHP" },
-    period: { en: "Feb 2025–Apr 2026", vi: "Tháng 2/2025–4/2026" },
-    summary: {
-      en: "Worked on a property management platform for managers and rental owners.",
-      vi: "Phát triển nền tảng quản lý bất động sản cho quản lý và chủ nhà.",
-    },
-    contributions: [
-      {
-        en: "Built Laravel APIs and contract lifecycle workflows.",
-        vi: "Xây dựng API Laravel và quy trình vòng đời hợp đồng.",
-      },
-      {
-        en: "Moved invoice and tiered utility calculations to queues; applied access control across four roles.",
-        vi: "Chuyển việc lập hóa đơn và tính phí tiện ích theo bậc sang queues; phân quyền bốn vai trò.",
-      },
-      {
-        en: "Fixed N+1 queries with eager loading, composite indexes, and Redis; added PDF exports.",
-        vi: "Xử lý N+1 bằng eager loading, composite index và Redis; bổ sung xuất PDF.",
-      },
-    ],
-    technologies: ["Laravel 12", "PHP 8+", "MySQL", "Redis", "RBAC"],
-  },
-] satisfies Array<{
-  company: string;
-  role: LocalizedText;
-  period: LocalizedText;
-  summary: LocalizedText;
-  contributions: LocalizedText[];
-  technologies: string[];
-}>;
+import { EXPERIENCES } from "@/data/portfolio";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function ExperienceSection() {
   const { dictionary, language } = useLanguage();
   const text = dictionary.experience;
 
   return (
-    <SectionWrapper id="experience" py="xl">
-      <SectionTitle eyebrow={text.eyebrow} title={text.title} subtitle={text.subtitle} />
-      <div>
-        {experience.map((item) => (
-          <article className="experience-item" key={item.company}>
-            <p className="font-mono text-xs leading-relaxed text-olive-gray">{item.period[language]}</p>
-            <div>
-              <p className="font-mono text-[0.68rem] uppercase tracking-[0.07em] text-olive-gray">{text.work}</p>
-              <h3 className="mt-2 font-serif text-2xl leading-tight tracking-[-0.02em] text-near-black">
-                {item.company}
-              </h3>
-              <p className="mt-2 text-sm text-terracotta">{item.role[language]}</p>
-            </div>
-            <div>
-              <p className="text-sm leading-relaxed text-charcoal-warm">{item.summary[language]}</p>
-              <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-olive-gray marker:text-terracotta">
-                {item.contributions.map((contribution) => (
-                  <li key={contribution.en}>{contribution[language]}</li>
-                ))}
-              </ul>
-              <p className="mt-4 font-mono text-[0.68rem] leading-relaxed text-olive-gray">
-                {item.technologies.join(" · ")}
-              </p>
-            </div>
-          </article>
-        ))}
+    <section id="experience" className="border-b border-[var(--rule-cut)] py-16 md:py-24">
+      <div className="site-container">
+        <SectionTitle
+          title={text.title}
+          subtitle={text.subtitle}
+          asideMeta="2025 — 2026"
+        />
+
+        {/* Sticky Stacked Archival Career Sheets */}
+        <div className="flex flex-col gap-8">
+          {EXPERIENCES.map((item, idx) => (
+            <article
+              key={item.id}
+              className={
+                "paper-stack paper-chamfer p-6 sm:p-8 " +
+                (idx === 0 ? "lg:sticky lg:top-[5.5rem]" : "lg:sticky lg:top-[7rem]")
+              }
+            >
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-10">
+                <div className="flex flex-col justify-between border-b border-[var(--rule-cut)] pb-5 lg:col-span-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-8">
+                  <div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--rule-cut)] pb-2.5 font-mono text-xs">
+                      <span className="font-semibold text-[var(--accent-vermilion)] tabular-nums">
+                        {item.ledgerCode}
+                      </span>
+                      <span className="text-[var(--ink-secondary)] tabular-nums">
+                        {item.period[language]}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-4 font-serif text-2xl font-medium leading-tight tracking-[-0.02em] text-[var(--ink-primary)] sm:text-3xl">
+                      {item.company}
+                    </h3>
+                    <p className="mt-2 font-sans text-sm font-medium text-[var(--accent-patina)]">
+                      {item.role[language]}
+                    </p>
+                  </div>
+
+                  <p className="mt-4 font-mono text-xs text-[var(--ink-tertiary)]">
+                    {item.location[language]}
+                  </p>
+                </div>
+
+                <div className="lg:col-span-8">
+                  <p className="text-base leading-relaxed text-[var(--ink-primary)]">
+                    {item.summary[language]}
+                  </p>
+
+                  <p className="mt-5 font-mono text-xs uppercase tracking-[0.05em] text-[var(--ink-tertiary)]">
+                    {text.contributionsLabel}
+                  </p>
+
+                  <ul className="mt-3 space-y-2.5">
+                    {item.contributions.map((contribution) => (
+                      <li
+                        key={contribution.en}
+                        className="flex items-start gap-3 text-sm leading-relaxed text-[var(--ink-secondary)]"
+                      >
+                        <span
+                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-vermilion)]"
+                          aria-hidden="true"
+                        />
+                        <span>{contribution[language]}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-6 flex flex-wrap gap-1.5 border-t border-[var(--rule-cut)] pt-4">
+                    {item.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-[2px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-2.5 py-0.5 font-mono text-xs text-[var(--ink-secondary)]"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
-    </SectionWrapper>
+    </section>
   );
 }

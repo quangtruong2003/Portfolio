@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-18T05:55:00+07:00",
+  "title": "Design System: Nguyen Quang Truong Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Cinnabar Seal Vermilion",
+        "canonical": "#b8332a",
+        "tonalRamp": ["#3a0d0a", "#5c1611", "#7d1f18", "#9c2921", "#b8332a", "#d25b52", "#e89a93", "#f5e4e1"]
+      },
+      "secondary-patina": {
+        "role": "secondary",
+        "displayName": "Mineral Pine Patina",
+        "canonical": "#2b5b4e",
+        "tonalRamp": ["#10241e", "#19362e", "#22483e", "#2b5b4e", "#3d7a69", "#5ea08e", "#9ac9bc", "#e1ece8"]
+      },
+      "tertiary-ochre": {
+        "role": "tertiary",
+        "displayName": "Raw Escapement Ochre",
+        "canonical": "#8e6119",
+        "tonalRamp": ["#2d1d05", "#4a310a", "#6b4811", "#8e6119", "#b68434", "#ddb05c", "#ecd098", "#f8eed9"]
+      },
+      "canvas-rag": {
+        "role": "neutral",
+        "displayName": "Raw Cotton Rag",
+        "canonical": "#efece4",
+        "tonalRamp": ["#181715", "#35322d", "#49453e", "#615c53", "#9e9686", "#cfc8b8", "#e5e0d5", "#f9f7f1"]
+      },
+      "press-pine": {
+        "role": "neutral",
+        "displayName": "Deep Pine-Walnut Press",
+        "canonical": "#1a1d1a",
+        "tonalRamp": ["#121512", "#1a1d1a", "#232823", "#353b35", "#586058", "#858c84", "#b5b0a4", "#f4f0e6"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero thesis statement and full-dossier project titles." },
+      "headline": { "displayName": "Headline", "purpose": "Primary section headings across light and dark zones." },
+      "title": { "displayName": "Title", "purpose": "Project folio titles, capability plate headings, and employer names." },
+      "body": { "displayName": "Body", "purpose": "Narrative prose, project summaries, and engineering deliverables." },
+      "label": { "displayName": "Label / Mono", "purpose": "Figure codes, pipeline node tags, timestamps, and tabular telemetry." }
+    },
+    "shadows": [
+      {
+        "name": "paper-sheet",
+        "value": "inset 0 1px 0 rgba(255,255,255,0.85), 0 2px 4px rgba(24,23,21,0.055), 0 12px 28px -10px rgba(24,23,21,0.11)",
+        "purpose": "Standard elevated cut-paper cards and repository tiles."
+      },
+      {
+        "name": "paper-stack",
+        "value": "inset 0 1px 0 rgba(255,255,255,0.88), 0 3px 0 -1px #e5e0d5, 0 3px 0 0 #cfc8b8, 0 7px 0 -2px #efece4, 0 7px 0 -1px #cfc8b8, 0 16px 32px -12px rgba(24,23,21,0.14)",
+        "purpose": "Multi-ply stacked deckle relief on primary project folios and career ledger sheets."
+      },
+      {
+        "name": "paper-well",
+        "value": "inset 0 2px 6px rgba(24,23,21,0.085), inset 0 1px 1px rgba(24,23,21,0.06), 0 1px 0 rgba(255,255,255,0.7)",
+        "purpose": "Recessed carved matboard apertures housing 3D and interactive schematic instruments."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-strong",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Primary UI entrances, tactile hover lifts, and ViewTransition shared-element morphs."
+      },
+      {
+        "name": "ease-in-out-paper",
+        "value": "cubic-bezier(0.77, 0, 0.175, 1)",
+        "purpose": "Directional paper-shutter unfold transitions between routes."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Vermilion Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary call-to-action button sealed in Cinnabar Vermilion with tactile press scale.",
+      "html": "<button class=\"ds-btn-vermilion\">Explore project folios</button>",
+      "css": ".ds-btn-vermilion { min-height: 48px; padding: 12px 20px; border-radius: 3px; border: 1px solid #b8332a; background: #b8332a; color: #f9f7f1; font-family: var(--font-sans, sans-serif); font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 150ms ease-out, transform 150ms ease-out; } .ds-btn-vermilion:hover { background: #8f241d; border-color: #8f241d; } .ds-btn-vermilion:active { transform: scale(0.97); } .ds-btn-vermilion:focus-visible { outline: 2px solid #1f5c6e; outline-offset: 3px; }"
+    },
+    {
+      "name": "Raised Paper Button",
+      "kind": "button",
+      "refersTo": "button-paper",
+      "description": "Secondary action styled as a cut alabaster sheet with drafting border.",
+      "html": "<button class=\"ds-btn-paper\">Inspect &amp; download CV</button>",
+      "css": ".ds-btn-paper { min-height: 48px; padding: 12px 20px; border-radius: 3px; border: 1px solid #9e9686; background: #f9f7f1; color: #181715; font-family: var(--font-sans, sans-serif); font-size: 14px; font-weight: 500; box-shadow: 0 2px 4px rgba(24,23,21,0.06); cursor: pointer; transition: background-color 150ms ease-out, border-color 150ms ease-out, transform 150ms ease-out; } .ds-btn-paper:hover { background: #e5e0d5; border-color: #181715; } .ds-btn-paper:active { transform: scale(0.97); } .ds-btn-paper:focus-visible { outline: 2px solid #1f5c6e; outline-offset: 3px; }"
+    },
+    {
+      "name": "Drafting Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "16px mobile-safe correspondence input on alabaster stock.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"jane@company.com\" />",
+      "css": ".ds-input { width: 100%; padding: 12px 14px; border-radius: 3px; border: 1px solid #9e9686; background: #f9f7f1; color: #181715; font-size: 16px; box-shadow: inset 0 1px 2px rgba(24,23,21,0.05); transition: border-color 150ms ease; } .ds-input:focus-visible { border-color: #b8332a; outline: 2px solid #1f5c6e; outline-offset: 1px; }"
+    },
+    {
+      "name": "Technical Stack Stamp",
+      "kind": "chip",
+      "description": "Monospace specification tag on raw cotton-rag stock.",
+      "html": "<span class=\"ds-chip\">Laravel 12 · PHP 8+</span>",
+      "css": ".ds-chip { display: inline-block; padding: 3px 9px; border-radius: 2px; border: 1px solid #cfc8b8; background: #efece4; color: #49453e; font-family: var(--font-mono, monospace); font-size: 11px; }"
+    },
+    {
+      "name": "Stacked Chamfered Folio Card",
+      "kind": "card",
+      "refersTo": "card-folio",
+      "description": "Multi-ply die-cut architectural dossier container with diagonal corner chamfers.",
+      "html": "<article class=\"ds-folio-card\"><h3>SmoothScroll</h3><p>Open-source Rust &amp; Tauri 2 Windows utility.</p></article>",
+      "css": ".ds-folio-card { padding: 28px; background: #f9f7f1; color: #181715; border: 1px solid #cfc8b8; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 18px 100%, 0 calc(100% - 18px)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.88), 0 3px 0 -1px #e5e0d5, 0 3px 0 0 #cfc8b8, 0 14px 28px -10px rgba(24,23,21,0.14); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Kinetic Paper Atelier",
+    "overview": "This system joins the physical honesty of layered architectural matboard and patent drawing sheets with the responsive spring physics of native desktop tools. Built specifically for PHP/Laravel backend engineer and SmoothScroll creator Nguyễn Quang Trường, every surface behaves like cut museum stock or an inked letterpress plate: recessed wells hold interactive 3D and live physics instruments, while stacked chamfered folios organize real system architectures without fabricated screenshots.\n\nIt explicitly rejects neon purple-cyan SaaS dark modes, decorative glassmorphism, uniform Bento card grids, and flat unifferentiated cream résumés. Contrast between raw cotton-rag daylight galleries and a committed deep pine-walnut press bed paces the journey from first impression through technical proof to correspondence.",
+    "keyCharacteristics": [
+      "Multi-ply cut-paper relief combining raised alabaster sheets, recessed matboard apertures, and subtle static cotton-fiber grain.",
+      "A committed dark botanical pine-walnut press bed separating narrative philosophy and technical capability plates from light folio sheets.",
+      "Expressive metal-type display serif (Brygada 1918) paired with Vietnamese-native geometric prose (Be Vietnam Pro) and drafting monospace (Chivo Mono).",
+      "Meaningful spatial choreography: a Three.js 3D strata & rotor model, a pinned horizontal folio rail, and React 19 <ViewTransition> shared-element morphs with paper-shutter reveals."
+    ],
+    "rules": [
+      {
+        "name": "The Single Seal Rule",
+        "body": "Cinnabar Seal Vermilion marks only the active point of commitment or live motion trace in any viewport; peer controls stay in walnut ink or alabaster stock so hierarchy is immediate.",
+        "section": "colors"
+      },
+      {
+        "name": "The Whole-Zone Plate Rule",
+        "body": "Dark surfaces commit across an entire full-bleed press section (#about and #skills) rather than scattering isolated dark cards across a light page.",
+        "section": "colors"
+      },
+      {
+        "name": "The Self-Standing Heading Rule",
+        "body": "Headings never carry a stacked uppercase kicker or eyebrow above them; figure numbers and metadata sit in an adjacent margin column or separated top registration strip.",
+        "section": "typography"
+      },
+      {
+        "name": "The Native Diacritic Rule",
+        "body": "Every loaded typeface ships full native Vietnamese glyphs (latin-ext and vietnamese subsets), eliminating browser weight synthesis and fallback ransom-note rendering.",
+        "section": "typography"
+      },
+      {
+        "name": "The Honest Relief Rule",
+        "body": "Elevation always corresponds to physical layer order: wells recede into darker matboard (#e5e0d5), primary reading sheets rise into alabaster (#f9f7f1), and zero-blur cartoon block shadows are never used.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do pair every cross-route project link with transitionTypes (folio-forward or folio-back) and a unique <ViewTransition name> so shared-element morphs and paper-shutter reveals stay synchronized.",
+      "Do keep all claims, metrics (30,000+ user-reported SmoothScroll downloads), and source links strictly grounded in verified CV and repository facts, omitting public repo links for proprietary enterprise work.",
+      "Do gate pointer hover motion behind @media (hover: hover) and (pointer: fine) and collapse spatial motion cleanly under prefers-reduced-motion: reduce."
+    ],
+    "donts": [
+      "Don't place uppercase eyebrows or kickers above h1, h2, or h3 headings.",
+      "Don't introduce purple/indigo/cyan neon glows, decorative backdrop-filter glass cards, gradient text, or transition: all.",
+      "Don't duplicate named <ViewTransition> boundaries simultaneously in hidden desktop/mobile DOM branches."
+    ]
+  }
+}

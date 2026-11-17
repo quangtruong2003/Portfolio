@@ -38,6 +38,16 @@ function getCached(): GitHubRepo[] | null {
 }
 
 async function fetchGitHubRepos(): Promise<GitHubRepo[]> {
+  try {
+    const proxyRes = await fetch("/api/github");
+    if (proxyRes.ok) {
+      const proxyData = (await proxyRes.json()) as GitHubRepo[];
+      if (Array.isArray(proxyData)) return proxyData;
+    }
+  } catch {
+    // Fall back to direct GitHub public endpoint
+  }
+
   const response = await fetch(
     "https://api.github.com/users/" + GITHUB_USERNAME + "/repos?per_page=100&sort=updated",
     { headers: { Accept: "application/vnd.github+json" } }

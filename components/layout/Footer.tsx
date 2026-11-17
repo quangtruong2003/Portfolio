@@ -1,20 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { Mail, Phone } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ArrowUp, Mail, Phone } from "lucide-react";
 import { GitHubIcon, LinkedInIcon } from "@/components/ui/Icons";
+import { OWNER_INFO } from "@/data/portfolio";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const socialLinks = [
-  { icon: GitHubIcon, key: "github" as const, href: "https://github.com/quangtruong2003" },
-  { icon: LinkedInIcon, key: "linkedin" as const, href: "https://www.linkedin.com/in/quangtruong2003" },
-  { icon: Mail, key: "email" as const, href: "mailto:nguyentruongk530042003@gmail.com" },
-  { icon: Phone, key: "phone" as const, href: "tel:+84947890450" },
+  { icon: GitHubIcon, key: "github" as const, href: OWNER_INFO.githubUrl },
+  { icon: LinkedInIcon, key: "linkedin" as const, href: OWNER_INFO.linkedinUrl },
+  { icon: Mail, key: "email" as const, href: `mailto:${OWNER_INFO.email}` },
+  { icon: Phone, key: "phone" as const, href: OWNER_INFO.phoneHref },
 ];
 
 export default function Footer() {
-  const { dictionary } = useLanguage();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const { language, dictionary } = useLanguage();
   const { footer, nav, contact } = dictionary;
+  const ownerName = language === "vi" ? OWNER_INFO.nameVi : OWNER_INFO.nameEn;
+
   const navItems = [
     { key: "work" as const, id: "projects" },
     { key: "about" as const, id: "about" },
@@ -25,29 +32,65 @@ export default function Footer() {
   ];
 
   return (
-    <footer id="footer" className="border-t border-border-warm py-12 md:py-14">
+    <footer
+      id="footer"
+      className="border-t border-[var(--rule-strong)] bg-[var(--bg-sheet-mid)] pb-[calc(3rem+env(safe-area-inset-bottom,0px))] pt-12 md:pt-16"
+    >
       <div className="site-container">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8">
-          <div className="md:col-span-4">
-            <a href="#hero" className="inline-flex min-h-11 items-center gap-2.5 font-serif text-xl tracking-[-0.03em] text-near-black">
-              <Image src="/favicon.svg" alt="" width={28} height={28} />
-              <span>Nguyen Quang Truong</span>
-            </a>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-olive-gray">{footer.tagline}</p>
+          <div className="md:col-span-5">
+            {isHome ? (
+              <a
+                href="#hero"
+                className="inline-flex min-h-11 items-center gap-2.5 font-serif text-xl font-medium tracking-[-0.02em] text-[var(--ink-primary)]"
+              >
+                <Image src="/favicon.svg" alt="" width={28} height={28} />
+                <span>{ownerName}</span>
+              </a>
+            ) : (
+              <Link
+                href="/"
+                transitionTypes={["folio-back"]}
+                className="inline-flex min-h-11 items-center gap-2.5 font-serif text-xl font-medium tracking-[-0.02em] text-[var(--ink-primary)]"
+              >
+                <Image src="/favicon.svg" alt="" width={28} height={28} />
+                <span>{ownerName}</span>
+              </Link>
+            )}
+            <p className="mt-3 max-w-[40ch] text-sm leading-relaxed text-[var(--ink-secondary)]">
+              {footer.tagline}
+            </p>
           </div>
 
           <div className="md:col-span-4">
-            <h2 className="font-mono text-[0.68rem] uppercase tracking-[0.08em] text-olive-gray">{footer.navigate}</h2>
+            <h2 className="font-mono text-xs font-medium text-[var(--ink-primary)]">
+              {footer.navigate}
+            </h2>
             <nav aria-label={footer.navigate} className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1">
-              {navItems.map(({ key, id }) => (
-                <a key={id} href={`#${id}`} className="flex min-h-10 items-center text-sm text-near-black transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue">
-                  {nav[key]}
-                </a>
-              ))}
+              {navItems.map(({ key, id }) =>
+                isHome ? (
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    className="link-draw flex min-h-11 items-center text-sm text-[var(--ink-secondary)] hover:text-[var(--accent-vermilion)]"
+                  >
+                    {nav[key]}
+                  </a>
+                ) : (
+                  <Link
+                    key={id}
+                    href={`/#${id}`}
+                    transitionTypes={["folio-back"]}
+                    className="link-draw flex min-h-11 items-center text-sm text-[var(--ink-secondary)] hover:text-[var(--accent-vermilion)]"
+                  >
+                    {nav[key]}
+                  </Link>
+                )
+              )}
             </nav>
           </div>
 
-          <div className="flex items-start gap-5 md:col-span-4 md:justify-end">
+          <div className="flex items-start gap-3 md:col-span-3 md:justify-end">
             {socialLinks.map(({ icon: Icon, key, href }) => (
               <a
                 key={key}
@@ -55,7 +98,7 @@ export default function Footer() {
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                 aria-label={contact[key]}
-                className="flex min-h-11 min-w-8 items-center justify-center text-olive-gray transition-colors duration-200 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] transition-[background-color,border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.96]"
               >
                 <Icon size={17} aria-hidden="true" />
               </a>
@@ -63,11 +106,34 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-9 flex flex-col gap-3 border-t border-border-warm pt-4 text-xs text-olive-gray sm:flex-row sm:items-center sm:justify-between">
-          <p>{footer.copyright}</p>
-          <a href="#hero" className="min-h-10 content-center underline decoration-border-warm underline-offset-4 hover:text-terracotta focus-visible:outline-2 focus-visible:outline-focus-blue">
-            {footer.backToTop}
-          </a>
+        <div className="mt-10 flex flex-col gap-3 border-t border-[var(--rule-cut)] pt-5 text-xs text-[var(--ink-secondary)] sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span>{footer.copyright}</span>
+            <span className="hidden text-[var(--rule-strong)] sm:inline" aria-hidden="true">
+              |
+            </span>
+            <span className="font-mono text-xs text-[var(--ink-tertiary)]">
+              {footer.colophon}
+            </span>
+          </div>
+
+          {isHome ? (
+            <a
+              href="#hero"
+              className="inline-flex min-h-11 items-center gap-1.5 font-mono text-xs font-medium text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+            >
+              <span>{footer.backToTop}</span>
+              <ArrowUp size={14} aria-hidden="true" />
+            </a>
+          ) : (
+            <Link
+              href="/"
+              transitionTypes={["folio-back"]}
+              className="inline-flex min-h-11 items-center gap-1.5 font-mono text-xs font-medium text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+            >
+              <span>{nav.homeAtelier}</span>
+            </Link>
+          )}
         </div>
       </div>
     </footer>

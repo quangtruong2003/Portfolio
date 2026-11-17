@@ -1,64 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f5f2ea;
-  --ivory: #fcfbf8;
-  --ink: #191815;
-  --muted: #625e56;
-  --hairline: #d8d4cb;
-  --rust: #a64738;
-  --olive: #6d715e;
-  --focus: #315f8a;
-  --diagram-surface: #e9e7df;
+  /* Material 1: Raw Cotton Rag & Layered Cut-Paper Stock */
+  --bg-canvas: #efece4;
+  --bg-sheet-top: #f9f7f1;
+  --bg-sheet-mid: #e5e0d5;
+  --bg-sheet-deep: #d8d1c3;
 
-  --parchment: var(--paper);
-  --near-black: var(--ink);
-  --terracotta: var(--rust);
-  --coral: var(--rust);
-  --pure-white: var(--ivory);
-  --warm-sand: #ebe8df;
-  --dark-surface: #f0eee8;
-  --charcoal-warm: #39362f;
-  --olive-gray: var(--muted);
-  --stone-gray: var(--muted);
-  --dark-warm: #39362f;
-  --warm-silver: #514d46;
-  --border-cream: #e9e5dc;
-  --border-warm: var(--hairline);
-  --border-dark: var(--hairline);
-  --ring-warm: #b8b2a7;
-  --error-crimson: #a3312b;
-  --focus-blue: var(--focus);
+  /* Material 2: Deep Pine-Walnut Letterpress Plate */
+  --bg-press: #1a1d1a;
+  --bg-press-raised: #232823;
+  --bg-press-well: #121512;
+  --ink-on-press: #f4f0e6;
+  --muted-on-press: #b5b0a4;
+  --rule-on-press: #353b35;
+
+  /* Material 3: Drafting & Archival Inks (All >= 4.5:1 AA against light stock) */
+  --ink-primary: #181715;
+  --ink-secondary: #49453e;
+  --ink-tertiary: #615c53;
+  --rule-cut: #cfc8b8;
+  --rule-strong: #9e9686;
+
+  /* Material 4: Distinct Pigments (>15deg OKLCH separation, single semantic job each) */
+  --accent-vermilion: #b8332a;
+  --accent-vermilion-hover: #8f241d;
+  --accent-vermilion-wash: #f5e4e1;
+  --accent-patina: #2b5b4e;
+  --accent-patina-on-press: #7cc0ac;
+  --accent-patina-wash: #e1ece8;
+  --accent-ochre: #8e6119;
+  --accent-ochre-on-press: #ddb05c;
+  --focus-ring: #1f5c6e;
+  --error-crimson: #9e261f;
+
+  /* Legacy semantic aliases kept aligned for primitive compatibility */
+  --paper: var(--bg-canvas);
+  --parchment: var(--bg-canvas);
+  --ivory: var(--bg-sheet-top);
+  --ink: var(--ink-primary);
+  --near-black: var(--ink-primary);
+  --muted: var(--ink-secondary);
+  --olive-gray: var(--ink-secondary);
+  --charcoal-warm: var(--ink-primary);
+  --hairline: var(--rule-cut);
+  --border-warm: var(--rule-cut);
+  --border-cream: var(--bg-sheet-mid);
+  --rust: var(--accent-vermilion);
+  --terracotta: var(--accent-vermilion);
+  --warm-sand: var(--bg-sheet-mid);
+  --diagram-surface: var(--bg-sheet-mid);
+  --focus-blue: var(--focus-ring);
+
+  /* Motion & Tactile Physics Tokens */
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-paper: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @theme inline {
+  --color-canvas: var(--bg-canvas);
+  --color-sheet-top: var(--bg-sheet-top);
+  --color-sheet-mid: var(--bg-sheet-mid);
+  --color-sheet-deep: var(--bg-sheet-deep);
+  --color-press: var(--bg-press);
+  --color-press-raised: var(--bg-press-raised);
+  --color-press-well: var(--bg-press-well);
+  --color-ink-on-press: var(--ink-on-press);
+  --color-muted-on-press: var(--muted-on-press);
+  --color-rule-on-press: var(--rule-on-press);
+  --color-ink-primary: var(--ink-primary);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-tertiary: var(--ink-tertiary);
+  --color-rule-cut: var(--rule-cut);
+  --color-rule-strong: var(--rule-strong);
+  --color-vermilion: var(--accent-vermilion);
+  --color-vermilion-hover: var(--accent-vermilion-hover);
+  --color-vermilion-wash: var(--accent-vermilion-wash);
+  --color-patina: var(--accent-patina);
+  --color-patina-on-press: var(--accent-patina-on-press);
+  --color-patina-wash: var(--accent-patina-wash);
+  --color-ochre: var(--accent-ochre);
+  --color-ochre-on-press: var(--accent-ochre-on-press);
+  --color-focus-ring: var(--focus-ring);
+  --color-error-crimson: var(--error-crimson);
+
   --color-parchment: var(--parchment);
   --color-ivory: var(--ivory);
   --color-near-black: var(--near-black);
   --color-terracotta: var(--terracotta);
-  --color-coral: var(--coral);
-  --color-pure-white: var(--pure-white);
   --color-warm-sand: var(--warm-sand);
-  --color-dark-surface: var(--dark-surface);
   --color-charcoal-warm: var(--charcoal-warm);
   --color-olive-gray: var(--olive-gray);
-  --color-stone-gray: var(--stone-gray);
-  --color-dark-warm: var(--dark-warm);
-  --color-warm-silver: var(--warm-silver);
   --color-border-cream: var(--border-cream);
   --color-border-warm: var(--border-warm);
-  --color-border-dark: var(--border-dark);
-  --color-error-crimson: var(--error-crimson);
   --color-focus-blue: var(--focus-blue);
   --color-diagram-surface: var(--diagram-surface);
-  --font-serif: var(--font-newsreader), "Noto Serif", Georgia, serif;
-  --font-sans: var(--font-dm-sans), "Noto Sans", Arial, sans-serif;
-  --font-mono: var(--font-ibm-plex-mono), "Courier New", monospace;
-  --radius-sharp: 2px;
-  --radius-subtle: 4px;
-  --radius-comfortable: 6px;
-  --radius-generous: 8px;
-  --radius-very: 12px;
+
+  --font-serif: var(--font-brygada), Georgia, serif;
+  --font-sans: var(--font-be-vietnam), system-ui, sans-serif;
+  --font-mono: var(--font-chivo-mono), ui-monospace, monospace;
 }
 
 * {
@@ -67,16 +108,43 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 4rem;
+  scroll-padding-top: 4.5rem;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  scrollbar-color: var(--rule-strong) var(--bg-canvas);
+  scrollbar-width: thin;
 }
 
 body {
   min-width: 320px;
-  background: var(--paper);
-  color: var(--ink);
+  overflow-x: clip;
+  background-color: var(--bg-canvas);
+  /* Subtle static cotton-rag paper fiber weave via inline SVG data URI */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");
+  color: var(--ink-primary);
   font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-size: 1rem;
+  line-height: 1.6;
+  caret-color: var(--accent-vermilion);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--rule-strong);
+  border: 2px solid var(--bg-canvas);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-secondary);
 }
 
 h1,
@@ -87,267 +155,444 @@ h4 {
   text-wrap: balance;
 }
 
-p {
+p,
+li {
   text-wrap: pretty;
 }
 
+a {
+  text-underline-position: from-font;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.22em;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+button,
+[role="button"] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea,
+select {
+  font-size: 1rem;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+section[id]:not(#hero) {
+  scroll-margin-top: 4.5rem;
+}
+
 ::selection {
-  background: var(--rust);
-  color: var(--ivory);
+  background: var(--accent-vermilion);
+  color: var(--bg-sheet-top);
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
-:is(input, textarea, select):focus {
-  border: 2px solid var(--rust);
-  outline: none;
+:is(input, textarea, select):focus-visible {
+  border-color: var(--accent-vermilion);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
 }
 
 .site-container {
-  width: min(100% - 3rem, 1320px);
+  width: min(100% - 3rem, 1340px);
   margin-inline: auto;
+}
+
+@media (max-width: 639px) {
+  .site-container {
+    width: min(100% - 2rem, 1340px);
+  }
 }
 
 .skip-link {
   position: fixed;
   top: 0.75rem;
   left: 0.75rem;
-  z-index: 100;
-  transform: translateY(-160%);
-  padding: 0.75rem 1rem;
-  background: var(--ink);
-  color: var(--ivory);
+  z-index: 120;
+  transform: translateY(-180%);
+  padding: 0.75rem 1.1rem;
+  border-radius: 3px;
+  background: var(--ink-primary);
+  color: var(--bg-sheet-top);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  transition: transform 180ms var(--ease-out-strong);
 }
 
 .skip-link:focus {
   transform: translateY(0);
 }
 
-.section-kicker {
-  color: var(--rust);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
+@layer components {
+  /* ==========================================================================
+     TACTILE PAPER-CUT ARCHITECTURE SURFACES
+     ========================================================================== */
 
-.section-heading {
-  max-width: 18ch;
-  font-size: clamp(2.5rem, 5.3vw, 4.5rem);
-  font-weight: 400;
-  line-height: 1.04;
-  letter-spacing: -0.035em;
-}
-
-.section-copy {
-  max-width: 68ch;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.45vw, 1.125rem);
-  line-height: 1.65;
-}
-
-.hairline {
-  border-color: var(--hairline);
-}
-
-.hero-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.65rem 1.5rem;
-  border-bottom: 1px solid var(--hairline);
-  padding-bottom: 1rem;
-  color: var(--muted);
-  font-family: var(--font-ibm-plex-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-}
-
-.hero-layout {
-  display: grid;
-  gap: 3rem;
-  padding-block: clamp(3rem, 7vw, 6.5rem);
-}
-
-.hero-headline {
-  max-width: 16ch;
-  color: var(--ink);
-  font-family: var(--font-newsreader);
-  font-size: clamp(3rem, 6.4vw, 6.5rem);
-  font-weight: 400;
-  letter-spacing: -0.055em;
-  line-height: 0.94;
-  text-wrap: balance;
-}
-
-.hero-headline span {
-  display: block;
-  padding-bottom: 0.08em;
-  color: var(--rust);
-  font-style: italic;
-  line-height: 1.08;
-}
-
-.hero-description {
-  max-width: 54ch;
-  margin-top: 1.5rem;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.3vw, 1.125rem);
-  line-height: 1.65;
-}
-
-.hero-proof {
-  align-self: end;
-  border-top: 1px solid var(--hairline);
-  border-left: 1px solid var(--hairline);
-  background: var(--diagram-surface);
-  padding: clamp(1.25rem, 3vw, 2rem);
-}
-
-.hero-proof-value {
-  margin-top: 1.25rem;
-  color: var(--rust);
-  font-family: var(--font-newsreader);
-  font-size: clamp(3rem, 6vw, 5rem);
-  letter-spacing: -0.06em;
-  line-height: 0.95;
-}
-
-.project-spotlight {
-  display: grid;
-  border-top: 3px solid var(--rust);
-  background: var(--diagram-surface);
-}
-
-.project-spotlight-copy {
-  padding: clamp(1.25rem, 3.5vw, 3rem);
-}
-
-.project-flow {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 2rem;
-  border-top: 1px solid var(--hairline);
-  padding: clamp(1.25rem, 3.5vw, 3rem);
-}
-
-.project-flow-steps {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.5rem 1rem;
-}
-
-.project-flow-step {
-  min-height: 6.25rem;
-  border-top: 1px solid var(--muted);
-  padding-top: 0.75rem;
-}
-
-.project-row {
-  display: grid;
-  gap: 0.85rem;
-  border-bottom: 1px solid var(--hairline);
-  padding-block: 1.75rem;
-}
-
-.capability-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem 1.5rem;
-}
-
-.capability-item {
-  border-top: 1px solid var(--hairline);
-  padding-top: 1rem;
-}
-
-.experience-item {
-  display: grid;
-  gap: 0.75rem;
-  border-top: 1px solid var(--hairline);
-  padding-block: 1.75rem;
-}
-
-.open-source-row {
-  display: grid;
-  gap: 0.6rem;
-  border-top: 1px solid var(--hairline);
-  padding-block: 1.15rem;
-}
-
-@media (min-width: 640px) {
-  .project-flow-steps {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1rem;
+  /* Raised matboard cut-sheet with studio bevel & penumbra shadow */
+  .paper-sheet {
+    position: relative;
+    background-color: var(--bg-sheet-top);
+    border: 1px solid var(--rule-cut);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 2px 4px rgba(24, 23, 21, 0.055),
+      0 12px 28px -10px rgba(24, 23, 21, 0.11);
   }
 
-  .capability-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Stacked multi-ply paper deckle illusion */
+  .paper-stack {
+    position: relative;
+    background-color: var(--bg-sheet-top);
+    border: 1px solid var(--rule-cut);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.88),
+      0 3px 0 -1px var(--bg-sheet-mid),
+      0 3px 0 0 var(--rule-cut),
+      0 7px 0 -2px var(--bg-canvas),
+      0 7px 0 -1px var(--rule-cut),
+      0 16px 32px -12px rgba(24, 23, 21, 0.14);
+  }
+
+  /* Recessed die-cut paper aperture (carved well) */
+  .paper-well {
+    position: relative;
+    background-color: var(--bg-sheet-mid);
+    border: 1px solid var(--rule-cut);
+    box-shadow:
+      inset 0 2px 6px rgba(24, 23, 21, 0.085),
+      inset 0 1px 1px rgba(24, 23, 21, 0.06),
+      0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .paper-well-deep {
+    position: relative;
+    background-color: var(--bg-sheet-deep);
+    border: 1px solid var(--rule-strong);
+    box-shadow:
+      inset 0 3px 9px rgba(24, 23, 21, 0.12),
+      0 1px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  /* Unclipped multi-ply 45-deg chamfered folio: zero-filter GPU geometry with crisp 1px diagonal bevel & offset ply */
+  .paper-chamfer {
+    --chamfer-poly: polygon(
+      0 0,
+      calc(100% - 22px) 0,
+      100% 22px,
+      100% 100%,
+      18px 100%,
+      0 calc(100% - 18px)
+    );
+    position: relative;
+    isolation: isolate;
+    background: transparent;
+    border: 0;
+    box-shadow: 0 16px 30px -14px rgba(24, 23, 21, 0.16);
+  }
+
+  .paper-chamfer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    transform: translate3d(5px, 6px, 0);
+    background-color: var(--bg-sheet-deep);
+    background-image:
+      linear-gradient(225deg, var(--rule-cut) calc(50% + 1.15px), transparent calc(50% + 1.15px)),
+      linear-gradient(45deg, var(--rule-cut) calc(50% + 1.15px), transparent calc(50% + 1.15px));
+    background-size: 22px 22px, 18px 18px;
+    background-position: top right, bottom left;
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 0 1px var(--rule-cut);
+    clip-path: var(--chamfer-poly);
+    pointer-events: none;
+  }
+
+  .paper-chamfer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--bg-sheet-top);
+    background-image:
+      linear-gradient(225deg, var(--rule-strong) calc(50% + 1.15px), transparent calc(50% + 1.15px)),
+      linear-gradient(45deg, var(--rule-strong) calc(50% + 1.15px), transparent calc(50% + 1.15px));
+    background-size: 22px 22px, 18px 18px;
+    background-position: top right, bottom left;
+    background-repeat: no-repeat;
+    box-shadow:
+      inset 0 0 0 1px var(--rule-strong),
+      inset 0 2px 0 rgba(255, 255, 255, 0.85);
+    clip-path: var(--chamfer-poly);
+    pointer-events: none;
+  }
+
+  /* Committed Deep Pine-Walnut Press Plate (#about + #skills) */
+  .press-plate {
+    position: relative;
+    background-color: var(--bg-press);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23p)' opacity='0.045'/%3E%3C/svg%3E");
+    color: var(--ink-on-press);
+  }
+
+  .press-card {
+    background-color: var(--bg-press-raised);
+    border: 1px solid var(--rule-on-press);
+    box-shadow:
+      inset 0 1px 0 rgba(244, 240, 230, 0.06),
+      0 12px 28px -10px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Typography Scale (craft-floor compliant: display <= 5.5rem, tracking >= -0.035em, unitless line-height) */
+  .display-hero {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 5.1vw, 5.25rem);
+    font-weight: 500;
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+  }
+
+  .section-heading {
+    max-width: 19ch;
+    font-family: var(--font-serif);
+    font-size: clamp(2.1rem, 4.2vw, 3.75rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+  }
+
+  .section-copy {
+    max-width: 64ch;
+    color: var(--ink-secondary);
+    font-size: clamp(1rem, 1.25vw, 1.125rem);
+    line-height: 1.65;
   }
 }
 
-@media (min-width: 1024px) {
-  .hero-layout {
-    grid-template-columns: minmax(0, 1.4fr) minmax(20rem, 0.6fr);
-    align-items: end;
-    gap: 3rem;
+/* Pointer-gated tactile hover states */
+@media (hover: hover) and (pointer: fine) {
+  .paper-lift {
+    transition:
+      transform 240ms var(--ease-out-strong),
+      border-color 220ms ease;
   }
 
-  .project-spotlight {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  .paper-lift:hover {
+    transform: translate3d(0, -3px, 0);
+    border-color: var(--rule-strong);
   }
 
-  .project-flow {
-    border-top: 0;
-    border-left: 1px solid var(--hairline);
+  .link-draw {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    text-decoration: none;
+    transition:
+      background-size 220ms var(--ease-out-strong),
+      color 180ms ease;
   }
 
-  .project-row {
-    grid-template-columns: minmax(15rem, 0.7fr) minmax(0, 1.3fr);
-    align-items: start;
-    gap: 2rem;
-  }
-
-  .capability-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2.75rem 2rem;
-  }
-
-  .experience-item {
-    grid-template-columns: minmax(9rem, 0.65fr) minmax(15rem, 0.9fr) minmax(0, 1.45fr);
-    gap: 2rem;
-  }
-
-  .open-source-row {
-    grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.4fr) auto;
-    align-items: center;
-    gap: 2rem;
+  .link-draw:hover {
+    background-size: 100% 1px;
   }
 }
 
-@media (max-width: 639px) {
-  .site-container {
-    width: min(100% - 2rem, 1320px);
+/*Choreographed Hero Entrance (runs once on load on compositor + clip-path)*/
+@keyframes paperUnfold {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.985);
+    clip-path: inset(0 0 14% 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    clip-path: inset(-32px -32px -32px -32px);
   }
 }
 
+@keyframes quietFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-lead-enter {
+  animation: paperUnfold 620ms var(--ease-out-strong) both;
+}
+
+.hero-support-enter {
+  animation: paperUnfold 560ms var(--ease-out-strong) 90ms both;
+}
+
+.hero-stage-enter {
+  animation: paperUnfold 680ms var(--ease-out-strong) 150ms both;
+}
+
+.hero-meta-enter {
+  animation: quietFade 420ms ease-out both;
+}
+
+/* ==========================================================================
+   REACT 19 + NEXT.JS VIEW TRANSITIONS (Shared Element Morph & Paper Shutter)
+   ========================================================================== */
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* Shared project folio sheet geometry morph */
+::view-transition-group(.morph-folio) {
+  animation-duration: 440ms;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: 40;
+}
+
+::view-transition-image-pair(.morph-folio) {
+  animation: 440ms cubic-bezier(0.23, 1, 0.32, 1) both viaPaperFocus;
+}
+
+@keyframes viaPaperFocus {
+  35% {
+    filter: blur(2px);
+  }
+}
+
+/* Directional Paper-Shutter Unfold (Forward: Home -> Dossier / Next Folio) */
+::view-transition-old(.folio-forward) {
+  animation:
+    180ms ease-out both vtPaperFadeOut,
+    380ms cubic-bezier(0.77, 0, 0.175, 1) both vtSlideOutLeft;
+}
+
+::view-transition-new(.folio-forward) {
+  animation:
+    420ms cubic-bezier(0.23, 1, 0.32, 1) 80ms both vtPaperShutterInRight;
+}
+
+/* Directional Paper-Shutter Fold Back (Back: Dossier -> Home / Prev Folio) */
+::view-transition-old(.folio-back) {
+  animation:
+    180ms ease-out both vtPaperFadeOut,
+    380ms cubic-bezier(0.77, 0, 0.175, 1) both vtSlideOutRight;
+}
+
+::view-transition-new(.folio-back) {
+  animation:
+    420ms cubic-bezier(0.23, 1, 0.32, 1) 80ms both vtPaperShutterInLeft;
+}
+
+@keyframes vtPaperFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vtSlideOutLeft {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-44px, 0, 0);
+  }
+}
+
+@keyframes vtSlideOutRight {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(44px, 0, 0);
+  }
+}
+
+@keyframes vtPaperShutterInRight {
+  from {
+    opacity: 0;
+    transform: translate3d(38px, 0, 0);
+    clip-path: inset(0 0 0 18%);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes vtPaperShutterInLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-38px, 0, 0);
+    clip-path: inset(0 18% 0 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Suspense Loading Reveal */
+::view-transition-old(.folio-skeleton-out) {
+  animation: 150ms ease-out both vtPaperFadeOut;
+}
+
+::view-transition-new(.folio-content-in) {
+  animation: 260ms cubic-bezier(0.23, 1, 0.32, 1) 90ms both paperUnfold;
+}
+
+/* ==========================================================================
+   REDUCED MOTION: Collapse positional choreography, preserve comprehension
+   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  *,
-  *::before,
-  *::after {
+  .hero-lead-enter,
+  .hero-support-enter,
+  .hero-stage-enter,
+  .hero-meta-enter {
+    animation: quietFade 200ms ease-out both !important;
+    clip-path: none !important;
+    transform: none !important;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
+    animation-delay: 0s !important;
   }
 }

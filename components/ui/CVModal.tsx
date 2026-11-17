@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Download, X } from "lucide-react";
+import { OWNER_INFO } from "@/data/portfolio";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface CVModalProps {
@@ -33,7 +34,10 @@ export default function CVModal({ isOpen, onClose }: CVModalProps) {
     };
   }, [isOpen]);
 
-  const previewTitle = language === "vi" ? "Xem trước CV" : "CV preview";
+  const previewTitle =
+    language === "vi"
+      ? "Hồ sơ năng lực (CV) — Nguyễn Quang Trường"
+      : "Curriculum Vitae — Nguyen Quang Truong";
 
   return (
     <dialog
@@ -43,32 +47,40 @@ export default function CVModal({ isOpen, onClose }: CVModalProps) {
       onClick={(event) => {
         if (event.target === event.currentTarget) dialogRef.current?.close();
       }}
-      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-screen max-w-none border-0 bg-paper p-0 text-near-black backdrop:bg-near-black/75"
+      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-screen max-w-none overscroll-contain border-0 bg-[var(--ink-primary)]/75 p-2 text-[var(--ink-primary)] backdrop:bg-[var(--ink-primary)]/70 sm:p-6"
     >
       {isOpen && (
-        <div className="relative h-full w-full">
+        <div className="paper-sheet mx-auto flex h-full max-w-5xl flex-col overflow-hidden rounded-[4px]">
+          <div className="flex items-center justify-between gap-3 border-b border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-4 py-2.5 sm:px-5">
+            <p className="truncate font-mono text-xs font-medium text-[var(--ink-primary)]">
+              {previewTitle}
+            </p>
+            <div className="flex items-center gap-2">
+              <a
+                href={OWNER_INFO.cvPath}
+                download={OWNER_INFO.cvDownloadName}
+                className="inline-flex min-h-11 items-center gap-2 rounded-[3px] border border-[var(--accent-vermilion)] bg-[var(--accent-vermilion)] px-3.5 font-sans text-xs font-medium text-[var(--bg-sheet-top)] transition-[background-color,transform] duration-150 ease-out hover:bg-[var(--accent-vermilion-hover)] active:scale-[0.97]"
+              >
+                <Download size={15} aria-hidden="true" />
+                <span>{language === "vi" ? "Tải PDF" : "Download PDF"}</span>
+              </a>
+              <button
+                type="button"
+                ref={closeButtonRef}
+                onClick={() => dialogRef.current?.close()}
+                aria-label={language === "vi" ? "Đóng bản xem trước CV" : "Close CV preview"}
+                className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--bg-sheet-mid)] active:scale-[0.97]"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+
           <iframe
-            src="/cv.pdf#toolbar=0&navpanes=0"
-            className="h-full w-full bg-paper"
+            src={`${OWNER_INFO.cvPath}#toolbar=0&navpanes=0`}
+            className="h-full w-full flex-1 bg-[var(--bg-sheet-top)]"
             title={previewTitle}
           />
-          <button
-            type="button"
-            ref={closeButtonRef}
-            onClick={() => dialogRef.current?.close()}
-            aria-label={language === "vi" ? "Đóng bản xem trước" : "Close preview"}
-            className="absolute right-4 top-4 flex min-h-11 min-w-11 items-center justify-center border border-border-warm bg-parchment text-near-black focus-visible:outline-2 focus-visible:outline-focus-blue"
-          >
-            <X size={20} aria-hidden="true" />
-          </button>
-          <a
-            href="/cv.pdf"
-            download="Nguyen-Quang-Truong-CV.pdf"
-            className="absolute bottom-4 right-4 inline-flex min-h-11 items-center gap-2 border border-terracotta bg-terracotta px-4 text-sm font-medium text-ivory hover:bg-near-black focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-focus-blue"
-          >
-            <Download size={16} aria-hidden="true" />
-            {language === "vi" ? "Tải CV" : "Download CV"}
-          </a>
         </div>
       )}
     </dialog>

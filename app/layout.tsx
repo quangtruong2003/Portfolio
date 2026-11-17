@@ -1,36 +1,53 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
-import { DM_Sans, IBM_Plex_Mono, Newsreader } from "next/font/google";
+import { Be_Vietnam_Pro, Brygada_1918, Chivo_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import MotionProvider from "@/components/animations/MotionProvider";
+import TactileCursor from "@/components/ui/TactileCursor";
 
-const newsreader = Newsreader({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-newsreader",
+const brygadaDisplay = Brygada_1918({
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  style: ["normal", "italic"],
+  variable: "--font-brygada",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-dm-sans",
+const beVietnamSans = Be_Vietnam_Pro({
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-be-vietnam",
   display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500"],
-  variable: "--font-ibm-plex-mono",
+const chivoMono = Chivo_Mono({
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  variable: "--font-chivo-mono",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#EFECE4" },
+    { media: "(prefers-color-scheme: dark)", color: "#1A1D1A" },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://quangtruong.dev"),
-  title: "Nguyen Quang Truong | PHP Engineer",
+  title: {
+    default: "Nguyen Quang Truong | PHP & Systems Engineer",
+    template: "%s | Nguyen Quang Truong",
+  },
   description:
-    "Portfolio of Nguyen Quang Truong, a PHP engineer building maintainable Laravel APIs, data workflows, and Windows desktop software.",
+    "Portfolio of Nguyen Quang Truong, a PHP & systems engineer building maintainable Laravel 12 APIs, MySQL/Redis data workflows, and Rust Windows software.",
   keywords: [
     "Nguyen Quang Truong",
+    "Nguyễn Quang Trường",
     "PHP Engineer",
     "PHP Developer",
     "Laravel Developer",
@@ -43,15 +60,16 @@ export const metadata: Metadata = {
     "TypeScript",
     "Rust",
     "Tauri",
+    "SmoothScroll",
     "Ho Chi Minh City",
     "Vietnam",
   ],
   authors: [{ name: "Nguyen Quang Truong" }],
   creator: "Nguyen Quang Truong",
   openGraph: {
-    title: "Nguyen Quang Truong | PHP Engineer",
+    title: "Nguyen Quang Truong | PHP & Systems Engineer",
     description:
-      "PHP engineer building Laravel backends, data workflows, and Windows desktop software.",
+      "PHP engineer building Laravel 12 backends, MySQL/Redis data workflows, and Rust Windows desktop software.",
     url: "https://quangtruong.dev",
     siteName: "Nguyen Quang Truong",
     locale: "en_US",
@@ -59,9 +77,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nguyen Quang Truong | PHP Engineer",
+    title: "Nguyen Quang Truong | PHP & Systems Engineer",
     description:
-      "PHP engineer focused on Laravel backends, reliable APIs, MySQL, Redis, and desktop software.",
+      "PHP engineer focused on Laravel backends, reliable APIs, MySQL, Redis, and Rust desktop software.",
   },
   robots: { index: true, follow: true },
   alternates: { canonical: "https://quangtruong.dev" },
@@ -111,7 +129,7 @@ export default async function RootLayout({
     <html
       lang={initialLanguage}
       suppressHydrationWarning
-      className={`${newsreader.variable} ${dmSans.variable} ${ibmPlexMono.variable}`}
+      className={`${brygadaDisplay.variable} ${beVietnamSans.variable} ${chivoMono.variable}`}
     >
       <head>
         <script
@@ -120,9 +138,12 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-[100dvh] antialiased">
-        <LanguageProvider initialLanguage={initialLanguage}>
-          {children}
-        </LanguageProvider>
+        <MotionProvider>
+          <LanguageProvider initialLanguage={initialLanguage}>
+            <TactileCursor />
+            {children}
+          </LanguageProvider>
+        </MotionProvider>
       </body>
     </html>
   );

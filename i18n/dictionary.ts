@@ -11,48 +11,82 @@ export interface Dictionary {
     experience: string;
     openSource: string;
     contact: string;
+    homeAtelier: string;
   };
   hero: {
     role: string;
     location: string;
-    headlineStart: string;
-    headlineAccent: string;
+    headline: string;
     bio: string;
     viewProjects: string;
     viewCV: string;
     proofLabel: string;
     proofCaption: string;
     viewProject: string;
+    stageLabel: string;
+    explodeStrata: string;
+    assembleStrata: string;
+    pulseRotor: string;
+    strataHint: string;
+    layers: [string, string, string];
   };
   about: {
     title: string;
     subtitle: string;
     bio1: string;
     bio2: string;
-    education: string;
+    educationLabel: string;
+    educationSchool: string;
+    educationMeta: string;
+    pressNote: string;
   };
   skills: {
     title: string;
     subtitle: string;
+    focusLabel: string;
+    stackLabel: string;
   };
   experience: {
-    eyebrow: string;
     title: string;
     subtitle: string;
     work: string;
+    contributionsLabel: string;
   };
   projects: {
-    eyebrow: string;
     title: string;
     subtitle: string;
-    processLabel: string;
-    seeMore: string;
+    scrollHint: string;
+    openDossier: string;
     viewSource: string;
     viewWebsite: string;
+    seeMore: string;
+    interactiveNodeHint: string;
     category: {
       work: string;
       thesis: string;
       personal: string;
+    };
+    lab: {
+      title: string;
+      rawLabel: string;
+      smoothLabel: string;
+      triggerBurst: string;
+      presets: {
+        crisp: string;
+        balanced: string;
+        silky: string;
+      };
+      caption: string;
+    };
+    dossier: {
+      backToWork: string;
+      contextHeading: string;
+      architectureHeading: string;
+      interactiveBlueprintHeading: string;
+      craftHeading: string;
+      sourceStatusLabel: string;
+      prevFolio: string;
+      nextFolio: string;
     };
   };
   openSource: {
@@ -67,7 +101,6 @@ export interface Dictionary {
     retry: string;
   };
   contact: {
-    eyebrow: string;
     title: string;
     subtitle: string;
     email: string;
@@ -85,6 +118,7 @@ export interface Dictionary {
     sending: string;
     sent: string;
     sentMessage: string;
+    sendAnother: string;
     mailFallback: string;
     sendError: string;
     orFind: string;
@@ -94,109 +128,157 @@ export interface Dictionary {
     navigate: string;
     copyright: string;
     backToTop: string;
+    colophon: string;
+  };
+  cursor: {
+    open: string;
+    inspect: string;
   };
 }
 
 export const vi: Dictionary = {
   nav: {
-    skip: "Bỏ qua đến nội dung",
-    openMenu: "Mở menu điều hướng",
-    closeMenu: "Đóng menu điều hướng",
+    skip: "Bỏ qua đến nội dung chính",
+    openMenu: "Mở bảng điều hướng",
+    closeMenu: "Đóng bảng điều hướng",
     work: "Dự án",
     about: "Giới thiệu",
     capabilities: "Năng lực",
     experience: "Kinh nghiệm",
     openSource: "Mã nguồn mở",
     contact: "Liên hệ",
+    homeAtelier: "Trang chính",
   },
   hero: {
-    role: "Kỹ sư PHP",
+    role: "Kỹ sư PHP & Hệ thống",
     location: "TP. Hồ Chí Minh, Việt Nam",
-    headlineStart: "Backend PHP.",
-    headlineAccent: "Tiện ích Windows.",
-    bio: "Tôi xây dựng API Laravel dễ bảo trì, tối ưu quy trình dữ liệu và phát triển tiện ích Windows bằng Rust.",
-    viewProjects: "Xem dự án tiêu biểu",
-    viewCV: "Xem CV",
-    proofLabel: "Dự án mã nguồn mở",
-    proofCaption: "lượt tải",
-    viewProject: "Xem dự án",
+    headline: "Backend PHP.\nTiện ích Windows.",
+    bio: "Tôi xây dựng RESTful API Laravel 12 dễ bảo trì, tối ưu hiệu năng MySQL/Redis cho nghiệp vụ dữ liệu lớn và chế tác phần mềm desktop Windows bằng Rust.",
+    viewProjects: "Khám phá hồ sơ dự án",
+    viewCV: "Xem & tải CV",
+    proofLabel: "Sản phẩm mã nguồn mở",
+    proofCaption: "lượt tải ghi nhận",
+    viewProject: "Mở hồ sơ SmoothScroll",
+    stageLabel: "Mô hình cắt lớp 3D · Kiến trúc & Xung cuộn",
+    explodeStrata: "Tách lớp kiến trúc",
+    assembleStrata: "Khép lớp mô hình",
+    pulseRotor: "Phát xung cuộn",
+    strataHint: "Di chuột hoặc chạm từng tầng giấy để soi cấu trúc",
+    layers: [
+      "Tầng I · Input Hook & Nhân Rust",
+      "Tầng II · Laravel API & Queue Worker",
+      "Tầng III · MySQL Index & Đệm Redis",
+    ],
   },
   about: {
-    title: "Tư duy sản phẩm, nền tảng backend.",
-    subtitle: "Tôi quan tâm đến API đáng tin cậy, luồng dữ liệu và công cụ giải quyết việc cụ thể.",
-    bio1: "Công việc của tôi xoay quanh PHP 8+, Laravel, REST API, MySQL và Redis. Tôi tập trung vào những phần ít thấy nhưng quyết định độ tin cậy: tác vụ nền, phân quyền và hiệu năng dữ liệu.",
-    bio2: "Tại Penalty, tôi bảo trì ứng dụng PHP/Laravel và xây dựng hệ thống tải sản phẩm hàng loạt tích hợp WordPress. Trước đó tại C3TEK, tôi phát triển quy trình hợp đồng, xử lý hóa đơn qua Laravel Queues, và tối ưu MySQL bằng eager loading, composite index và Redis. SmoothScroll, tiện ích cuộn chuột Windows mã nguồn mở do tôi phát triển, đã vượt 30.000 lượt tải.",
-    education: "Công nghệ Thông tin · Đại học Công nghệ Sài Gòn · 2021–2025",
+    title: "Tư duy sản phẩm trên nền tảng backend vững chắc.",
+    subtitle: "Tôi tập trung vào những tầng ít phô trương nhưng quyết định độ tin cậy của toàn hệ thống.",
+    bio1: "Công việc hằng ngày của tôi xoay quanh PHP 8+, Laravel 12, RESTful API, MySQL và Redis. Tôi ưu tiên cấu trúc mã tuân thủ SOLID, ranh giới phân quyền rõ ràng, xử lý hàng đợi bất đồng bộ để giữ phản hồi nhanh và ổn định.",
+    bio2: "Tại Penalty, tôi bảo trì hệ thống PHP/Laravel nội bộ và kiến trúc luồng tải sản phẩm hàng loạt đồng bộ trực tiếp với kho WordPress. Trước đó tại C3TEK, tôi phát triển nghiệp vụ hợp đồng, hàng đợi hóa đơn điện nước lũy tiến và tối ưu N+1 bằng eager loading, composite index cùng Redis. Ngoài giờ làm việc, tiện ích Windows mã nguồn mở SmoothScroll viết bằng Rust & Tauri 2 của tôi đã vượt mốc 30.000 lượt tải.",
+    educationLabel: "Nền tảng học vấn",
+    educationSchool: "Đại học Công nghệ Sài Gòn (STU)",
+    educationMeta: "Kỹ sư Công nghệ Thông tin · Quận 8, TP.HCM · 2021–2025",
+    pressNote: "Bản in kỹ thuật · HCMC",
   },
   skills: {
-    title: "Năng lực kỹ thuật",
-    subtitle: "Từ API và dữ liệu đến tích hợp sản phẩm và phần mềm desktop.",
+    title: "Ba trụ cột năng lực kỹ thuật",
+    subtitle: "Từ kiến trúc API, tối ưu truy vấn dữ liệu đến tích hợp cổng thanh toán và phần mềm native.",
+    focusLabel: "Chuỗi kiến trúc trọng tâm",
+    stackLabel: "Công nghệ & công cụ sử dụng",
   },
   experience: {
-    eyebrow: "Vai trò đã đảm nhiệm",
-    title: "Kinh nghiệm làm việc",
-    subtitle: "Hai vai trò tập trung vào ứng dụng PHP và quy trình dữ liệu.",
-    work: "Công việc",
+    title: "Hồ sơ kinh nghiệm thực chiến",
+    subtitle: "Hai vai trò tập trung sâu vào ứng dụng PHP/Laravel, đồng bộ dữ liệu và tối ưu truy vấn sản xuất.",
+    work: "Đơn vị công tác",
+    contributionsLabel: "Đóng góp kỹ thuật chính",
   },
   projects: {
-    eyebrow: "Dự án",
-    title: "Sản phẩm và hệ thống backend",
-    subtitle: "Tiện ích Windows, nền tảng quản lý bất động sản, hệ thống đặt lịch khám và ứng dụng Android.",
-    processLabel: "Luồng xử lý cuộn",
-    seeMore: "Xem thêm hoạt động mã nguồn mở",
-    viewSource: "Xem mã nguồn",
-    viewWebsite: "Mở website",
+    title: "Tác phẩm & hệ thống tiêu biểu",
+    subtitle: "Bốn hồ sơ kỹ thuật trải dài từ tiện ích hệ thống Rust/Tauri, nền tảng bất động sản Laravel 12 đến cổng đặt lịch y tế và ứng dụng Android.",
+    scrollHint: "Cuộn để lật ngang từng bản vẽ hoặc chọn trực tiếp trên thanh chỉ mục",
+    openDossier: "Mở bản vẽ chi tiết",
+    viewSource: "Mã nguồn GitHub",
+    viewWebsite: "Trang chủ sản phẩm",
+    seeMore: "Xem tiếp kho lưu trữ mã nguồn mở",
+    interactiveNodeHint: "Chọn từng mắt xích để xem cơ chế xử lý",
     category: {
-      work: "Công việc",
-      thesis: "Đồ án",
-      personal: "Cá nhân",
+      work: "Thực tế doanh nghiệp",
+      thesis: "Đồ án tốt nghiệp",
+      personal: "Dự án cá nhân",
+    },
+    lab: {
+      title: "Bàn thử xung cuộn trực tiếp",
+      rawLabel: "Win32 gốc (bậc thang)",
+      smoothLabel: "SmoothScroll (nội suy Rust)",
+      triggerBurst: "Phát chuỗi xung cuộn",
+      presets: {
+        crisp: "Dứt khoát",
+        balanced: "Cân bằng",
+        silky: "Mượt sâu",
+      },
+      caption: "Cuộn con lăn ngay trên khung giấy này hoặc bấm nút để so sánh quỹ đạo bước nhảy thô với đường cong vận tốc mượt.",
+    },
+    dossier: {
+      backToWork: "Quay lại danh mục dự án",
+      contextHeading: "Bối cảnh & bài toán thực tế",
+      architectureHeading: "Kiến trúc & quyết định kỹ thuật",
+      interactiveBlueprintHeading: "Sơ đồ luồng xử lý tương tác",
+      craftHeading: "Ghi chú vận hành & hoàn thiện",
+      sourceStatusLabel: "Trạng thái mã nguồn",
+      prevFolio: "Hồ sơ trước",
+      nextFolio: "Hồ sơ tiếp theo",
     },
   },
   openSource: {
-    title: "Mã nguồn mở",
-    subtitle: "Một số dự án được chọn từ GitHub.",
-    loading: "Đang tải repository…",
-    error: "Chưa thể tải repository. Bạn vẫn có thể xem trực tiếp trên GitHub.",
+    title: "Lưu trữ mã nguồn mở trên GitHub",
+    subtitle: "Dữ liệu trực tiếp từ các repository tiêu biểu được duy trì công khai.",
+    loading: "Đang đồng bộ danh sách repository từ GitHub…",
+    error: "Chưa thể kết nối GitHub API lúc này. Bạn vẫn có thể mở trực tiếp trang GitHub cá nhân.",
     empty: "Hiện chưa có repository công khai để hiển thị.",
     stars: "sao",
-    forks: "fork",
-    viewAll: "Xem GitHub",
-    retry: "Thử tải lại",
+    forks: "nhánh fork",
+    viewAll: "Mở hồ sơ GitHub",
+    retry: "Thử đồng bộ lại",
   },
   contact: {
-    eyebrow: "Liên hệ",
-    title: "Bạn đang cần cải thiện một hệ thống?",
-    subtitle: "Trao đổi về backend, một vai trò mới hoặc một công cụ hữu ích.",
-    email: "Email",
+    title: "Cần củng cố một hệ thống backend hoặc hợp tác sản phẩm mới?",
+    subtitle: "Trao đổi trực tiếp về cơ hội nghề nghiệp PHP/Backend, tối ưu hiệu năng dữ liệu hoặc ý tưởng phần mềm công cụ.",
+    email: "Thư điện tử",
     phone: "Điện thoại",
     linkedin: "LinkedIn",
     github: "GitHub",
-    location: "Địa điểm",
-    sendMessage: "Gửi tin nhắn",
-    nameLabel: "Tên",
-    emailLabel: "Email",
-    messageLabel: "Nội dung",
-    namePlaceholder: "Tên của bạn",
-    emailPlaceholder: "email@cuaban.com",
-    messagePlaceholder: "Bạn muốn trao đổi về điều gì?",
-    sending: "Đang gửi…",
-    sent: "Đã gửi tin nhắn",
-    sentMessage: "Cảm ơn bạn đã liên hệ. Tôi sẽ phản hồi sớm nhất có thể.",
-    mailFallback: "Ứng dụng email của bạn sẽ mở cùng nội dung đã soạn. Nếu không, hãy gửi email trực tiếp đến địa chỉ bên cạnh.",
-    sendError: "Gửi chưa thành công. Vui lòng thử lại hoặc liên hệ trực tiếp qua email.",
-    orFind: "Hoặc kết nối qua",
+    location: "Khu vực",
+    sendMessage: "Gửi thư trao đổi",
+    nameLabel: "Họ và tên",
+    emailLabel: "Địa chỉ email",
+    messageLabel: "Nội dung trao đổi",
+    namePlaceholder: "Nguyễn Văn A",
+    emailPlaceholder: "ten@congty.com",
+    messagePlaceholder: "Chia sẻ ngắn gọn về vị trí, hệ thống hoặc dự án bạn đang quan tâm…",
+    sending: "Đang chuyển thư…",
+    sent: "Đã ghi nhận thư liên hệ",
+    sentMessage: "Cảm ơn bạn đã gửi lời nhắn. Tôi sẽ phản hồi qua email trong thời gian sớm nhất.",
+    sendAnother: "Soạn thư mới",
+    mailFallback: "Trình gửi thư trên thiết bị của bạn đang được mở kèm nội dung vừa nhập. Nếu chưa mở, bạn có thể gửi trực tiếp tới địa chỉ email bên cạnh.",
+    sendError: "Quá trình gửi gặp gián đoạn. Vui lòng thử lại hoặc gửi email trực tiếp.",
+    orFind: "Kênh kết nối trực tiếp",
   },
   footer: {
-    tagline: "Kỹ sư PHP xây dựng backend Laravel, API và quy trình dữ liệu tại TP. Hồ Chí Minh.",
-    navigate: "Điều hướng",
+    tagline: "Kỹ sư PHP phát triển hệ thống Laravel, REST API, tối ưu MySQL/Redis và tiện ích desktop Rust tại TP. Hồ Chí Minh.",
+    navigate: "Mục lục hồ sơ",
     copyright: "© 2026 Nguyễn Quang Trường",
-    backToTop: "Lên đầu trang",
+    backToTop: "Trở về đầu trang",
+    colophon: "Chế tác trên nền giấy cắt lớp & chuyển cảnh View Transitions · Next.js 16",
+  },
+  cursor: {
+    open: "Mở hồ sơ",
+    inspect: "Tương tác",
   },
 };
 
 export const en: Dictionary = {
   nav: {
-    skip: "Skip to content",
+    skip: "Skip to main content",
     openMenu: "Open navigation menu",
     closeMenu: "Close navigation menu",
     work: "Work",
@@ -205,88 +287,131 @@ export const en: Dictionary = {
     experience: "Experience",
     openSource: "Open source",
     contact: "Contact",
+    homeAtelier: "Atelier Home",
   },
   hero: {
-    role: "PHP Engineer",
+    role: "PHP & Systems Engineer",
     location: "Ho Chi Minh City, Vietnam",
-    headlineStart: "PHP backends.",
-    headlineAccent: "Windows tools.",
-    bio: "I build maintainable Laravel APIs, optimize data workflows, and develop Windows utilities in Rust.",
-    viewProjects: "Explore selected work",
-    viewCV: "View CV",
-    proofLabel: "Open-source project",
-    proofCaption: "downloads",
-    viewProject: "View project",
+    headline: "PHP backends.\nWindows tools.",
+    bio: "I architect maintainable Laravel 12 APIs, tune MySQL and Redis data pipelines, and build native Windows utilities in Rust.",
+    viewProjects: "Explore project folios",
+    viewCV: "Inspect & download CV",
+    proofLabel: "Open-source utility",
+    proofCaption: "user-reported downloads",
+    viewProject: "Open SmoothScroll dossier",
+    stageLabel: "3D Cut-Paper Model · Strata & Scroll Rotor",
+    explodeStrata: "Explode strata",
+    assembleStrata: "Assemble strata",
+    pulseRotor: "Pulse wheel",
+    strataHint: "Move pointer or select a paper stratum to inspect",
+    layers: [
+      "Stratum I · Native Hook & Rust Core",
+      "Stratum II · Laravel API & Queue Workers",
+      "Stratum III · MySQL Indexes & Redis Cache",
+    ],
   },
   about: {
-    title: "Product thinking, backend foundations.",
-    subtitle: "I care about reliable APIs, data workflows, and tools that solve a specific job.",
-    bio1: "My work centers on PHP 8+, Laravel, REST APIs, MySQL, and Redis. I focus on the parts users rarely see but rely on: background jobs, access boundaries, and data performance.",
-    bio2: "At Penalty, I maintained PHP/Laravel applications and built a bulk product upload system integrated with WordPress. Before that, at C3TEK, I developed contract workflows, queued invoice processing, and optimized MySQL with eager loading, composite indexes, and Redis. SmoothScroll, my open-source Windows scrolling utility, has passed 30,000 downloads.",
-    education: "Information Technology · SaiGon Technology University · 2021–2025",
+    title: "Product thinking anchored in backend reliability.",
+    subtitle: "I focus on the unseen layers that keep software fast, predictable, and maintainable under real load.",
+    bio1: "My daily craft centers on PHP 8+, Laravel 12, RESTful APIs, MySQL, and Redis. I care deeply about SOLID boundaries, role-based access control, background queue workers, and query plans that stay fast as data grows.",
+    bio2: "At Penalty, I maintained internal PHP/Laravel web systems and built an automated bulk product upload pipeline synchronized with WordPress inventory. Previously at C3TEK, I engineered lease contract workflows, queued monthly invoice and tiered utility jobs, and eliminated N+1 bottlenecks with eager loading, composite indexes, and Redis. Outside client systems, SmoothScroll—my open-source Rust and Tauri 2 Windows utility—has passed 30,000 downloads.",
+    educationLabel: "Academic foundation",
+    educationSchool: "SaiGon Technology University (STU)",
+    educationMeta: "B.Eng. Information Technology · District 8, HCMC · 2021–2025",
+    pressNote: "Architectural Press Plate · HCMC",
   },
   skills: {
-    title: "Technical capabilities",
-    subtitle: "From APIs and data to product integrations and desktop software.",
+    title: "Three pillars of technical capability",
+    subtitle: "Spanning domain APIs, relational query performance, payment gateways, and native desktop software.",
+    focusLabel: "Primary execution chain",
+    stackLabel: "Verified languages & tools",
   },
   experience: {
-    eyebrow: "Selected roles",
-    title: "Work experience",
-    subtitle: "Two roles focused on PHP applications and data-heavy workflows.",
-    work: "Work",
+    title: "Production work ledger",
+    subtitle: "Two engineering roles centered on PHP/Laravel applications, batch synchronization, and data-intensive workflows.",
+    work: "Organization",
+    contributionsLabel: "Key engineering deliverables",
   },
   projects: {
-    eyebrow: "Projects",
-    title: "Products and backend systems",
-    subtitle: "A Windows utility, a property platform, a healthcare booking system, and an Android app.",
-    processLabel: "Scroll pipeline",
-    seeMore: "Explore more open-source work",
-    viewSource: "View source",
-    viewWebsite: "Visit website",
+    title: "Selected products & backend architectures",
+    subtitle: "Four documented folios spanning a Rust/Tauri Windows utility, a Laravel 12 property platform, a Spring Boot healthcare portal, and a Kotlin Android client.",
+    scrollHint: "Scroll to glide across the folio rail or jump directly via the index strip",
+    openDossier: "Open full dossier",
+    viewSource: "GitHub source",
+    viewWebsite: "Live website",
+    seeMore: "Inspect live GitHub repositories below",
+    interactiveNodeHint: "Select any pipeline stage to inspect its role",
     category: {
-      work: "Work",
-      thesis: "Thesis",
-      personal: "Personal",
+      work: "Enterprise Work",
+      thesis: "Graduation Thesis",
+      personal: "Personal Craft",
+    },
+    lab: {
+      title: "Live wheel-impulse comparator",
+      rawLabel: "Raw Win32 (stepped)",
+      smoothLabel: "SmoothScroll (Rust spring)",
+      triggerBurst: "Fire wheel burst",
+      presets: {
+        crisp: "Crisp",
+        balanced: "Balanced",
+        silky: "Silky",
+      },
+      caption: "Scroll directly over this paper pad or trigger a burst to compare coarse 120-delta notches against velocity-smoothed integration.",
+    },
+    dossier: {
+      backToWork: "Back to project folios",
+      contextHeading: "Problem space & operational context",
+      architectureHeading: "System architecture & key decisions",
+      interactiveBlueprintHeading: "Interactive pipeline schematic",
+      craftHeading: "Delivery & craft notes",
+      sourceStatusLabel: "Source availability",
+      prevFolio: "Previous folio",
+      nextFolio: "Next folio",
     },
   },
   openSource: {
-    title: "Open source",
-    subtitle: "A selected set of projects from GitHub.",
-    loading: "Loading repositories…",
-    error: "Repositories are unavailable right now. You can still visit GitHub directly.",
-    empty: "There are no public repositories to show yet.",
+    title: "Curated GitHub repositories",
+    subtitle: "Live public repository metadata fetched directly from GitHub.",
+    loading: "Fetching repository ledger from GitHub…",
+    error: "GitHub API is temporarily unreachable. You can still browse repositories directly on GitHub.",
+    empty: "No public repositories available right now.",
     stars: "stars",
     forks: "forks",
-    viewAll: "View GitHub",
-    retry: "Try again",
+    viewAll: "Open GitHub profile",
+    retry: "Retry fetch",
   },
   contact: {
-    eyebrow: "Contact",
-    title: "Working on a system that needs improving?",
-    subtitle: "Reach out about backend work, a role, or a useful tool idea.",
+    title: "Working on a backend system that needs care?",
+    subtitle: "Reach out regarding PHP/Laravel engineering roles, database & queue optimization, or practical software tools.",
     email: "Email",
     phone: "Phone",
     linkedin: "LinkedIn",
     github: "GitHub",
-    location: "Location",
-    sendMessage: "Send message",
-    nameLabel: "Name",
-    emailLabel: "Email",
-    messageLabel: "Message",
-    namePlaceholder: "Your name",
-    emailPlaceholder: "you@example.com",
-    messagePlaceholder: "What would you like to discuss?",
-    sending: "Sending…",
-    sent: "Message sent",
-    sentMessage: "Thank you for reaching out. I’ll reply as soon as I can.",
-    mailFallback: "Your email app should open with the message drafted. If it does not, email me directly at the address shown beside the form.",
-    sendError: "Your message could not be sent. Please try again or contact me by email.",
-    orFind: "Or connect on",
+    location: "Base",
+    sendMessage: "Dispatch message",
+    nameLabel: "Your name",
+    emailLabel: "Email address",
+    messageLabel: "Project or role details",
+    namePlaceholder: "Jane Doe",
+    emailPlaceholder: "jane@company.com",
+    messagePlaceholder: "Tell me about the system, team, or role you have in mind…",
+    sending: "Dispatching…",
+    sent: "Correspondence recorded",
+    sentMessage: "Thank you for reaching out. I’ll respond to your email as soon as possible.",
+    sendAnother: "Write another note",
+    mailFallback: "Your mail client is opening with your drafted message. If it didn’t open automatically, use the direct email address beside this form.",
+    sendError: "Delivery failed. Please try again or reach out directly via email.",
+    orFind: "Direct channels",
   },
   footer: {
-    tagline: "PHP engineer building Laravel backends, APIs, and data workflows in Ho Chi Minh City.",
-    navigate: "Navigate",
+    tagline: "PHP engineer building maintainable Laravel backends, data pipelines, and Rust Windows software in Ho Chi Minh City.",
+    navigate: "Folio index",
     copyright: "© 2026 Nguyen Quang Truong",
-    backToTop: "Back to top",
+    backToTop: "Return to top",
+    colophon: "Set on layered cotton-rag CSS & React View Transitions · Next.js 16",
+  },
+  cursor: {
+    open: "Open folio",
+    inspect: "Interact",
   },
 };

@@ -1,10 +1,10 @@
+import { ViewTransition } from "react";
 import LocaleHandler from "@/components/layout/LocaleHandler";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/sections/HeroSection";
 import ProjectsSection from "@/components/sections/ProjectsSection";
-import AboutSection from "@/components/sections/AboutSection";
-import SkillsSection from "@/components/sections/SkillsSection";
+import PressPlateZone from "@/components/sections/PressPlateZone";
 import ExperienceSection from "@/components/sections/ExperienceSection";
 import OpenSourceSection from "@/components/sections/OpenSourceSection";
 import ContactSection from "@/components/sections/ContactSection";
@@ -15,15 +15,28 @@ export default function PortfolioPage() {
       <LocaleHandler />
       <Navbar />
 
-      <main id="main-content">
-        <HeroSection />
-        <ProjectsSection />
-        <AboutSection />
-        <SkillsSection />
-        <ExperienceSection />
-        <OpenSourceSection />
-        <ContactSection />
-      </main>
+      <ViewTransition
+        enter={{
+          "folio-forward": "folio-forward",
+          "folio-back": "folio-back",
+          default: "none",
+        }}
+        exit={{
+          "folio-forward": "folio-forward",
+          "folio-back": "folio-back",
+          default: "none",
+        }}
+        default="none"
+      >
+        <main id="main-content">
+          <HeroSection />
+          <ProjectsSection />
+          <PressPlateZone />
+          <ExperienceSection />
+          <OpenSourceSection />
+          <ContactSection />
+        </main>
+      </ViewTransition>
 
       <Footer />
     </>
