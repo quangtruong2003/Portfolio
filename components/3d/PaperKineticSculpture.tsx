@@ -18,29 +18,257 @@ interface PaperKineticSculptureProps {
 
 type ActIndex = 0 | 1 | 2 | 3;
 
-interface FlowParticle {
+interface FlowCourier {
   u: number;
   lane: number;
   speed: number;
   size: number;
-  hue: 0 | 1 | 2; // 0: vermilion, 1: brass, 2: patina
+  tone: 0 | 1 | 2; // 0: vermilion, 1: brass, 2: patina
 }
 
-interface MorphNode {
+interface JewelNode {
   x: number;
   y: number;
   vx: number;
   vy: number;
 }
 
-const RIBBON_COUNT = 14;
-const SAMPLES_PER_RIBBON = 46;
-const PARTICLE_COUNT = 42;
-const NODE_COUNT = 24;
-const ACT_DURATION_SEC = 5.6;
+interface WakePoint {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+}
+
+const FILAMENT_COUNT = 22;
+const SAMPLES = 68;
+const COURIER_COUNT = 54;
+const JEWEL_COUNT = 28;
+const ACT_DURATION_SEC = 6.2;
 
 function damp(cur: number, target: number, lambda: number, dt: number): number {
   return cur + (target - cur) * (1 - Math.exp(-lambda * dt));
+}
+
+/** Draw precision horological gear with involute-inspired teeth & spoked cutout */
+function drawPrecisionGear(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  outerR: number,
+  innerR: number,
+  teeth: number,
+  toothDepth: number,
+  rotation: number,
+  fillStyle: string,
+  strokeStyle: string,
+  spokes = 5
+) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+
+  ctx.beginPath();
+  const step = (Math.PI * 2) / teeth;
+  for (let i = 0; i < teeth; i++) {
+    const a0 = i * step;
+    const a1 = a0 + step * 0.22;
+    const a2 = a0 + step * 0.32;
+    const a3 = a0 + step * 0.68;
+    const a4 = a0 + step * 0.78;
+    const baseR = outerR - toothDepth;
+
+    if (i === 0) {
+      ctx.moveTo(Math.cos(a0) * baseR, Math.sin(a0) * baseR);
+    } else {
+      ctx.lineTo(Math.cos(a0) * baseR, Math.sin(a0) * baseR);
+    }
+    ctx.lineTo(Math.cos(a1) * baseR, Math.sin(a1) * baseR);
+    ctx.lineTo(Math.cos(a2) * outerR, Math.sin(a2) * outerR);
+    ctx.lineTo(Math.cos(a3) * outerR, Math.sin(a3) * outerR);
+    ctx.lineTo(Math.cos(a4) * baseR, Math.sin(a4) * baseR);
+  }
+  ctx.closePath();
+
+  // Inner cutout ring
+  ctx.moveTo(innerR, 0);
+  ctx.arc(0, 0, innerR, 0, Math.PI * 2, true);
+
+  ctx.fillStyle = fillStyle;
+  ctx.fill("evenodd");
+  ctx.lineWidth = 0.9;
+  ctx.strokeStyle = strokeStyle;
+  ctx.stroke();
+
+  // Delicate watchmaker spokes
+  if (spokes > 0 && innerR > 6) {
+    ctx.beginPath();
+    for (let s = 0; s < spokes; s++) {
+      const sa = (s / spokes) * Math.PI * 2;
+      ctx.moveTo(Math.cos(sa) * 4.5, Math.sin(sa) * 4.5);
+      ctx.lineTo(Math.cos(sa) * innerR, Math.sin(sa) * innerR);
+    }
+    ctx.lineWidth = 1.25;
+    ctx.strokeStyle = strokeStyle;
+    ctx.stroke();
+  }
+
+  // Jewel center bearing
+  ctx.beginPath();
+  ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
+  ctx.fillStyle = "#FAF7F1";
+  ctx.fill();
+  ctx.lineWidth = 1.2;
+  ctx.strokeStyle = "#B8332A";
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(0, 0, 1.8, 0, Math.PI * 2);
+  ctx.fillStyle = "#B8332A";
+  ctx.fill();
+
+  ctx.restore();
+}
+
+/** Smooth quadratic midpoint spline through sampled points */
+function strokeSmoothCurve(ctx: CanvasRenderingContext2D, pts: Array<[number, number]>) {
+  if (pts.length < 2) return;
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length - 1; i++) {
+    const mx = (pts[i][0] + pts[i + 1][0]) * 0.5;
+    const my = (pts[i][1] + pts[i + 1][1]) * 0.5;
+    ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
+  }
+  const last = pts[pts.length - 1];
+  ctx.lineTo(last[0], last[1]);
+  ctx.stroke();
+}
+
+/** Render a sculpted variable-width cut-paper silk ribbon with cast relief shadow */
+function drawTaperedSilkRibbon(
+  ctx: CanvasRenderingContext2D,
+  pts: Array<[number, number]>,
+  maxHalfWidth: number,
+  fillStyle: string,
+  edgeStroke: string,
+  withShadow: boolean
+) {
+  const n = pts.length;
+  if (n < 3) return;
+
+  const upper: Array<[number, number]> = [];
+  const lower: Array<[number, number]> = [];
+
+  for (let i = 0; i < n; i++) {
+    const prev = pts[Math.max(0, i - 1)];
+    const next = pts[Math.min(n - 1, i + 1)];
+    const tx = next[0] - prev[0];
+    const ty = next[1] - prev[1];
+    const len = Math.hypot(tx, ty) || 1;
+    const nx = -ty / len;
+    const ny = tx / len;
+
+    const u = i / (n - 1);
+    // Needle-sharp calligraphic taper at both ends, full body in middle
+    const taper = Math.pow(Math.sin(u * Math.PI), 0.75);
+    const hw = maxHalfWidth * taper;
+
+    upper.push([pts[i][0] + nx * hw, pts[i][1] + ny * hw]);
+    lower.push([pts[i][0] - nx * hw, pts[i][1] - ny * hw]);
+  }
+
+  ctx.save();
+  if (withShadow) {
+    ctx.shadowColor = "rgba(24, 23, 21, 0.14)";
+    ctx.shadowBlur = 7;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 3;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(upper[0][0], upper[0][1]);
+  for (let i = 1; i < n; i++) {
+    ctx.lineTo(upper[i][0], upper[i][1]);
+  }
+  for (let i = n - 1; i >= 0; i--) {
+    ctx.lineTo(lower[i][0], lower[i][1]);
+  }
+  ctx.closePath();
+  ctx.fillStyle = fillStyle;
+  ctx.fill();
+
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = 0.7;
+  ctx.strokeStyle = edgeStroke;
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** Crisp drafted callout pill + hair-leader rendered directly in the engraving */
+function drawEngravedCallout(
+  ctx: CanvasRenderingContext2D,
+  anchorX: number,
+  anchorY: number,
+  boxX: number,
+  boxY: number,
+  label: string,
+  accentColor: string,
+  alpha: number
+) {
+  if (alpha <= 0.04) return;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.font = "600 9.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+  const textW = ctx.measureText(label).width;
+  const padX = 6.5;
+  const boxW = textW + padX * 2;
+  const boxH = 17;
+  const rx = boxX - boxW * 0.5;
+  const ry = boxY - boxH * 0.5;
+
+  // Orthogonal drafting leader stem
+  ctx.beginPath();
+  ctx.moveTo(anchorX, anchorY);
+  ctx.lineTo(boxX, anchorY);
+  ctx.lineTo(boxX, boxY);
+  ctx.strokeStyle = accentColor;
+  ctx.lineWidth = 0.85;
+  ctx.setLineDash([2.5, 2]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Bullseye anchor point
+  ctx.beginPath();
+  ctx.arc(anchorX, anchorY, 2.4, 0, Math.PI * 2);
+  ctx.fillStyle = accentColor;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(anchorX, anchorY, 4.8, 0, Math.PI * 2);
+  ctx.strokeStyle = accentColor;
+  ctx.lineWidth = 0.7;
+  ctx.stroke();
+
+  // Micro-plaque card
+  ctx.fillStyle = "rgba(250, 247, 241, 0.94)";
+  ctx.strokeStyle = "rgba(73, 69, 62, 0.42)";
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.rect(rx, ry, boxW, boxH);
+  ctx.fill();
+  ctx.stroke();
+
+  // Left pigment bar on micro-plaque
+  ctx.fillStyle = accentColor;
+  ctx.fillRect(rx, ry, 2.2, boxH);
+
+  ctx.fillStyle = "#181715";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, rx + padX + 1, boxY + 0.5);
+  ctx.restore();
 }
 
 export default function PaperKineticSculpture({
@@ -64,12 +292,21 @@ export default function PaperKineticSculpture({
     morphBlend: [1, 0, 0, 0] as [number, number, number, number],
     pointerX: 0.5,
     pointerY: 0.5,
+    prevPointerX: 0.5,
+    prevPointerY: 0.5,
     pointerActive: false,
-    wheelVelocity: 1.5,
+    isDragging: false,
+    dragLastAngle: 0,
+    wheelVelocity: 1.55,
     shockwave: 0,
-    shockX: 0.36,
+    shockX: 0.35,
     shockY: 0.5,
+    liveDlLabel: liveDownloads ?? "40k+",
   });
+
+  useEffect(() => {
+    stateRef.current.liveDlLabel = liveDownloads ?? "40k+";
+  }, [liveDownloads]);
 
   useEffect(() => {
     stateRef.current.act = activeAct;
@@ -81,7 +318,7 @@ export default function PaperKineticSculpture({
   }, [autoPlay]);
 
   const triggerWave = useCallback((nx = 0.5, ny = 0.5) => {
-    stateRef.current.wheelVelocity = Math.min(stateRef.current.wheelVelocity + 6.5, 14);
+    stateRef.current.wheelVelocity = Math.min(stateRef.current.wheelVelocity + 7.5, 16);
     stateRef.current.shockwave = 1;
     stateRef.current.shockX = nx;
     stateRef.current.shockY = ny;
@@ -95,34 +332,34 @@ export default function PaperKineticSculpture({
             short: "SmoothScroll",
             title: liveDownloads
               ? `SmoothScroll · ${liveDownloads} lượt tải`
-              : "SmoothScroll · Nội suy 120Hz",
-            caption: "Biến nấc cuộn Win32 bậc thang thành dải lụa vận tốc 120Hz bằng Rust",
+              : "SmoothScroll · Cơ cấu Lò xo 120Hz",
+            caption: "Bộ hồi cơ khí Rust biến xung nấc Win32 120Δ thành dải lụa vận tốc 120Hz",
             slug: "smoothscroll",
-            linkLabel: "Mở hồ sơ SmoothScroll",
+            cta: "Hồ sơ SmoothScroll",
           },
           {
             code: "II",
             short: "Laravel 12",
-            title: "Laravel 12 · RBAC & Queue",
-            caption: "4 vòng phân quyền đồng tâm & luồng hàng đợi hóa đơn bất đồng bộ (C3TEK)",
+            title: "Laravel 12 · Thiên cầu RBAC & Queue",
+            caption: "4 quỹ đạo phân quyền đồng tâm & luồng hàng đợi hóa đơn bất đồng bộ (C3TEK)",
             slug: "property-management",
-            linkLabel: "Mở hồ sơ Property Platform",
+            cta: "Hồ sơ Property",
           },
           {
             code: "III",
             short: "MySQL/Redis",
-            title: "MySQL B-Tree & Đệm Redis",
-            caption: "Triệt tiêu N+1 bằng Eager Loading, Composite Index & vòng cộng hưởng O(1)",
+            title: "MySQL B+Tree & Cộng hưởng Redis",
+            caption: "Cấu trúc chỉ mục phân tầng kết hợp vòng sóng bộ nhớ đệm phản hồi O(1)",
             slug: "medical-booking",
-            linkLabel: "Mở hồ sơ Medical Booking",
+            cta: "Hồ sơ Medical",
           },
           {
             code: "IV",
             short: "Sync & AI",
-            title: "Đồng bộ Đa kênh & AI",
-            caption: "Cầu nối nhịp đôi: Laravel ↔ WordPress, Spring Boot ↔ VNPay, Kotlin ↔ Gemini",
+            title: "Chuỗi Xoắn Đồng bộ Đa Kênh",
+            caption: "Con quay đôi kết nối Laravel ↔ WordPress, Spring Boot ↔ VNPay & Kotlin AI",
             slug: "chatbot",
-            linkLabel: "Mở hồ sơ ChatBot",
+            cta: "Hồ sơ ChatBot",
           },
         ]
       : [
@@ -130,41 +367,41 @@ export default function PaperKineticSculpture({
             code: "I",
             short: "SmoothScroll",
             title: liveDownloads
-              ? `SmoothScroll · ${liveDownloads} dl`
-              : "SmoothScroll · 120Hz Rust Engine",
-            caption: "Transforming coarse 120-delta Win32 notches into liquid 120Hz silk ribbons",
+              ? `SmoothScroll · ${liveDownloads} downloads`
+              : "SmoothScroll · 120Hz Escapement",
+            caption: "Triple-gear Rust escapement smoothing raw 120Δ Win32 detents into 120Hz silk",
             slug: "smoothscroll",
-            linkLabel: "Open SmoothScroll folio",
+            cta: "SmoothScroll folio",
           },
           {
             code: "II",
             short: "Laravel 12",
-            title: "Laravel 12 · RBAC & Queues",
-            caption: "4 concentric access rings & async billing/contract queue couriers (C3TEK)",
+            title: "Laravel 12 · 4-Ring RBAC Orrery",
+            caption: "Concentric Owner/Admin/Manager/Sales access rings & async queue couriers",
             slug: "property-management",
-            linkLabel: "Open Property folio",
+            cta: "Property folio",
           },
           {
             code: "III",
             short: "MySQL/Redis",
-            title: "MySQL B-Tree & Redis Halo",
-            caption: "Collapsing N+1 bottlenecks via Composite Indexes & O(1) cache resonance",
+            title: "MySQL B+Tree & Redis Cymatics",
+            caption: "Composite-indexed B+Tree hierarchy crowned by O(1) cache resonance waves",
             slug: "medical-booking",
-            linkLabel: "Open Medical folio",
+            cta: "Medical folio",
           },
           {
             code: "IV",
             short: "Sync & AI",
-            title: "Live Sync & Payment Bridges",
-            caption: "Dual-pole harmonic loom: WordPress batch sync, VNPay callbacks & Kotlin AI",
+            title: "Dual-Gyroscope Sync Helix",
+            caption: "Braided pipeline bridging WordPress inventory, VNPay settlement & Kotlin AI",
             slug: "chatbot",
-            linkLabel: "Open ChatBot folio",
+            cta: "ChatBot folio",
           },
         ];
 
   const currentChapter = chapters[activeAct];
 
-  // Non-passive wheel capture directly over the art canvas
+  // Non-passive mouse-wheel capture over the art canvas
   useEffect(() => {
     const el = stageWrapperRef.current;
     if (!el) return;
@@ -172,12 +409,12 @@ export default function PaperKineticSculpture({
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       const dir = e.deltaY >= 0 ? 1 : -1;
-      const boost = Math.min(Math.abs(e.deltaY) * 0.05, 8);
+      const boost = Math.min(Math.abs(e.deltaY) * 0.055, 9);
       stateRef.current.wheelVelocity = Math.max(
-        -14,
-        Math.min(14, stateRef.current.wheelVelocity + dir * Math.max(2, boost))
+        -16,
+        Math.min(16, stateRef.current.wheelVelocity + dir * Math.max(2.2, boost))
       );
-      stateRef.current.shockwave = Math.min(1, stateRef.current.shockwave + 0.55);
+      stateRef.current.shockwave = Math.min(1, stateRef.current.shockwave + 0.6);
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -199,17 +436,19 @@ export default function PaperKineticSculpture({
     };
     reducedQuery.addEventListener("change", onReducedChange);
 
-    let width = 540;
-    let height = 310;
-    let dpr = 1;
+    let width = 580;
+    let height = 330;
+    let renderScale = 2;
 
     const resize = () => {
       const rect = wrapper.getBoundingClientRect();
       width = Math.max(260, Math.round(rect.width));
-      height = Math.max(230, Math.round(rect.height));
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
+      height = Math.max(240, Math.round(rect.height));
+      // Supersample >= 2x even on 1x desktop monitors for razor-sharp copperplate lines!
+      const rawDpr = window.devicePixelRatio || 1;
+      renderScale = Math.max(2, Math.min(rawDpr * 1.5, 3));
+      canvas.width = Math.round(width * renderScale);
+      canvas.height = Math.round(height * renderScale);
     };
     resize();
 
@@ -225,149 +464,169 @@ export default function PaperKineticSculpture({
     );
     io.observe(wrapper);
 
-    // Deterministic particles & spring-interpolated constellation nodes
-    const particles: FlowParticle[] = Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
-      u: (i / PARTICLE_COUNT) % 1,
-      lane: i % RIBBON_COUNT,
-      speed: 0.16 + ((i * 7) % 11) * 0.018,
-      size: 1.8 + (i % 3) * 0.85,
-      hue: (i % 3) as 0 | 1 | 2,
+    const couriers: FlowCourier[] = Array.from({ length: COURIER_COUNT }, (_, i) => ({
+      u: (i / COURIER_COUNT) % 1,
+      lane: i % FILAMENT_COUNT,
+      speed: 0.14 + ((i * 11) % 13) * 0.015,
+      size: 1.5 + (i % 3) * 0.75,
+      tone: (i % 3) as 0 | 1 | 2,
     }));
 
-    const nodes: MorphNode[] = Array.from({ length: NODE_COUNT }, (_, i) => {
-      const a = (i / NODE_COUNT) * Math.PI * 2;
+    const jewels: JewelNode[] = Array.from({ length: JEWEL_COUNT }, (_, i) => {
+      const a = (i / JEWEL_COUNT) * Math.PI * 2;
       return {
-        x: 0.5 + Math.cos(a) * 0.25,
-        y: 0.5 + Math.sin(a) * 0.25,
+        x: 0.5 + Math.cos(a) * 0.24,
+        y: 0.5 + Math.sin(a) * 0.24,
         vx: 0,
         vy: 0,
       };
     });
 
-    // Compute normalized [0..1] ribbon sample point for a given Act (0..3)
-    const sampleActRibbon = (
+    const wakeTrail: WakePoint[] = [];
+
+    // Sample normalized [0..1] filament geometry for each Act (0..3)
+    const sampleActFilament = (
       act: number,
       rIdx: number,
       u: number,
       time: number,
       wheelPhase: number
     ): [number, number] => {
-      const laneNorm = RIBBON_COUNT > 1 ? rIdx / (RIBBON_COUNT - 1) - 0.5 : 0; // [-0.5 .. +0.5]
+      const laneNorm = FILAMENT_COUNT > 1 ? rIdx / (FILAMENT_COUNT - 1) - 0.5 : 0;
 
       if (act === 0) {
-        // ACT I: SmoothScroll — Stepped raw ticks (left) -> Rotor Gate (0.34) -> 120Hz Silk Wave (right)
-        const gateX = 0.34;
-        const x = 0.06 + u * 0.88;
+        // ACT I: SmoothScroll — Quantized 120Δ Square Steps -> Escapement (0.35) -> 120Hz Laminar Silk
+        const gateX = 0.35;
+        const x = 0.05 + u * 0.9;
         if (x < gateX) {
-          // Discrete stepped staircase notches before the Rust Spring Gate
-          const localU = (x - 0.06) / (gateX - 0.06);
-          const quantized = Math.floor(localU * 5) / 5;
-          const stepOffset = Math.sin(quantized * 4.2 + rIdx * 0.45 - wheelPhase * 0.35) * 0.14;
-          const converge = 1 - Math.pow(localU, 1.8) * 0.78;
-          const y = 0.5 + (laneNorm * 0.56 + stepOffset) * converge;
-          return [x, y];
+          const localU = (x - 0.05) / (gateX - 0.05);
+          // Crisp quantized stair-steps mimicking raw 120-delta wheel ticks
+          const steps = 6;
+          const q = Math.floor(localU * steps) / steps;
+          const smoothSub = Math.pow((localU * steps) % 1, 7);
+          const quantU = q + smoothSub / steps;
+          const stair = Math.sin(quantU * 5.2 + rIdx * 0.35 - wheelPhase * 0.28) * 0.16;
+          const funnel = Math.max(0.06, 1 - Math.pow(localU, 1.55) * 0.92);
+          return [x, 0.5 + (laneNorm * 0.64 + stair) * funnel];
         }
-        // Liquid 120Hz harmonic silk ribbons blooming out of the gate
-        const postU = (x - gateX) / (0.94 - gateX);
-        const spread = 0.06 + Math.pow(postU, 0.78) * 0.62;
-        const wave1 = Math.sin(postU * 6.8 - wheelPhase * 1.15 + rIdx * 0.32) * 0.11 * postU;
-        const wave2 = Math.cos(postU * 3.4 - time * 1.4 - rIdx * 0.2) * 0.045 * postU;
-        const y = 0.5 + laneNorm * spread + wave1 + wave2;
-        return [x, y];
+        const postU = (x - gateX) / (0.95 - gateX);
+        const bloom = 0.03 + Math.pow(postU, 0.72) * 0.66;
+        const harmonic1 =
+          Math.sin(postU * 7.4 - wheelPhase * 1.1 + rIdx * 0.22) * 0.115 * Math.sin(postU * Math.PI * 0.92);
+        const harmonic2 =
+          Math.cos(postU * 13.5 - time * 1.9 - rIdx * 0.4) * 0.026 * postU;
+        return [x, 0.5 + laneNorm * bloom + harmonic1 + harmonic2];
       }
 
       if (act === 1) {
-        // ACT II: Laravel 12 — 4 Concentric RBAC Orbital Rings & Spiraling Queue Streams
+        // ACT II: Laravel 12 — 4 Concentric RBAC Planetary Rings + Guilloché Epicycles
         const tier = rIdx % 4;
-        const baseRadius = 0.13 + tier * 0.078;
-        const angleOffset = (Math.floor(rIdx / 4) * Math.PI) / 2;
+        const baseR = 0.125 + tier * 0.082;
+        const subOffset = Math.floor(rIdx / 4) * ((Math.PI * 2) / 6);
+        const dir = tier % 2 === 0 ? 1 : -1;
         const theta =
-          u * Math.PI * 1.85 +
-          angleOffset +
-          time * (tier % 2 === 0 ? 0.38 : -0.28) +
-          wheelPhase * 0.08;
-        const ripple = Math.sin(u * 12 + time * 2.2 + rIdx) * 0.012;
+          u * Math.PI * 1.92 +
+          subOffset +
+          time * 0.32 * dir +
+          wheelPhase * 0.07 * dir;
+        // Subtle 6-lobe guilloché rose modulation
+        const guilloche = Math.sin(theta * 6 + time * 1.5) * 0.009;
+        const r = baseR + guilloche;
         const aspect = width / height;
-        const rx = (baseRadius + ripple) / Math.max(1, aspect * 0.72);
-        const ry = baseRadius + ripple;
-        return [0.5 + Math.cos(theta) * rx * 1.15, 0.5 + Math.sin(theta) * ry * 1.08];
+        return [
+          0.5 + (Math.cos(theta) * r * 1.18) / Math.max(1, aspect * 0.74),
+          0.5 + Math.sin(theta) * r * 1.12,
+        ];
       }
 
       if (act === 2) {
-        // ACT III: MySQL B-Tree & Redis Halo — Root (top) branching into indexed leaves + harmonic rings
-        const branchGroup = rIdx % 4; // 4 primary index branches
-        const subLane = (Math.floor(rIdx / 4) - 1.5) * 0.032;
-        const branchTargetX = 0.18 + (branchGroup / 3) * 0.64 + subLane;
-        const easeU = u * u * (3 - 2 * u);
-        const sCurve = Math.sin(u * Math.PI) * Math.sin(time * 1.6 + rIdx * 0.5) * 0.035;
-        const x = 0.5 + (branchTargetX - 0.5) * easeU + sCurve;
-        const y = 0.16 + u * 0.68;
+        // ACT III: MySQL B+Tree Cathedral & Cymatic Standing-Wave Resonance
+        const cluster = rIdx % 5; // 5 indexed leaf columns
+        const fineOffset = (Math.floor(rIdx / 5) - 2) * 0.022;
+        const targetX = 0.14 + (cluster / 4) * 0.72 + fineOffset;
+        const sEase = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+        const standingWave =
+          Math.sin(u * Math.PI * 3 - wheelPhase * 0.5 + rIdx * 0.3) *
+          0.022 *
+          Math.sin(u * Math.PI);
+        const x = 0.5 + (targetX - 0.5) * sEase + standingWave;
+        const y = 0.15 + u * 0.72;
         return [x, y];
       }
 
-      // ACT IV: Dual-Pole Infinity Loom (Laravel/Spring <-> WordPress/VNPay/AI)
-      const phase = u * Math.PI * 2 + time * 0.55 + rIdx * 0.22;
-      const spread = 1 + laneNorm * 0.36;
-      const x = 0.5 + Math.sin(phase) * 0.34 * spread;
-      const y = 0.5 + Math.sin(phase * 2 + wheelPhase * 0.12) * 0.24 * spread;
+      // ACT IV: Dual-Gyroscope Braided DNA / Lissajous Helix
+      const strand = rIdx % 2 === 0 ? 1 : -1;
+      const band = (Math.floor(rIdx / 2) / (FILAMENT_COUNT / 2 - 1) - 0.5) * 0.16;
+      const x = 0.14 + u * 0.72;
+      const pinch = Math.sin(u * Math.PI); // widest in center, pinched into the 2 gyroscopes at x=0.18 & x=0.82
+      const helix =
+        Math.sin(u * Math.PI * 3.5 - wheelPhase * 0.65 + (strand > 0 ? 0 : Math.PI)) *
+        0.24 *
+        (0.28 + 0.72 * pinch);
+      const y = 0.5 + helix + band * pinch;
       return [x, y];
     };
 
-    // Compute normalized [0..1] target for structural architecture nodes per Act
-    const targetNodePos = (act: number, idx: number, time: number): [number, number] => {
+    // Structural Jewel Node Coordinates per Act
+    const targetJewelPos = (act: number, idx: number, time: number): [number, number] => {
+      const aspect = width / height;
+      const xScale = 1 / Math.max(1, aspect * 0.74);
+
       if (act === 0) {
-        // 8 wheel teeth around Rotor Gate (0.34, 0.5) + 8 raw ticks + 8 wave crests
-        if (idx < 8) {
-          const a = (idx / 8) * Math.PI * 2 + time * 1.1;
-          const aspect = width / height;
-          return [0.34 + (Math.cos(a) * 0.095) / Math.max(1, aspect * 0.75), 0.5 + Math.sin(a) * 0.095];
+        if (idx < 10) {
+          const a = (idx / 10) * Math.PI * 2 + time * 0.85;
+          return [0.35 + Math.cos(a) * 0.115 * xScale, 0.5 + Math.sin(a) * 0.115];
         }
-        if (idx < 16) {
-          const k = idx - 8;
-          return [0.09 + (k / 7) * 0.2, 0.24 + ((k * 37) % 10) * 0.052];
+        if (idx < 18) {
+          const k = idx - 10;
+          return [0.08 + (k / 7) * 0.21, 0.24 + ((k * 29) % 9) * 0.062];
         }
-        const k = idx - 16;
-        const ux = 0.46 + (k / 7) * 0.44;
-        return [ux, 0.5 + Math.sin(ux * 7 - time * 2.1 + k) * 0.22];
+        const k = idx - 18;
+        const ux = 0.48 + (k / 9) * 0.43;
+        return [ux, 0.5 + Math.sin(ux * 7.4 - time * 1.8 + k * 0.7) * 0.23];
       }
 
       if (act === 1) {
-        // 4 RBAC rings x 6 domain nodes
         const ring = idx % 4;
-        const spoke = Math.floor(idx / 4); // 0..5
-        const r = 0.13 + ring * 0.078;
-        const a = (spoke / 6) * Math.PI * 2 + (ring % 2 === 0 ? time * 0.32 : -time * 0.24);
-        const aspect = width / height;
-        return [0.5 + (Math.cos(a) * r * 1.15) / Math.max(1, aspect * 0.72), 0.5 + Math.sin(a) * r * 1.08];
+        const spoke = Math.floor(idx / 4); // 0..6
+        const r = 0.125 + ring * 0.082;
+        const a = (spoke / 7) * Math.PI * 2 + (ring % 2 === 0 ? time * 0.32 : -time * 0.32);
+        return [0.5 + Math.cos(a) * r * 1.18 * xScale, 0.5 + Math.sin(a) * r * 1.12];
       }
 
       if (act === 2) {
-        // B-Tree hierarchy: 1 Root + 3 Level-1 + 8 Level-2 + 12 Leaf Index Nodes
-        if (idx === 0) return [0.5, 0.16];
-        if (idx < 5) {
-          const k = idx - 1; // 0..3
-          return [0.23 + (k / 3) * 0.54, 0.42];
+        // 1 Root + 3 Branch + 9 Mid + 15 Leaf B+Tree Index Nodes
+        if (idx === 0) return [0.5, 0.15];
+        if (idx < 4) {
+          const k = idx - 1;
+          return [0.24 + (k / 2) * 0.52, 0.38];
         }
         if (idx < 13) {
-          const k = idx - 5; // 0..7
-          return [0.15 + (k / 7) * 0.7, 0.65];
+          const k = idx - 4;
+          return [0.16 + (k / 8) * 0.68, 0.63];
         }
-        const k = idx - 13; // 0..10
-        return [0.12 + (k / 10) * 0.76, 0.83];
+        const k = idx - 13;
+        return [0.12 + (k / 14) * 0.76, 0.87];
       }
 
-      // Act 3: Dual poles (Left cluster at 0.24, Right cluster at 0.76 + bridge nodes)
+      // Act 3: Two Gyroscope Rings at x=0.18 & x=0.82 + 8 Central Helix Nodes
       if (idx < 10) {
-        const a = (idx / 10) * Math.PI * 2 + time * 0.5;
-        return [0.23 + Math.cos(a) * 0.085, 0.5 + Math.sin(a) * 0.13];
+        const a = (idx / 10) * Math.PI * 2 + time * 0.65;
+        return [0.18 + Math.cos(a) * 0.095 * xScale, 0.5 + Math.sin(a) * 0.12];
       }
       if (idx < 20) {
-        const a = ((idx - 10) / 10) * Math.PI * 2 - time * 0.5;
-        return [0.77 + Math.cos(a) * 0.085, 0.5 + Math.sin(a) * 0.13];
+        const a = ((idx - 10) / 10) * Math.PI * 2 - time * 0.65;
+        return [0.82 + Math.cos(a) * 0.095 * xScale, 0.5 + Math.sin(a) * 0.12];
       }
       const k = idx - 20;
-      return [0.38 + (k / 3) * 0.24, 0.5 + Math.sin(time * 2 + k) * 0.08];
+      const ux = 0.32 + (k / 7) * 0.36;
+      return [ux, 0.5 + Math.sin(ux * 10 - time * 2.2) * 0.14];
     };
+
+    const sampledRibbons: Array<Array<[number, number]>> = Array.from(
+      { length: FILAMENT_COUNT },
+      () => Array.from({ length: SAMPLES }, () => [0, 0])
+    );
 
     let elapsed = 0;
     let wheelPhase = 0;
@@ -385,10 +644,12 @@ export default function PaperKineticSculpture({
       if (!prefersReduced) {
         elapsed += dt;
         wheelPhase += st.wheelVelocity * dt;
-        st.wheelVelocity = damp(st.wheelVelocity, 1.35, 2.1, dt);
-        st.shockwave = Math.max(0, st.shockwave - dt * 1.35);
+        if (!st.isDragging) {
+          st.wheelVelocity = damp(st.wheelVelocity, 1.45, 2.0, dt);
+        }
+        st.shockwave = Math.max(0, st.shockwave - dt * 1.25);
 
-        if (st.autoPlay) {
+        if (st.autoPlay && !st.isDragging) {
           st.actTimer += dt;
           if (st.actTimer >= ACT_DURATION_SEC) {
             st.actTimer = 0;
@@ -399,7 +660,32 @@ export default function PaperKineticSculpture({
         }
       }
 
-      // Update active chapter progress bar directly via DOM (zero React re-renders!)
+      // Decay pointer fluid wake trail
+      for (let w = wakeTrail.length - 1; w >= 0; w--) {
+        wakeTrail[w].life -= dt * 2.1;
+        if (wakeTrail[w].life <= 0) {
+          wakeTrail.splice(w, 1);
+        }
+      }
+
+      if (st.pointerActive && !prefersReduced) {
+        const dvx = st.pointerX - st.prevPointerX;
+        const dvy = st.pointerY - st.prevPointerY;
+        if (Math.hypot(dvx, dvy) > 0.004) {
+          wakeTrail.push({
+            x: st.pointerX * width,
+            y: st.pointerY * height,
+            vx: dvx * width * 16,
+            vy: dvy * height * 16,
+            life: 1,
+          });
+          if (wakeTrail.length > 10) wakeTrail.shift();
+        }
+        st.prevPointerX = st.pointerX;
+        st.prevPointerY = st.pointerY;
+      }
+
+      // Sync chapter progress hairlines
       for (let i = 0; i < 4; i++) {
         const bar = progressBarRefs.current[i];
         if (!bar) continue;
@@ -412,309 +698,617 @@ export default function PaperKineticSculpture({
         bar.style.transform = `scaleX(${ratio.toFixed(3)})`;
       }
 
-      // Smoothly blend weights across the 4 Acts for seamless liquid morphing
+      // Blend Act weights
       for (let a = 0; a < 4; a++) {
         const targetW = st.act === a ? 1 : 0;
-        st.morphBlend[a] = prefersReduced
-          ? targetW
-          : damp(st.morphBlend[a], targetW, 4.6, dt);
+        st.morphBlend[a] = prefersReduced ? targetW : damp(st.morphBlend[a], targetW, 4.8, dt);
       }
       const weightSum =
         st.morphBlend[0] + st.morphBlend[1] + st.morphBlend[2] + st.morphBlend[3] || 1;
 
       ctx.save();
-      ctx.scale(dpr, dpr);
+      ctx.scale(renderScale, renderScale);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
 
-      // 1. Warm Cotton-Rag Atelier Canvas Ground + Subtle Vignette
-      ctx.fillStyle = "#F7F2E8";
-      ctx.fillRect(0, 0, width, height);
-
-      const radialBg = ctx.createRadialGradient(
+      // =======================================================================
+      // 1. ARCHIVAL COTTON-RAG GROUND + ISOMETRIC MICRO-DOT MATRIX
+      // =======================================================================
+      const bgGrad = ctx.createRadialGradient(
+        width * 0.5,
+        height * 0.48,
+        12,
         width * 0.5,
         height * 0.5,
-        18,
-        width * 0.5,
-        height * 0.5,
-        Math.max(width, height) * 0.68
+        Math.max(width, height) * 0.72
       );
-      radialBg.addColorStop(0, "rgba(255, 253, 249, 0.75)");
-      radialBg.addColorStop(1, "rgba(226, 217, 200, 0.45)");
-      ctx.fillStyle = radialBg;
+      bgGrad.addColorStop(0, "#FCF9F2");
+      bgGrad.addColorStop(0.65, "#F5EFE3");
+      bgGrad.addColorStop(1, "#E9E1D0");
+      ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // 2. Architectural Drafting Grid Hairlines & Rotating Horological Compass Dial
-      ctx.strokeStyle = "rgba(73, 69, 62, 0.08)";
-      ctx.lineWidth = 1;
+      // Precision 22px Isometric Blueprint Micro-Dot Matrix
+      ctx.fillStyle = "rgba(73, 69, 62, 0.13)";
+      const gridStep = 22;
+      for (let gx = 18; gx < width - 14; gx += gridStep) {
+        for (let gy = 18; gy < height - 14; gy += gridStep) {
+          ctx.fillRect(gx, gy, 1.1, 1.1);
+        }
+      }
+
+      // Golden-Ratio Axis Hairlines
+      const hubX = width * (0.35 * st.morphBlend[0] + 0.5 * (1 - st.morphBlend[0]));
+      const hubY = height * 0.5;
+
+      ctx.strokeStyle = "rgba(73, 69, 62, 0.09)";
+      ctx.lineWidth = 0.75;
       ctx.beginPath();
-      ctx.moveTo(0, height * 0.5);
-      ctx.lineTo(width, height * 0.5);
-      ctx.moveTo(width * 0.5, 0);
-      ctx.lineTo(width * 0.5, height);
+      ctx.moveTo(12, hubY);
+      ctx.lineTo(width - 12, hubY);
+      ctx.moveTo(hubX, 12);
+      ctx.lineTo(hubX, height - 12);
       ctx.stroke();
 
-      const dialR = Math.min(width, height) * 0.43;
-      const cx = width * (0.34 * st.morphBlend[0] + 0.5 * (1 - st.morphBlend[0]));
-      const cy = height * 0.5;
-
+      // =======================================================================
+      // 2. COUNTER-ROTATING SWISS ASTROLABE VERNIER DIAL (120 TICKS + DEGREES)
+      // =======================================================================
+      const outerDialR = Math.min(width, height) * 0.44;
       ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(wheelPhase * 0.16);
-      ctx.strokeStyle = "rgba(182, 132, 52, 0.24)";
-      ctx.lineWidth = 1;
+      ctx.translate(hubX, hubY);
+
+      // Outer Slow Counter-Rotating Degree Ring
+      ctx.save();
+      ctx.rotate(-elapsed * 0.06);
+      ctx.strokeStyle = "rgba(158, 150, 134, 0.38)";
+      ctx.lineWidth = 0.75;
       ctx.beginPath();
-      ctx.arc(0, 0, dialR, 0, Math.PI * 2);
+      ctx.arc(0, 0, outerDialR, 0, Math.PI * 2);
+      ctx.arc(0, 0, outerDialR - 11, 0, Math.PI * 2);
       ctx.stroke();
 
-      // 48 Precision Chronometer Detent Ticks (echoing mouse-wheel notches)
-      for (let t = 0; t < 48; t++) {
-        const ang = (t / 48) * Math.PI * 2;
-        const inner = t % 4 === 0 ? dialR - 7 : dialR - 3.5;
+      ctx.font = "500 7.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+      ctx.fillStyle = "rgba(97, 92, 83, 0.65)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      for (let t = 0; t < 120; t++) {
+        const ang = (t / 120) * Math.PI * 2;
+        const isMajor = t % 15 === 0;
+        const isMid = t % 5 === 0;
+        const rIn = isMajor ? outerDialR - 11 : isMid ? outerDialR - 6.5 : outerDialR - 3.5;
+
         ctx.beginPath();
-        ctx.moveTo(Math.cos(ang) * inner, Math.sin(ang) * inner);
-        ctx.lineTo(Math.cos(ang) * dialR, Math.sin(ang) * dialR);
-        ctx.strokeStyle =
-          t % 12 === 0 ? "rgba(184, 51, 42, 0.55)" : "rgba(73, 69, 62, 0.22)";
+        ctx.moveTo(Math.cos(ang) * rIn, Math.sin(ang) * rIn);
+        ctx.lineTo(Math.cos(ang) * outerDialR, Math.sin(ang) * outerDialR);
+        ctx.strokeStyle = isMajor
+          ? "rgba(184, 51, 42, 0.55)"
+          : isMid
+            ? "rgba(73, 69, 62, 0.32)"
+            : "rgba(73, 69, 62, 0.16)";
+        ctx.lineWidth = isMajor ? 1 : 0.6;
         ctx.stroke();
+
+        if (isMajor && outerDialR > 95) {
+          const deg = String(Math.round((t / 120) * 360)).padStart(3, "0") + "°";
+          ctx.save();
+          ctx.rotate(ang + Math.PI / 2);
+          ctx.fillText(deg, 0, -(outerDialR + 7));
+          ctx.restore();
+        }
       }
       ctx.restore();
 
-      // Expanding Shockwave Ring on Scroll / Impulse
+      // Inner Wheel-Driven Vernier Compass Ring
+      ctx.save();
+      ctx.rotate(wheelPhase * 0.18);
+      ctx.strokeStyle = "rgba(182, 132, 52, 0.34)";
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([6, 3, 1.5, 3]);
+      ctx.beginPath();
+      ctx.arc(0, 0, outerDialR * 0.72, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      ctx.restore();
+
+      // Double Concentric Copperplate Shockwaves on Impulse
       if (st.shockwave > 0.01) {
-        const swProgress = 1 - st.shockwave;
-        const swRadius = 16 + swProgress * Math.max(width, height) * 0.55;
-        ctx.beginPath();
-        ctx.arc(st.shockX * width, st.shockY * height, swRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(184, 51, 42, ${(st.shockwave * 0.42).toFixed(3)})`;
-        ctx.lineWidth = 1.6;
-        ctx.stroke();
+        const prog = 1 - st.shockwave;
+        const maxR = Math.max(width, height) * 0.62;
+        for (let ring = 0; ring < 2; ring++) {
+          const rProg = Math.max(0, prog - ring * 0.12);
+          if (rProg <= 0) continue;
+          ctx.beginPath();
+          ctx.arc(st.shockX * width, st.shockY * height, 14 + rProg * maxR, 0, Math.PI * 2);
+          ctx.strokeStyle =
+            ring === 0
+              ? `rgba(184, 51, 42, ${(st.shockwave * 0.45).toFixed(3)})`
+              : `rgba(182, 132, 52, ${(st.shockwave * 0.32).toFixed(3)})`;
+          ctx.lineWidth = ring === 0 ? 1.5 : 0.9;
+          ctx.stroke();
+        }
       }
 
-      // Helper: blended sample across active morph weights + cursor fluid vortex
-      const getBlendedPoint = (rIdx: number, u: number): [number, number] => {
-        let bx = 0;
-        let by = 0;
-        for (let a = 0; a < 4; a++) {
-          const w = st.morphBlend[a] / weightSum;
-          if (w < 0.002) continue;
-          const [ax, ay] = sampleActRibbon(a, rIdx, u, elapsed, wheelPhase);
-          bx += ax * w;
-          by += ay * w;
-        }
-
-        let px = bx * width;
-        let py = by * height;
-
-        // Interactive Cursor Magnetic Vortex Repulsion & Swirl
-        if (st.pointerActive && !prefersReduced) {
-          const mx = st.pointerX * width;
-          const my = st.pointerY * height;
-          const dx = px - mx;
-          const dy = py - my;
-          const distSq = dx * dx + dy * dy;
-          const radius = 105;
-          if (distSq < radius * radius && distSq > 0.1) {
-            const dist = Math.sqrt(distSq);
-            const falloff = Math.pow(1 - dist / radius, 2);
-            const push = falloff * 24;
-            // Radial push + subtle tangential calligraphic curl
-            px += (dx / dist) * push - (dy / dist) * push * 0.38;
-            py += (dy / dist) * push + (dx / dist) * push * 0.38;
+      // =======================================================================
+      // 3. SAMPLE ALL 22 RIBBONS WITH FLUID WAKE & MAGNETIC VORTEX DEFORMATION
+      // =======================================================================
+      for (let r = 0; r < FILAMENT_COUNT; r++) {
+        const row = sampledRibbons[r];
+        for (let s = 0; s < SAMPLES; s++) {
+          const u = s / (SAMPLES - 1);
+          let bx = 0;
+          let by = 0;
+          for (let a = 0; a < 4; a++) {
+            const w = st.morphBlend[a] / weightSum;
+            if (w < 0.002) continue;
+            const [ax, ay] = sampleActFilament(a, r, u, elapsed, wheelPhase);
+            bx += ax * w;
+            by += ay * w;
           }
-        }
 
-        return [px, py];
-      };
+          let px = bx * width;
+          let py = by * height;
 
-      // 3. Render 14 Layered Calligraphic Silk & Sumi-Ink Ribbons
-      for (let r = 0; r < RIBBON_COUNT; r++) {
-        const isPrimaryVermilion = r % 4 === 0;
-        const isBrass = r % 4 === 2;
-        const isPatina = r % 5 === 3;
-
-        ctx.beginPath();
-        for (let s = 0; s < SAMPLES_PER_RIBBON; s++) {
-          const u = s / (SAMPLES_PER_RIBBON - 1);
-          const [px, py] = getBlendedPoint(r, u);
-          if (s === 0) {
-            ctx.moveTo(px, py);
-          } else {
-            ctx.lineTo(px, py);
+          // Cursor Magnetic Swirl
+          if (st.pointerActive && !prefersReduced) {
+            const mx = st.pointerX * width;
+            const my = st.pointerY * height;
+            const dx = px - mx;
+            const dy = py - my;
+            const d2 = dx * dx + dy * dy;
+            const rad = 110;
+            if (d2 < rad * rad && d2 > 0.2) {
+              const d = Math.sqrt(d2);
+              const f = Math.pow(1 - d / rad, 2) * 22;
+              px += (dx / d) * f - (dy / d) * f * 0.42;
+              py += (dy / d) * f + (dx / d) * f * 0.42;
+            }
           }
-        }
 
-        const alphaBoost = st.shockwave * 0.2;
-        if (isPrimaryVermilion) {
-          ctx.strokeStyle = `rgba(184, 51, 42, ${(0.62 + alphaBoost).toFixed(2)})`;
-          ctx.lineWidth = 2.1;
-        } else if (isBrass) {
-          ctx.strokeStyle = `rgba(182, 132, 52, ${(0.48 + alphaBoost).toFixed(2)})`;
-          ctx.lineWidth = 1.45;
-        } else if (isPatina) {
-          ctx.strokeStyle = `rgba(42, 92, 77, ${(0.44 + alphaBoost).toFixed(2)})`;
-          ctx.lineWidth = 1.35;
-        } else {
-          ctx.strokeStyle = "rgba(38, 36, 32, 0.22)";
-          ctx.lineWidth = 1.05;
+          // Trailing Fluid Velocity Wake
+          for (let w = 0; w < wakeTrail.length; w++) {
+            const wp = wakeTrail[w];
+            const dx = px - wp.x;
+            const dy = py - wp.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < 4900) {
+              const k = (1 - d2 / 4900) * wp.life * 0.22;
+              px += wp.vx * k;
+              py += wp.vy * k;
+            }
+          }
+
+          row[s][0] = px;
+          row[s][1] = py;
         }
+      }
+
+      // First Pass: 16 Ultra-Fine Guilloché Copperplate Filaments (0.65px crisp ink)
+      for (let r = 0; r < FILAMENT_COUNT; r++) {
+        if (r % 4 === 0) continue; // Save hero lanes for sculpted paper-silk ribbons!
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
-        ctx.stroke();
+        if (r % 3 === 0) {
+          ctx.strokeStyle = "rgba(182, 132, 52, 0.44)";
+          ctx.lineWidth = 0.9;
+        } else if (r % 3 === 1) {
+          ctx.strokeStyle = "rgba(42, 92, 77, 0.38)";
+          ctx.lineWidth = 0.85;
+        } else {
+          ctx.strokeStyle = "rgba(38, 36, 32, 0.24)";
+          ctx.lineWidth = 0.65;
+        }
+        strokeSmoothCurve(ctx, sampledRibbons[r]);
       }
 
-      // 4. Act-Specific Centerpiece Emblem (SmoothScroll Rotor / Redis Halo)
-      if (st.morphBlend[0] > 0.05) {
-        const a0 = st.morphBlend[0];
-        const gx = width * 0.34;
-        const gy = height * 0.5;
+      // Second Pass: 6 Sculpted Tapered Washi-Paper & Vermilion Silk Ribbons (with relief shadow!)
+      for (let r = 0; r < FILAMENT_COUNT; r += 4) {
+        const idx = r / 4;
+        const isVermilionSilk = idx % 2 === 0;
+        const isAlabasterPaper = idx % 3 === 1;
 
-        // Vertical Spring Gate Line
+        const fill = isVermilionSilk
+          ? "rgba(184, 51, 42, 0.78)"
+          : isAlabasterPaper
+            ? "rgba(250, 247, 241, 0.92)"
+            : "rgba(201, 154, 62, 0.72)";
+        const edge = isVermilionSilk
+          ? "rgba(122, 26, 20, 0.9)"
+          : isAlabasterPaper
+            ? "rgba(73, 69, 62, 0.68)"
+            : "rgba(130, 92, 24, 0.85)";
+
+        drawTaperedSilkRibbon(
+          ctx,
+          sampledRibbons[r],
+          isAlabasterPaper ? 4.4 : 3.4,
+          fill,
+          edge,
+          true
+        );
+      }
+
+      // =======================================================================
+      // 4. INTRICATE CHAPTER-SPECIFIC HOROLOGICAL & ARCHITECTURAL MECHANISMS
+      // =======================================================================
+      // ACT I: Triple Interlocking SmoothScroll Escapement Gears
+      if (st.morphBlend[0] > 0.04) {
+        const a0 = st.morphBlend[0];
         ctx.save();
         ctx.globalAlpha = a0;
-        ctx.strokeStyle = "rgba(184, 51, 42, 0.35)";
-        ctx.setLineDash([4, 3]);
+
+        // Vertical laser gate line separating raw Win32 from 120Hz Silk
+        ctx.strokeStyle = "rgba(184, 51, 42, 0.38)";
+        ctx.lineWidth = 0.9;
+        ctx.setLineDash([4, 2.5]);
         ctx.beginPath();
-        ctx.moveTo(gx, 18);
-        ctx.lineTo(gx, height - 18);
+        ctx.moveTo(hubX, 18);
+        ctx.lineTo(hubX, height - 18);
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Sculpted Vermilion & Brass Scroll Escapement Wheel
-        ctx.translate(gx, gy);
-        ctx.rotate(wheelPhase * 0.65);
+        // Secondary Upper Brass Pinion Gear (14 teeth, counter-rotates at -24/14 ratio)
+        drawPrecisionGear(
+          ctx,
+          hubX - 24,
+          hubY - 31,
+          17,
+          8.5,
+          14,
+          3.2,
+          -wheelPhase * 0.55 * (24 / 14) + 0.2,
+          "rgba(234, 227, 213, 0.95)",
+          "#8B6524",
+          4
+        );
 
-        ctx.fillStyle = "#FAF7F1";
-        ctx.beginPath();
-        ctx.arc(0, 0, 22, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "#B8332A";
-        ctx.stroke();
+        // Tertiary Lower Patina Balance Gear (16 teeth)
+        drawPrecisionGear(
+          ctx,
+          hubX - 21,
+          hubY + 34,
+          19,
+          9.5,
+          16,
+          3.2,
+          -wheelPhase * 0.55 * (24 / 16),
+          "rgba(232, 240, 236, 0.95)",
+          "#2A5C4D",
+          4
+        );
 
-        for (let k = 0; k < 12; k++) {
-          const ka = (k / 12) * Math.PI * 2;
-          ctx.beginPath();
-          ctx.moveTo(Math.cos(ka) * 15, Math.sin(ka) * 15);
-          ctx.lineTo(Math.cos(ka) * 22, Math.sin(ka) * 22);
-          ctx.strokeStyle = k % 3 === 0 ? "#B8332A" : "#B68434";
-          ctx.lineWidth = 1.6;
-          ctx.stroke();
-        }
-
-        ctx.fillStyle = "#B8332A";
-        ctx.beginPath();
-        ctx.arc(0, 0, 6.5, 0, Math.PI * 2);
-        ctx.fill();
+        // Primary Central Vermilion & Alabaster Scroll Escapement Wheel (24 teeth)
+        drawPrecisionGear(
+          ctx,
+          hubX,
+          hubY,
+          28,
+          16,
+          24,
+          3.8,
+          wheelPhase * 0.55,
+          "rgba(250, 247, 241, 0.97)",
+          "#B8332A",
+          6
+        );
         ctx.restore();
+
+        if (width >= 440) {
+          drawEngravedCallout(
+            ctx,
+            width * 0.14,
+            height * 0.24,
+            width * 0.17,
+            26,
+            "WIN32 · 120Δ RAW",
+            "#49453E",
+            a0
+          );
+          drawEngravedCallout(
+            ctx,
+            hubX,
+            hubY - 28,
+            hubX + 18,
+            height - 24,
+            "RUST 120HZ ESCAPEMENT",
+            "#B8332A",
+            a0
+          );
+          drawEngravedCallout(
+            ctx,
+            width * 0.78,
+            height * 0.34,
+            width * 0.78,
+            26,
+            `SMOOTHSCROLL · ${st.liveDlLabel}`,
+            "#2A5C4D",
+            a0
+          );
+        }
       }
 
-      if (st.morphBlend[2] > 0.05) {
-        // Redis O(1) Resonance Halo around B-Tree Root
+      // ACT II: Laravel 12 Central Dispatch Seal & Engraved RBAC Ring Callouts
+      if (st.morphBlend[1] > 0.04) {
+        const a1 = st.morphBlend[1];
+        ctx.save();
+        ctx.globalAlpha = a1;
+        drawPrecisionGear(
+          ctx,
+          width * 0.5,
+          height * 0.5,
+          22,
+          11,
+          18,
+          3,
+          wheelPhase * 0.35,
+          "rgba(250, 247, 241, 0.96)",
+          "#B8332A",
+          4
+        );
+        ctx.restore();
+
+        if (width >= 440) {
+          drawEngravedCallout(
+            ctx,
+            width * 0.5,
+            height * 0.5 - 22,
+            width * 0.22,
+            26,
+            "LARAVEL 12 · 4-TIER RBAC",
+            "#B8332A",
+            a1
+          );
+          drawEngravedCallout(
+            ctx,
+            width * 0.68,
+            height * 0.68,
+            width * 0.77,
+            height - 24,
+            "QUEUE · BILLING & PDF",
+            "#B68434",
+            a1
+          );
+        }
+      }
+
+      // ACT III: MySQL B+Tree Apex Jewel & Cymatic Redis Resonance Rings
+      if (st.morphBlend[2] > 0.04) {
         const a2 = st.morphBlend[2];
         const rx = width * 0.5;
-        const ry = height * 0.16;
-        const pulse = (elapsed * 0.85) % 1;
+        const ry = height * 0.15;
         ctx.save();
-        ctx.globalAlpha = a2 * (1 - pulse) * 0.65;
-        ctx.strokeStyle = "#2A5C4D";
-        ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        ctx.arc(rx, ry, 10 + pulse * 36, 0, Math.PI * 2);
-        ctx.stroke();
+        for (let w = 0; w < 3; w++) {
+          const p = ((elapsed * 0.65 + w * 0.33) % 1);
+          ctx.globalAlpha = a2 * (1 - p) * 0.55;
+          ctx.strokeStyle = w % 2 === 0 ? "#2A5C4D" : "#B68434";
+          ctx.lineWidth = 1.3;
+          ctx.beginPath();
+          ctx.arc(rx, ry, 8 + p * 48, 0, Math.PI * 2);
+          ctx.stroke();
+        }
         ctx.restore();
+
+        if (width >= 440) {
+          drawEngravedCallout(
+            ctx,
+            rx,
+            ry,
+            width * 0.23,
+            26,
+            "REDIS CACHE · O(1) HIT",
+            "#2A5C4D",
+            a2
+          );
+          drawEngravedCallout(
+            ctx,
+            width * 0.74,
+            height * 0.63,
+            width * 0.77,
+            26,
+            "MYSQL COMPOSITE B+TREE",
+            "#B8332A",
+            a2
+          );
+        }
       }
 
-      // 5. Update & Draw 24 Spring-Physics Structural Nodes + Subtle Mesh Filaments
-      for (let i = 0; i < NODE_COUNT; i++) {
+      // ACT IV: Dual Horological Gyroscopes at x=0.18 & x=0.82
+      if (st.morphBlend[3] > 0.04) {
+        const a3 = st.morphBlend[3];
+        ctx.save();
+        ctx.globalAlpha = a3;
+        drawPrecisionGear(
+          ctx,
+          width * 0.18,
+          height * 0.5,
+          23,
+          12,
+          16,
+          3.2,
+          wheelPhase * 0.45,
+          "rgba(250, 247, 241, 0.96)",
+          "#B8332A",
+          4
+        );
+        drawPrecisionGear(
+          ctx,
+          width * 0.82,
+          height * 0.5,
+          23,
+          12,
+          16,
+          3.2,
+          -wheelPhase * 0.45,
+          "rgba(232, 240, 236, 0.96)",
+          "#2A5C4D",
+          4
+        );
+        ctx.restore();
+
+        if (width >= 440) {
+          drawEngravedCallout(
+            ctx,
+            width * 0.18,
+            height * 0.5 - 23,
+            width * 0.24,
+            26,
+            "LARAVEL · SPRING BOOT",
+            "#B8332A",
+            a3
+          );
+          drawEngravedCallout(
+            ctx,
+            width * 0.82,
+            height * 0.5 - 23,
+            width * 0.76,
+            26,
+            "WORDPRESS · VNPAY · AI",
+            "#2A5C4D",
+            a3
+          );
+        }
+      }
+
+      // =======================================================================
+      // 5. SPRING-PHYSICS CONSTELLATION JEWELS & FINE ARCHITECTURAL WEBBING
+      // =======================================================================
+      for (let i = 0; i < JEWEL_COUNT; i++) {
         let tx = 0;
         let ty = 0;
         for (let a = 0; a < 4; a++) {
           const w = st.morphBlend[a] / weightSum;
           if (w < 0.002) continue;
-          const [nx, ny] = targetNodePos(a, i, elapsed);
+          const [nx, ny] = targetJewelPos(a, i, elapsed);
           tx += nx * w;
           ty += ny * w;
         }
-
-        const nd = nodes[i];
+        const jw = jewels[i];
         if (prefersReduced) {
-          nd.x = tx;
-          nd.y = ty;
+          jw.x = tx;
+          jw.y = ty;
         } else {
-          const stiffness = 26;
-          const damping = 7.2;
-          const ax = (tx - nd.x) * stiffness - nd.vx * damping;
-          const ay = (ty - nd.y) * stiffness - nd.vy * damping;
-          nd.vx += ax * dt;
-          nd.vy += ay * dt;
-          nd.x += nd.vx * dt;
-          nd.y += nd.vy * dt;
+          const ax = (tx - jw.x) * 28 - jw.vx * 7.4;
+          const ay = (ty - jw.y) * 28 - jw.vy * 7.4;
+          jw.vx += ax * dt;
+          jw.vy += ay * dt;
+          jw.x += jw.vx * dt;
+          jw.y += jw.vy * dt;
         }
       }
 
-      // Connect nearby B-Tree / RBAC nodes with ultra-fine architectural hairlines
-      ctx.lineWidth = 0.85;
-      for (let i = 0; i < NODE_COUNT; i++) {
-        const ax = nodes[i].x * width;
-        const ay = nodes[i].y * height;
-        for (let j = i + 1; j < NODE_COUNT; j++) {
-          const bx = nodes[j].x * width;
-          const by = nodes[j].y * height;
-          const d2 = (ax - bx) * (ax - bx) + (ay - by) * (ay - by);
-          if (d2 < 5200) {
-            const op = (1 - d2 / 5200) * 0.18;
+      ctx.lineWidth = 0.65;
+      for (let i = 0; i < JEWEL_COUNT; i++) {
+        const x1 = jewels[i].x * width;
+        const y1 = jewels[i].y * height;
+        for (let j = i + 1; j < JEWEL_COUNT; j++) {
+          const x2 = jewels[j].x * width;
+          const y2 = jewels[j].y * height;
+          const d2 = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
+          if (d2 < 6400) {
+            const op = (1 - d2 / 6400) * 0.22;
             ctx.strokeStyle = `rgba(73, 69, 62, ${op.toFixed(3)})`;
             ctx.beginPath();
-            ctx.moveTo(ax, ay);
-            ctx.lineTo(bx, by);
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
             ctx.stroke();
           }
         }
       }
 
-      for (let i = 0; i < NODE_COUNT; i++) {
-        const px = nodes[i].x * width;
-        const py = nodes[i].y * height;
-        const isAnchor = i % 4 === 0;
-
-        ctx.fillStyle = isAnchor ? "#FAF7F1" : "#262420";
-        ctx.beginPath();
-        ctx.arc(px, py, isAnchor ? 4 : 2.3, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (isAnchor) {
-          ctx.strokeStyle = i % 8 === 0 ? "#B8332A" : "#2A5C4D";
-          ctx.lineWidth = 1.5;
+      for (let i = 0; i < JEWEL_COUNT; i++) {
+        const px = jewels[i].x * width;
+        const py = jewels[i].y * height;
+        if (i % 3 === 0) {
+          // Diamond Watchmaker Bearing Node
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(Math.PI / 4);
+          ctx.fillStyle = "#FAF7F1";
+          ctx.strokeStyle = i % 6 === 0 ? "#B8332A" : "#2A5C4D";
+          ctx.lineWidth = 1.25;
+          ctx.beginPath();
+          ctx.rect(-3.2, -3.2, 6.4, 6.4);
+          ctx.fill();
           ctx.stroke();
+          ctx.restore();
+        } else {
+          ctx.beginPath();
+          ctx.arc(px, py, 2.1, 0, Math.PI * 2);
+          ctx.fillStyle = "#262420";
+          ctx.fill();
         }
       }
 
-      // 6. Advance & Render 42 Luminous Courier Beads Streaming Along the Silk Ribbons
-      const speedBoost = prefersReduced
+      // =======================================================================
+      // 6. 54 LUMINOUS COURIER BEADS STREAMING ALONG RIBBON TRAJECTORIES
+      // =======================================================================
+      const flowBoost = prefersReduced
         ? 0
-        : 1 + Math.abs(st.wheelVelocity) * 0.15 + st.shockwave * 1.8;
+        : 1 + Math.abs(st.wheelVelocity) * 0.14 + st.shockwave * 1.9;
 
-      for (const p of particles) {
-        p.u = (((p.u + dt * p.speed * speedBoost) % 1) + 1) % 1;
-        const [px, py] = getBlendedPoint(p.lane, p.u);
-        const fade = Math.sin(p.u * Math.PI);
+      for (const c of couriers) {
+        c.u = (((c.u + dt * c.speed * flowBoost) % 1) + 1) % 1;
+        const sampleIdx = Math.min(SAMPLES - 1, Math.floor(c.u * (SAMPLES - 1)));
+        const [px, py] = sampledRibbons[c.lane][sampleIdx];
+        const env = Math.sin(c.u * Math.PI);
+        const rad = c.size * (0.65 + env * 0.6);
+
+        // Outer soft halo + razor crisp core
+        ctx.beginPath();
+        ctx.arc(px, py, rad * 2.1, 0, Math.PI * 2);
+        ctx.fillStyle =
+          c.tone === 0
+            ? `rgba(184, 51, 42, ${(0.18 * env).toFixed(2)})`
+            : c.tone === 1
+              ? `rgba(182, 132, 52, ${(0.18 * env).toFixed(2)})`
+              : `rgba(42, 92, 77, ${(0.18 * env).toFixed(2)})`;
+        ctx.fill();
 
         ctx.beginPath();
-        ctx.arc(px, py, p.size * (0.7 + fade * 0.55), 0, Math.PI * 2);
-        if (p.hue === 0) {
-          ctx.fillStyle = `rgba(184, 51, 42, ${(0.88 * fade).toFixed(2)})`;
-        } else if (p.hue === 1) {
-          ctx.fillStyle = `rgba(182, 132, 52, ${(0.85 * fade).toFixed(2)})`;
-        } else {
-          ctx.fillStyle = `rgba(42, 92, 77, ${(0.85 * fade).toFixed(2)})`;
-        }
+        ctx.arc(px, py, rad, 0, Math.PI * 2);
+        ctx.fillStyle =
+          c.tone === 0
+            ? `rgba(184, 51, 42, ${(0.95 * env).toFixed(2)})`
+            : c.tone === 1
+              ? `rgba(182, 132, 52, ${(0.92 * env).toFixed(2)})`
+              : `rgba(42, 92, 77, ${(0.92 * env).toFixed(2)})`;
         ctx.fill();
       }
 
-      // 7. Crisp Corner Patent Registration Marks
-      ctx.strokeStyle = "rgba(110, 103, 91, 0.55)";
+      // =======================================================================
+      // 7. LEICA RANGEFINDER CURSOR CROSSHAIR & LIVE MICRO-TELEMETRY BAR
+      // =======================================================================
+      if (st.pointerActive && !prefersReduced) {
+        const mx = st.pointerX * width;
+        const my = st.pointerY * height;
+
+        ctx.save();
+        ctx.strokeStyle = "rgba(184, 51, 42, 0.22)";
+        ctx.lineWidth = 0.65;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(mx, 10);
+        ctx.lineTo(mx, height - 10);
+        ctx.moveTo(10, my);
+        ctx.lineTo(width - 10, my);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.beginPath();
+        ctx.arc(mx, my, 16, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(184, 51, 42, 0.45)";
+        ctx.lineWidth = 0.85;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Crisp Vernier Corner Registration Brackets + Bottom-Left Micro Scale
+      ctx.strokeStyle = "rgba(97, 92, 83, 0.62)";
       ctx.lineWidth = 1;
-      const m = 10;
-      const tk = 11;
+      const m = 9;
+      const tk = 12;
       ctx.beginPath();
       ctx.moveTo(m, m + tk);
       ctx.lineTo(m, m);
@@ -730,6 +1324,16 @@ export default function PaperKineticSculpture({
       ctx.lineTo(width - m, height - m - tk);
       ctx.stroke();
 
+      ctx.font = "500 8.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+      ctx.fillStyle = "rgba(97, 92, 83, 0.72)";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
+      ctx.fillText(
+        `ω ${Math.abs(st.wheelVelocity).toFixed(2)} rad/s · ${Math.round(renderScale)}X RETINA`,
+        16,
+        height - 11
+      );
+
       ctx.restore();
     };
 
@@ -743,36 +1347,49 @@ export default function PaperKineticSculpture({
     };
   }, []);
 
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    stateRef.current.isDragging = true;
+    stateRef.current.dragLastAngle = Math.atan2(ny - 0.5, nx - 0.5);
+    triggerWave(nx, ny);
+  };
+
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
-    stateRef.current.pointerX = (e.clientX - rect.left) / rect.width;
-    stateRef.current.pointerY = (e.clientY - rect.top) / rect.height;
+    const nx = (e.clientX - rect.left) / rect.width;
+    const ny = (e.clientY - rect.top) / rect.height;
+    stateRef.current.pointerX = nx;
+    stateRef.current.pointerY = ny;
     stateRef.current.pointerActive = true;
+
+    if (stateRef.current.isDragging) {
+      const ang = Math.atan2(ny - 0.5, nx - 0.5);
+      let delta = ang - stateRef.current.dragLastAngle;
+      if (delta > Math.PI) delta -= Math.PI * 2;
+      if (delta < -Math.PI) delta += Math.PI * 2;
+      stateRef.current.wheelVelocity = Math.max(-16, Math.min(16, delta * 28));
+      stateRef.current.dragLastAngle = ang;
+    }
   };
 
-  const handlePointerLeave = () => {
-    stateRef.current.pointerActive = false;
-  };
-
-  const handleStageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
-    triggerWave(
-      (e.clientX - rect.left) / rect.width,
-      (e.clientY - rect.top) / rect.height
-    );
+  const handlePointerUpOrLeave = (leave: boolean) => {
+    stateRef.current.isDragging = false;
+    if (leave) stateRef.current.pointerActive = false;
   };
 
   return (
     <div className="paper-stack paper-chamfer relative flex flex-col justify-between p-4 sm:p-5">
-      {/* Top Atelier Frame Header */}
+      {/* Top Horological Plate Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--rule-cut)] pb-2.5 font-mono text-xs text-[var(--ink-secondary)]">
         <span className="truncate font-medium text-[var(--ink-primary)]">{stageLabel}</span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
-            onClick={() => triggerWave(0.36, 0.5)}
+            onClick={() => triggerWave(0.35, 0.5)}
             className="inline-flex min-h-7 cursor-pointer items-center gap-1 rounded-[2px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-2 py-0.5 font-mono text-xs text-[var(--ink-primary)] transition-colors hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)]"
           >
             <Sparkles size={12} aria-hidden="true" />
@@ -791,14 +1408,15 @@ export default function PaperKineticSculpture({
         </div>
       </div>
 
-      {/* Interactive High-DPI Generative Silk & Architecture Canvas */}
+      {/* 100% Unobstructed Supersampled Engraving Canvas */}
       <div
         ref={stageWrapperRef}
+        onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
-        onClick={handleStageClick}
+        onPointerUp={() => handlePointerUpOrLeave(false)}
+        onPointerLeave={() => handlePointerUpOrLeave(true)}
         data-cursor="inspect"
-        className="relative my-3 h-[255px] w-full cursor-crosshair overflow-hidden rounded-[3px] border border-[var(--rule-cut)] bg-[#F7F2E8] select-none sm:h-[300px]"
+        className="relative my-2.5 h-[265px] w-full cursor-crosshair overflow-hidden rounded-[3px] border border-[var(--rule-strong)] bg-[#FAF7F1] select-none sm:h-[315px]"
       >
         <canvas
           ref={canvasRef}
@@ -806,54 +1424,33 @@ export default function PaperKineticSculpture({
           role="img"
           className="block h-full w-full"
         />
-
-        {/* Floating Live Chapter Story Plaque on Desktop/Tablet (>=640px) */}
-        <div className="pointer-events-none absolute inset-x-3 bottom-3 hidden items-end justify-between gap-2 sm:flex">
-          <div className="max-w-[34ch] rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-sheet-top)]/92 px-3 py-2 shadow-[0_6px_18px_rgba(24,23,21,0.08)]">
-            <p className="font-serif text-sm font-semibold leading-tight text-[var(--ink-primary)] sm:text-base">
-              {currentChapter.title}
-            </p>
-            <p className="mt-0.5 font-sans text-xs leading-snug text-[var(--ink-secondary)]">
-              {currentChapter.caption}
-            </p>
-          </div>
-
-          <Link
-            href={`/projects/${currentChapter.slug}`}
-            transitionTypes={["folio-forward"]}
-            onClick={(e) => e.stopPropagation()}
-            data-cursor="open"
-            className="pointer-events-auto inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-[3px] border border-[var(--ink-primary)] bg-[var(--ink-primary)] px-3 font-mono text-xs font-medium text-[var(--bg-sheet-top)] shadow-[0_4px_12px_rgba(24,23,21,0.14)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:bg-[var(--accent-vermilion)] active:scale-[0.97]"
-          >
-            <span>{currentChapter.short}</span>
-            <ArrowUpRight size={13} aria-hidden="true" />
-          </Link>
-        </div>
       </div>
 
-      {/* Unobstructed Mobile Chapter Caption Strip (<640px) */}
-      <div className="mb-2.5 flex items-center justify-between gap-2.5 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-3 py-2 sm:hidden">
-        <div className="min-w-0">
-          <p className="truncate font-serif text-sm font-semibold text-[var(--ink-primary)]">
+      {/* Dedicated Unobstructed Story Plaque + Direct Folio Jump */}
+      <div className="mb-2.5 flex flex-col items-start justify-between gap-2.5 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-3 py-2.5 sm:flex-row sm:items-center">
+        <div className="min-w-0 flex-1">
+          <p className="font-serif text-sm font-semibold text-[var(--ink-primary)] sm:truncate sm:text-base">
             {currentChapter.title}
           </p>
-          <p className="mt-0.5 line-clamp-2 font-sans text-xs leading-snug text-[var(--ink-secondary)]">
+          <p className="mt-0.5 font-sans text-xs leading-snug text-[var(--ink-secondary)] sm:line-clamp-1">
             {currentChapter.caption}
           </p>
         </div>
+
         <Link
           href={`/projects/${currentChapter.slug}`}
           transitionTypes={["folio-forward"]}
-          className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-[3px] border border-[var(--ink-primary)] bg-[var(--ink-primary)] px-2.5 font-mono text-xs font-medium text-[var(--bg-sheet-top)]"
+          data-cursor="open"
+          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-[3px] border border-[var(--ink-primary)] bg-[var(--ink-primary)] px-3 font-mono text-xs font-medium text-[var(--bg-sheet-top)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:bg-[var(--accent-vermilion)] active:scale-[0.97]"
         >
-          <span>{currentChapter.code}</span>
+          <span>{currentChapter.cta}</span>
           <ArrowUpRight size={13} aria-hidden="true" />
         </Link>
       </div>
 
-      {/* 4 Interactive Portfolio Act Switcher Tabs with Smooth Progress Hairlines */}
-      <div className="space-y-2 border-t border-[var(--rule-cut)] pt-2.5">
-        <p className="font-sans text-xs text-[var(--ink-secondary)]">{strataHint}</p>
+      {/* 4 Interactive Portfolio Chapter Tabs with Live Progress Hairlines */}
+      <div className="space-y-1.5 border-t border-[var(--rule-cut)] pt-2">
+        <p className="font-sans text-xs text-[var(--ink-tertiary)]">{strataHint}</p>
 
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4" role="tablist" aria-label={stageLabel}>
           {chapters.map((ch, idx) => {
@@ -867,18 +1464,16 @@ export default function PaperKineticSculpture({
                 aria-selected={isSelected}
                 onClick={() => {
                   setActiveAct(act);
-                  triggerWave(0.5, 0.5);
+                  triggerWave(idx === 0 ? 0.35 : 0.5, 0.5);
                 }}
                 className={
-                  "relative min-h-10 cursor-pointer overflow-hidden rounded-[3px] border px-2.5 py-1.5 text-left font-mono text-xs transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] " +
+                  "relative min-h-9 cursor-pointer overflow-hidden rounded-[3px] border px-2 py-1.5 text-left font-mono text-xs transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] " +
                   (isSelected
                     ? "border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] font-semibold text-[var(--ink-primary)] shadow-[0_2px_8px_rgba(24,23,21,0.06)]"
                     : "border-[var(--rule-cut)] bg-[var(--bg-canvas)]/75 text-[var(--ink-secondary)] hover:border-[var(--rule-strong)] hover:text-[var(--ink-primary)]")
                 }
               >
-                <span className="flex items-center justify-between gap-1">
-                  <span className="truncate">{`${ch.code} · ${ch.short}`}</span>
-                </span>
+                <span className="block truncate">{`${ch.code} · ${ch.short}`}</span>
                 <span
                   ref={(el) => {
                     progressBarRefs.current[idx] = el;
