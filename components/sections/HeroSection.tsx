@@ -55,8 +55,8 @@ export default function HeroSection() {
         </div>
 
         {/* Main Asymmetric 12-Column Atelier Spread */}
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-10">
-          <div className="flex flex-col justify-between lg:col-span-7">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-9">
+          <div className="flex flex-col justify-between lg:col-span-6">
             <div className="hero-lead-enter">
               <h1 className="display-hero max-w-[16ch] whitespace-pre-line text-[var(--ink-primary)]">
                 {hero.headline}
@@ -134,15 +134,18 @@ export default function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Interactive 3D Paper-Rotor & Stratum Diorama */}
-          <div className="hero-stage-enter lg:col-span-5">
+          {/* Right Column: Interactive 3D Portfolio System Workbench Diorama */}
+          <div className="hero-stage-enter lg:col-span-6">
             <PaperKineticSculpture
               stageLabel={hero.stageLabel}
+              overviewLabel={hero.overviewLabel}
               explodeLabel={hero.explodeStrata}
               assembleLabel={hero.assembleStrata}
               pulseLabel={hero.pulseRotor}
               strataHint={hero.strataHint}
               layers={hero.layers}
+              liveDownloads={liveDownloads}
+              language={language}
             />
           </div>
         </div>

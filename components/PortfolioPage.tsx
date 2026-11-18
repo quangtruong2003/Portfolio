@@ -2,6 +2,7 @@ import { ViewTransition } from "react";
 import LocaleHandler from "@/components/layout/LocaleHandler";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import VelocityPaperTape from "@/components/animations/VelocityPaperTape";
 import HeroSection from "@/components/sections/HeroSection";
 import ProjectsSection from "@/components/sections/ProjectsSection";
 import PressPlateZone from "@/components/sections/PressPlateZone";
@@ -30,6 +31,7 @@ export default function PortfolioPage() {
       >
         <main id="main-content">
           <HeroSection />
+          <VelocityPaperTape />
           <ProjectsSection />
           <PressPlateZone />
           <ExperienceSection />

@@ -24,6 +24,7 @@ export interface Dictionary {
     proofCaption: string;
     viewProject: string;
     stageLabel: string;
+    overviewLabel: string;
     explodeStrata: string;
     assembleStrata: string;
     pulseRotor: string;
@@ -167,15 +168,16 @@ export const vi: Dictionary = {
     proofLabel: "Sản phẩm mã nguồn mở",
     proofCaption: "lượt tải GitHub Releases",
     viewProject: "Mở hồ sơ SmoothScroll",
-    stageLabel: "Mô hình cắt lớp 3D · Kiến trúc & Xung cuộn",
-    explodeStrata: "Tách lớp kiến trúc",
-    assembleStrata: "Khép lớp mô hình",
-    pulseRotor: "Phát xung cuộn",
-    strataHint: "Di chuột hoặc chạm từng tầng giấy để soi cấu trúc",
+    stageLabel: "Tác phẩm Động học Tương tác · 4 Chương Kỹ thuật",
+    overviewLabel: "Tự động chuyển chương",
+    explodeStrata: "Tự chuyển chương",
+    assembleStrata: "Đang tự chuyển",
+    pulseRotor: "Tạo sóng xung lực",
+    strataHint: "Rê chuột uốn dải lụa, lăn con lăn tạo xung hoặc chọn từng chương dự án",
     layers: [
-      "Tầng I · Input Hook & Nhân Rust",
-      "Tầng II · Laravel API & Queue Worker",
-      "Tầng III · MySQL Index & Đệm Redis",
+      "I · SmoothScroll",
+      "II · Laravel 12",
+      "III · MySQL/Redis",
     ],
   },
   about: {
@@ -320,15 +322,16 @@ export const en: Dictionary = {
     proofLabel: "Open-source utility",
     proofCaption: "GitHub release downloads",
     viewProject: "Open SmoothScroll dossier",
-    stageLabel: "3D Cut-Paper Model · Strata & Scroll Rotor",
-    explodeStrata: "Explode strata",
-    assembleStrata: "Assemble strata",
-    pulseRotor: "Pulse wheel",
-    strataHint: "Move pointer or select a paper stratum to inspect",
+    stageLabel: "Interactive Kinetic Art · 4 Engineering Chapters",
+    overviewLabel: "Auto-cycle acts",
+    explodeStrata: "Auto-cycle acts",
+    assembleStrata: "Auto-cycling",
+    pulseRotor: "Send wave pulse",
+    strataHint: "Sweep pointer through the silk field, scroll wheel, or select a chapter",
     layers: [
-      "Stratum I · Native Hook & Rust Core",
-      "Stratum II · Laravel API & Queue Workers",
-      "Stratum III · MySQL Indexes & Redis Cache",
+      "I · SmoothScroll",
+      "II · Laravel 12",
+      "III · MySQL/Redis",
     ],
   },
   about: {
