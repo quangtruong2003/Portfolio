@@ -2,7 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Pause, Play, Sparkles } from "lucide-react";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  Database,
+  Layers,
+  Mouse,
+  Play,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 
 interface PaperKineticSculptureProps {
   stageLabel: string;
@@ -16,1472 +26,701 @@ interface PaperKineticSculptureProps {
   language?: "vi" | "en";
 }
 
-type ActIndex = 0 | 1 | 2 | 3;
+type CardIndex = 0 | 1 | 2;
+type AppProfileId = "vscode" | "browser" | "game";
+type RbacRole = "Owner" | "Admin" | "Manager" | "Sales";
 
-interface FlowCourier {
-  u: number;
-  lane: number;
-  speed: number;
-  size: number;
-  tone: 0 | 1 | 2; // 0: vermilion, 1: brass, 2: patina
-}
-
-interface JewelNode {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-}
-
-interface WakePoint {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  life: number;
-}
-
-const FILAMENT_COUNT = 22;
-const SAMPLES = 68;
-const COURIER_COUNT = 54;
-const JEWEL_COUNT = 28;
-const ACT_DURATION_SEC = 6.2;
-
-function damp(cur: number, target: number, lambda: number, dt: number): number {
-  return cur + (target - cur) * (1 - Math.exp(-lambda * dt));
-}
-
-/** Draw precision horological gear with involute-inspired teeth & spoked cutout */
-function drawPrecisionGear(
-  ctx: CanvasRenderingContext2D,
-  cx: number,
-  cy: number,
-  outerR: number,
-  innerR: number,
-  teeth: number,
-  toothDepth: number,
-  rotation: number,
-  fillStyle: string,
-  strokeStyle: string,
-  spokes = 5
-) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(rotation);
-
-  ctx.beginPath();
-  const step = (Math.PI * 2) / teeth;
-  for (let i = 0; i < teeth; i++) {
-    const a0 = i * step;
-    const a1 = a0 + step * 0.22;
-    const a2 = a0 + step * 0.32;
-    const a3 = a0 + step * 0.68;
-    const a4 = a0 + step * 0.78;
-    const baseR = outerR - toothDepth;
-
-    if (i === 0) {
-      ctx.moveTo(Math.cos(a0) * baseR, Math.sin(a0) * baseR);
-    } else {
-      ctx.lineTo(Math.cos(a0) * baseR, Math.sin(a0) * baseR);
-    }
-    ctx.lineTo(Math.cos(a1) * baseR, Math.sin(a1) * baseR);
-    ctx.lineTo(Math.cos(a2) * outerR, Math.sin(a2) * outerR);
-    ctx.lineTo(Math.cos(a3) * outerR, Math.sin(a3) * outerR);
-    ctx.lineTo(Math.cos(a4) * baseR, Math.sin(a4) * baseR);
-  }
-  ctx.closePath();
-
-  // Inner cutout ring
-  ctx.moveTo(innerR, 0);
-  ctx.arc(0, 0, innerR, 0, Math.PI * 2, true);
-
-  ctx.fillStyle = fillStyle;
-  ctx.fill("evenodd");
-  ctx.lineWidth = 0.9;
-  ctx.strokeStyle = strokeStyle;
-  ctx.stroke();
-
-  // Delicate watchmaker spokes
-  if (spokes > 0 && innerR > 6) {
-    ctx.beginPath();
-    for (let s = 0; s < spokes; s++) {
-      const sa = (s / spokes) * Math.PI * 2;
-      ctx.moveTo(Math.cos(sa) * 4.5, Math.sin(sa) * 4.5);
-      ctx.lineTo(Math.cos(sa) * innerR, Math.sin(sa) * innerR);
-    }
-    ctx.lineWidth = 1.25;
-    ctx.strokeStyle = strokeStyle;
-    ctx.stroke();
-  }
-
-  // Jewel center bearing
-  ctx.beginPath();
-  ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
-  ctx.fillStyle = "#FAF7F1";
-  ctx.fill();
-  ctx.lineWidth = 1.2;
-  ctx.strokeStyle = "#B8332A";
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(0, 0, 1.8, 0, Math.PI * 2);
-  ctx.fillStyle = "#B8332A";
-  ctx.fill();
-
-  ctx.restore();
-}
-
-/** Smooth quadratic midpoint spline through sampled points */
-function strokeSmoothCurve(ctx: CanvasRenderingContext2D, pts: Array<[number, number]>) {
-  if (pts.length < 2) return;
-  ctx.beginPath();
-  ctx.moveTo(pts[0][0], pts[0][1]);
-  for (let i = 1; i < pts.length - 1; i++) {
-    const mx = (pts[i][0] + pts[i + 1][0]) * 0.5;
-    const my = (pts[i][1] + pts[i + 1][1]) * 0.5;
-    ctx.quadraticCurveTo(pts[i][0], pts[i][1], mx, my);
-  }
-  const last = pts[pts.length - 1];
-  ctx.lineTo(last[0], last[1]);
-  ctx.stroke();
-}
-
-/** Render a sculpted variable-width cut-paper silk ribbon with cast relief shadow */
-function drawTaperedSilkRibbon(
-  ctx: CanvasRenderingContext2D,
-  pts: Array<[number, number]>,
-  maxHalfWidth: number,
-  fillStyle: string,
-  edgeStroke: string,
-  withShadow: boolean
-) {
-  const n = pts.length;
-  if (n < 3) return;
-
-  const upper: Array<[number, number]> = [];
-  const lower: Array<[number, number]> = [];
-
-  for (let i = 0; i < n; i++) {
-    const prev = pts[Math.max(0, i - 1)];
-    const next = pts[Math.min(n - 1, i + 1)];
-    const tx = next[0] - prev[0];
-    const ty = next[1] - prev[1];
-    const len = Math.hypot(tx, ty) || 1;
-    const nx = -ty / len;
-    const ny = tx / len;
-
-    const u = i / (n - 1);
-    // Needle-sharp calligraphic taper at both ends, full body in middle
-    const taper = Math.pow(Math.sin(u * Math.PI), 0.75);
-    const hw = maxHalfWidth * taper;
-
-    upper.push([pts[i][0] + nx * hw, pts[i][1] + ny * hw]);
-    lower.push([pts[i][0] - nx * hw, pts[i][1] - ny * hw]);
-  }
-
-  ctx.save();
-  if (withShadow) {
-    ctx.shadowColor = "rgba(24, 23, 21, 0.14)";
-    ctx.shadowBlur = 7;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 3;
-  }
-
-  ctx.beginPath();
-  ctx.moveTo(upper[0][0], upper[0][1]);
-  for (let i = 1; i < n; i++) {
-    ctx.lineTo(upper[i][0], upper[i][1]);
-  }
-  for (let i = n - 1; i >= 0; i--) {
-    ctx.lineTo(lower[i][0], lower[i][1]);
-  }
-  ctx.closePath();
-  ctx.fillStyle = fillStyle;
-  ctx.fill();
-
-  ctx.shadowColor = "transparent";
-  ctx.shadowBlur = 0;
-  ctx.lineWidth = 0.7;
-  ctx.strokeStyle = edgeStroke;
-  ctx.stroke();
-  ctx.restore();
-}
-
-/** Crisp drafted callout pill + hair-leader rendered directly in the engraving */
-function drawEngravedCallout(
-  ctx: CanvasRenderingContext2D,
-  anchorX: number,
-  anchorY: number,
-  boxX: number,
-  boxY: number,
-  label: string,
-  accentColor: string,
-  alpha: number
-) {
-  if (alpha <= 0.04) return;
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.font = "600 9.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-  const textW = ctx.measureText(label).width;
-  const padX = 6.5;
-  const boxW = textW + padX * 2;
-  const boxH = 17;
-  const rx = boxX - boxW * 0.5;
-  const ry = boxY - boxH * 0.5;
-
-  // Orthogonal drafting leader stem
-  ctx.beginPath();
-  ctx.moveTo(anchorX, anchorY);
-  ctx.lineTo(boxX, anchorY);
-  ctx.lineTo(boxX, boxY);
-  ctx.strokeStyle = accentColor;
-  ctx.lineWidth = 0.85;
-  ctx.setLineDash([2.5, 2]);
-  ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Bullseye anchor point
-  ctx.beginPath();
-  ctx.arc(anchorX, anchorY, 2.4, 0, Math.PI * 2);
-  ctx.fillStyle = accentColor;
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(anchorX, anchorY, 4.8, 0, Math.PI * 2);
-  ctx.strokeStyle = accentColor;
-  ctx.lineWidth = 0.7;
-  ctx.stroke();
-
-  // Micro-plaque card
-  ctx.fillStyle = "rgba(250, 247, 241, 0.94)";
-  ctx.strokeStyle = "rgba(73, 69, 62, 0.42)";
-  ctx.lineWidth = 0.8;
-  ctx.beginPath();
-  ctx.rect(rx, ry, boxW, boxH);
-  ctx.fill();
-  ctx.stroke();
-
-  // Left pigment bar on micro-plaque
-  ctx.fillStyle = accentColor;
-  ctx.fillRect(rx, ry, 2.2, boxH);
-
-  ctx.fillStyle = "#181715";
-  ctx.textBaseline = "middle";
-  ctx.fillText(label, rx + padX + 1, boxY + 0.5);
-  ctx.restore();
-}
+const CODE_SAMPLE_LINES = [
+  { num: "01", code: "pub fn intercept_wheel(delta: i32, profile: &AppRule) {", accent: true },
+  { num: "02", code: "  if profile.bypass_raw { return pass_win32(delta); }", accent: false },
+  { num: "03", code: "  let target = state.target + (delta as f64) * profile.step;", accent: false },
+  { num: "04", code: "  spring.integrate_120hz(target, profile.duration_ms);", accent: true },
+  { num: "05", code: "}", accent: false },
+  { num: "06", code: "// Laravel 12 · Queued Tiered Utility & Contract Billing", accent: false },
+  { num: "07", code: "InvoiceBatchJob::dispatch($leaseIds)->onQueue('billing');", accent: true },
+  { num: "08", code: "Cache::tags(['contracts'])->remember($key, 900, $query);", accent: false },
+  { num: "09", code: "SELECT id, tenant_id, total FROM invoices USE INDEX (idx_ym);", accent: false },
+  { num: "10", code: "return Response::json(['status' => 'queued', 'ms' => 14]);", accent: true },
+];
 
 export default function PaperKineticSculpture({
   stageLabel,
   pulseLabel,
   strataHint,
+  layers,
   liveDownloads,
   language = "en",
 }: PaperKineticSculptureProps) {
-  const stageWrapperRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const progressBarRefs = useRef<Array<HTMLSpanElement | null>>([null, null, null, null]);
+  const shouldReduceMotion = useReducedMotion();
+  const isVi = language === "vi";
 
-  const [activeAct, setActiveAct] = useState<ActIndex>(0);
-  const [autoPlay, setAutoPlay] = useState(true);
+  // Active stacked paper window: 0 = SmoothScroll, 1 = Laravel 12 C3TEK, 2 = Spring Boot + VNPay
+  const [activeCard, setActiveCard] = useState<CardIndex>(0);
 
-  const stateRef = useRef({
-    act: 0 as ActIndex,
-    autoPlay: true,
-    actTimer: 0,
-    morphBlend: [1, 0, 0, 0] as [number, number, number, number],
-    pointerX: 0.5,
-    pointerY: 0.5,
-    prevPointerX: 0.5,
-    prevPointerY: 0.5,
-    pointerActive: false,
-    isDragging: false,
-    dragLastAngle: 0,
-    wheelVelocity: 1.55,
-    shockwave: 0,
-    shockX: 0.35,
-    shockY: 0.5,
-    liveDlLabel: liveDownloads ?? "40k+",
+  // ==================== WINDOW 01 STATE: SMOOTHSCROLL LIVE APP ====================
+  const [appProfile, setAppProfile] = useState<AppProfileId>("vscode");
+  const [smoothEnabled, setSmoothEnabled] = useState(true);
+  const scrollStageRef = useRef<HTMLDivElement>(null);
+  const rawTrackRef = useRef<HTMLDivElement>(null);
+  const smoothTrackRef = useRef<HTMLDivElement>(null);
+  const velocityReadoutRef = useRef<HTMLSpanElement>(null);
+
+  const physicsRef = useRef({
+    targetY: 0,
+    rawY: 0,
+    smoothY: 0,
+    velocity: 0,
+    autoClock: 0,
+    userTouchedUntil: 0,
+    enabled: true,
+    profile: "vscode" as AppProfileId,
   });
 
   useEffect(() => {
-    stateRef.current.liveDlLabel = liveDownloads ?? "40k+";
-  }, [liveDownloads]);
+    physicsRef.current.enabled = smoothEnabled && appProfile !== "game";
+    physicsRef.current.profile = appProfile;
+  }, [smoothEnabled, appProfile]);
 
-  useEffect(() => {
-    stateRef.current.act = activeAct;
-    stateRef.current.actTimer = 0;
-  }, [activeAct]);
-
-  useEffect(() => {
-    stateRef.current.autoPlay = autoPlay;
-  }, [autoPlay]);
-
-  const triggerWave = useCallback((nx = 0.5, ny = 0.5) => {
-    stateRef.current.wheelVelocity = Math.min(stateRef.current.wheelVelocity + 7.5, 16);
-    stateRef.current.shockwave = 1;
-    stateRef.current.shockX = nx;
-    stateRef.current.shockY = ny;
+  const fireScrollBurst = useCallback((deltaPx = 108) => {
+    const p = physicsRef.current;
+    p.userTouchedUntil = performance.now() + 4200;
+    p.targetY += deltaPx;
   }, []);
 
-  const chapters =
-    language === "vi"
-      ? [
-          {
-            code: "I",
-            short: "SmoothScroll",
-            title: liveDownloads
-              ? `SmoothScroll · ${liveDownloads} lượt tải`
-              : "SmoothScroll · Cơ cấu Lò xo 120Hz",
-            caption: "Bộ hồi cơ khí Rust biến xung nấc Win32 120Δ thành dải lụa vận tốc 120Hz",
-            slug: "smoothscroll",
-            cta: "Hồ sơ SmoothScroll",
-          },
-          {
-            code: "II",
-            short: "Laravel 12",
-            title: "Laravel 12 · Thiên cầu RBAC & Queue",
-            caption: "4 quỹ đạo phân quyền đồng tâm & luồng hàng đợi hóa đơn bất đồng bộ (C3TEK)",
-            slug: "property-management",
-            cta: "Hồ sơ Property",
-          },
-          {
-            code: "III",
-            short: "MySQL/Redis",
-            title: "MySQL B+Tree & Cộng hưởng Redis",
-            caption: "Cấu trúc chỉ mục phân tầng kết hợp vòng sóng bộ nhớ đệm phản hồi O(1)",
-            slug: "medical-booking",
-            cta: "Hồ sơ Medical",
-          },
-          {
-            code: "IV",
-            short: "Sync & AI",
-            title: "Chuỗi Xoắn Đồng bộ Đa Kênh",
-            caption: "Con quay đôi kết nối Laravel ↔ WordPress, Spring Boot ↔ VNPay & Kotlin AI",
-            slug: "chatbot",
-            cta: "Hồ sơ ChatBot",
-          },
-        ]
-      : [
-          {
-            code: "I",
-            short: "SmoothScroll",
-            title: liveDownloads
-              ? `SmoothScroll · ${liveDownloads} downloads`
-              : "SmoothScroll · 120Hz Escapement",
-            caption: "Triple-gear Rust escapement smoothing raw 120Δ Win32 detents into 120Hz silk",
-            slug: "smoothscroll",
-            cta: "SmoothScroll folio",
-          },
-          {
-            code: "II",
-            short: "Laravel 12",
-            title: "Laravel 12 · 4-Ring RBAC Orrery",
-            caption: "Concentric Owner/Admin/Manager/Sales access rings & async queue couriers",
-            slug: "property-management",
-            cta: "Property folio",
-          },
-          {
-            code: "III",
-            short: "MySQL/Redis",
-            title: "MySQL B+Tree & Redis Cymatics",
-            caption: "Composite-indexed B+Tree hierarchy crowned by O(1) cache resonance waves",
-            slug: "medical-booking",
-            cta: "Medical folio",
-          },
-          {
-            code: "IV",
-            short: "Sync & AI",
-            title: "Dual-Gyroscope Sync Helix",
-            caption: "Braided pipeline bridging WordPress inventory, VNPay settlement & Kotlin AI",
-            slug: "chatbot",
-            cta: "ChatBot folio",
-          },
-        ];
-
-  const currentChapter = chapters[activeAct];
-
-  // Non-passive mouse-wheel capture over the art canvas
+  // Capture physical mouse-wheel scrolling over Window 01's split comparator
   useEffect(() => {
-    const el = stageWrapperRef.current;
+    const el = scrollStageRef.current;
     if (!el) return;
 
     const onWheel = (e: WheelEvent) => {
+      if (activeCard !== 0) return;
       e.preventDefault();
-      const dir = e.deltaY >= 0 ? 1 : -1;
-      const boost = Math.min(Math.abs(e.deltaY) * 0.055, 9);
-      stateRef.current.wheelVelocity = Math.max(
-        -16,
-        Math.min(16, stateRef.current.wheelVelocity + dir * Math.max(2.2, boost))
-      );
-      stateRef.current.shockwave = Math.min(1, stateRef.current.shockwave + 0.6);
+      const stepScale = appProfile === "browser" ? 0.95 : 0.75;
+      const step = Math.sign(e.deltaY) * Math.min(Math.max(Math.abs(e.deltaY) * stepScale, 36), 140);
+      physicsRef.current.userTouchedUntil = performance.now() + 5000;
+      physicsRef.current.targetY += step;
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
+  }, [activeCard, appProfile]);
+
+  // 60/120fps Dual-Pane Scroll Physics Loop (Stepped 120Δ vs Rust Smooth Spring)
+  useEffect(() => {
+    let rafId = 0;
+    let last = performance.now();
+    const loopHeight = 260; // seamless 2x list wrap height in px
+
+    const tick = (now: number) => {
+      rafId = window.requestAnimationFrame(tick);
+      const dt = Math.max(0, Math.min((now - last) / 1000, 0.05));
+      last = now;
+
+      const p = physicsRef.current;
+
+      // Gentle automatic wheel notches when idle so visitor sees the difference immediately
+      if (!shouldReduceMotion && activeCard === 0 && now > p.userTouchedUntil) {
+        p.autoClock += dt;
+        if (p.autoClock >= 1.55) {
+          p.autoClock = 0;
+          p.targetY += 56;
+        }
+      }
+
+      // Raw Win32 stepped scroll: snaps harshly in 28px discrete wheel detents!
+      const quantStep = 28;
+      p.rawY = Math.round(p.targetY / quantStep) * quantStep;
+
+      // SmoothScroll Rust engine: velocity-damped sub-pixel interpolation
+      if (!p.enabled || shouldReduceMotion) {
+        p.smoothY = p.rawY;
+        p.velocity = 0;
+      } else {
+        const lambda = p.profile === "browser" ? 7.2 : 10.5;
+        const prev = p.smoothY;
+        p.smoothY = prev + (p.targetY - prev) * (1 - Math.exp(-lambda * dt));
+        p.velocity = dt > 0 ? Math.abs(p.smoothY - prev) / dt : 0;
+      }
+
+      const rawMod = (((p.rawY % loopHeight) + loopHeight) % loopHeight);
+      const smoothMod = (((p.smoothY % loopHeight) + loopHeight) % loopHeight);
+
+      if (rawTrackRef.current) {
+        rawTrackRef.current.style.transform = `translate3d(0, ${(-rawMod).toFixed(1)}px, 0)`;
+      }
+      if (smoothTrackRef.current) {
+        smoothTrackRef.current.style.transform = `translate3d(0, ${(-smoothMod).toFixed(2)}px, 0)`;
+      }
+      if (velocityReadoutRef.current) {
+        velocityReadoutRef.current.textContent = p.enabled
+          ? `${Math.round(p.velocity)} px/s`
+          : "RAW PASS";
+      }
+    };
+
+    rafId = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [activeCard, shouldReduceMotion]);
+
+  // ==================== WINDOW 02 STATE: LARAVEL 12 API & QUEUE ====================
+  const [rbacRole, setRbacRole] = useState<RbacRole>("Owner");
+  const [optimizedQuery, setOptimizedQuery] = useState(true);
+  const [queueStep, setQueueStep] = useState(0);
+
+  useEffect(() => {
+    if (activeCard !== 1 || shouldReduceMotion) return;
+    const id = window.setInterval(() => {
+      setQueueStep((s) => (s + 1) % 4);
+    }, 1150);
+    return () => window.clearInterval(id);
+  }, [activeCard, shouldReduceMotion]);
+
+  // ==================== WINDOW 03 STATE: SPRING BOOT + VNPAY ====================
+  const [selectedSlot, setSelectedSlot] = useState(0);
+  const [txStage, setTxStage] = useState(3);
+
+  const runVnpaySimulation = useCallback((slotIdx: number) => {
+    setSelectedSlot(slotIdx);
+    setTxStage(0);
   }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const wrapper = stageWrapperRef.current;
-    if (!canvas || !wrapper) return;
-
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let prefersReduced = reducedQuery.matches;
-    const onReducedChange = (e: MediaQueryListEvent) => {
-      prefersReduced = e.matches;
-    };
-    reducedQuery.addEventListener("change", onReducedChange);
-
-    let width = 580;
-    let height = 330;
-    let renderScale = 2;
-
-    const resize = () => {
-      const rect = wrapper.getBoundingClientRect();
-      width = Math.max(260, Math.round(rect.width));
-      height = Math.max(240, Math.round(rect.height));
-      // Supersample >= 2x even on 1x desktop monitors for razor-sharp copperplate lines!
-      const rawDpr = window.devicePixelRatio || 1;
-      renderScale = Math.max(2, Math.min(rawDpr * 1.5, 3));
-      canvas.width = Math.round(width * renderScale);
-      canvas.height = Math.round(height * renderScale);
-    };
-    resize();
-
-    const ro = new ResizeObserver(resize);
-    ro.observe(wrapper);
-
-    let inViewport = true;
-    const io = new IntersectionObserver(
-      (entries) => {
-        inViewport = entries[0]?.isIntersecting ?? true;
-      },
-      { threshold: 0.05 }
-    );
-    io.observe(wrapper);
-
-    const couriers: FlowCourier[] = Array.from({ length: COURIER_COUNT }, (_, i) => ({
-      u: (i / COURIER_COUNT) % 1,
-      lane: i % FILAMENT_COUNT,
-      speed: 0.14 + ((i * 11) % 13) * 0.015,
-      size: 1.5 + (i % 3) * 0.75,
-      tone: (i % 3) as 0 | 1 | 2,
-    }));
-
-    const jewels: JewelNode[] = Array.from({ length: JEWEL_COUNT }, (_, i) => {
-      const a = (i / JEWEL_COUNT) * Math.PI * 2;
-      return {
-        x: 0.5 + Math.cos(a) * 0.24,
-        y: 0.5 + Math.sin(a) * 0.24,
-        vx: 0,
-        vy: 0,
-      };
-    });
-
-    const wakeTrail: WakePoint[] = [];
-
-    // Sample normalized [0..1] filament geometry for each Act (0..3)
-    const sampleActFilament = (
-      act: number,
-      rIdx: number,
-      u: number,
-      time: number,
-      wheelPhase: number
-    ): [number, number] => {
-      const laneNorm = FILAMENT_COUNT > 1 ? rIdx / (FILAMENT_COUNT - 1) - 0.5 : 0;
-
-      if (act === 0) {
-        // ACT I: SmoothScroll — Quantized 120Δ Square Steps -> Escapement (0.35) -> 120Hz Laminar Silk
-        const gateX = 0.35;
-        const x = 0.05 + u * 0.9;
-        if (x < gateX) {
-          const localU = (x - 0.05) / (gateX - 0.05);
-          // Crisp quantized stair-steps mimicking raw 120-delta wheel ticks
-          const steps = 6;
-          const q = Math.floor(localU * steps) / steps;
-          const smoothSub = Math.pow((localU * steps) % 1, 7);
-          const quantU = q + smoothSub / steps;
-          const stair = Math.sin(quantU * 5.2 + rIdx * 0.35 - wheelPhase * 0.28) * 0.16;
-          const funnel = Math.max(0.06, 1 - Math.pow(localU, 1.55) * 0.92);
-          return [x, 0.5 + (laneNorm * 0.64 + stair) * funnel];
-        }
-        const postU = (x - gateX) / (0.95 - gateX);
-        const bloom = 0.03 + Math.pow(postU, 0.72) * 0.66;
-        const harmonic1 =
-          Math.sin(postU * 7.4 - wheelPhase * 1.1 + rIdx * 0.22) * 0.115 * Math.sin(postU * Math.PI * 0.92);
-        const harmonic2 =
-          Math.cos(postU * 13.5 - time * 1.9 - rIdx * 0.4) * 0.026 * postU;
-        return [x, 0.5 + laneNorm * bloom + harmonic1 + harmonic2];
-      }
-
-      if (act === 1) {
-        // ACT II: Laravel 12 — 4 Concentric RBAC Planetary Rings + Guilloché Epicycles
-        const tier = rIdx % 4;
-        const baseR = 0.125 + tier * 0.082;
-        const subOffset = Math.floor(rIdx / 4) * ((Math.PI * 2) / 6);
-        const dir = tier % 2 === 0 ? 1 : -1;
-        const theta =
-          u * Math.PI * 1.92 +
-          subOffset +
-          time * 0.32 * dir +
-          wheelPhase * 0.07 * dir;
-        // Subtle 6-lobe guilloché rose modulation
-        const guilloche = Math.sin(theta * 6 + time * 1.5) * 0.009;
-        const r = baseR + guilloche;
-        const aspect = width / height;
-        return [
-          0.5 + (Math.cos(theta) * r * 1.18) / Math.max(1, aspect * 0.74),
-          0.5 + Math.sin(theta) * r * 1.12,
-        ];
-      }
-
-      if (act === 2) {
-        // ACT III: MySQL B+Tree Cathedral & Cymatic Standing-Wave Resonance
-        const cluster = rIdx % 5; // 5 indexed leaf columns
-        const fineOffset = (Math.floor(rIdx / 5) - 2) * 0.022;
-        const targetX = 0.14 + (cluster / 4) * 0.72 + fineOffset;
-        const sEase = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
-        const standingWave =
-          Math.sin(u * Math.PI * 3 - wheelPhase * 0.5 + rIdx * 0.3) *
-          0.022 *
-          Math.sin(u * Math.PI);
-        const x = 0.5 + (targetX - 0.5) * sEase + standingWave;
-        const y = 0.15 + u * 0.72;
-        return [x, y];
-      }
-
-      // ACT IV: Dual-Gyroscope Braided DNA / Lissajous Helix
-      const strand = rIdx % 2 === 0 ? 1 : -1;
-      const band = (Math.floor(rIdx / 2) / (FILAMENT_COUNT / 2 - 1) - 0.5) * 0.16;
-      const x = 0.14 + u * 0.72;
-      const pinch = Math.sin(u * Math.PI); // widest in center, pinched into the 2 gyroscopes at x=0.18 & x=0.82
-      const helix =
-        Math.sin(u * Math.PI * 3.5 - wheelPhase * 0.65 + (strand > 0 ? 0 : Math.PI)) *
-        0.24 *
-        (0.28 + 0.72 * pinch);
-      const y = 0.5 + helix + band * pinch;
-      return [x, y];
-    };
-
-    // Structural Jewel Node Coordinates per Act
-    const targetJewelPos = (act: number, idx: number, time: number): [number, number] => {
-      const aspect = width / height;
-      const xScale = 1 / Math.max(1, aspect * 0.74);
-
-      if (act === 0) {
-        if (idx < 10) {
-          const a = (idx / 10) * Math.PI * 2 + time * 0.85;
-          return [0.35 + Math.cos(a) * 0.115 * xScale, 0.5 + Math.sin(a) * 0.115];
-        }
-        if (idx < 18) {
-          const k = idx - 10;
-          return [0.08 + (k / 7) * 0.21, 0.24 + ((k * 29) % 9) * 0.062];
-        }
-        const k = idx - 18;
-        const ux = 0.48 + (k / 9) * 0.43;
-        return [ux, 0.5 + Math.sin(ux * 7.4 - time * 1.8 + k * 0.7) * 0.23];
-      }
-
-      if (act === 1) {
-        const ring = idx % 4;
-        const spoke = Math.floor(idx / 4); // 0..6
-        const r = 0.125 + ring * 0.082;
-        const a = (spoke / 7) * Math.PI * 2 + (ring % 2 === 0 ? time * 0.32 : -time * 0.32);
-        return [0.5 + Math.cos(a) * r * 1.18 * xScale, 0.5 + Math.sin(a) * r * 1.12];
-      }
-
-      if (act === 2) {
-        // 1 Root + 3 Branch + 9 Mid + 15 Leaf B+Tree Index Nodes
-        if (idx === 0) return [0.5, 0.15];
-        if (idx < 4) {
-          const k = idx - 1;
-          return [0.24 + (k / 2) * 0.52, 0.38];
-        }
-        if (idx < 13) {
-          const k = idx - 4;
-          return [0.16 + (k / 8) * 0.68, 0.63];
-        }
-        const k = idx - 13;
-        return [0.12 + (k / 14) * 0.76, 0.87];
-      }
-
-      // Act 3: Two Gyroscope Rings at x=0.18 & x=0.82 + 8 Central Helix Nodes
-      if (idx < 10) {
-        const a = (idx / 10) * Math.PI * 2 + time * 0.65;
-        return [0.18 + Math.cos(a) * 0.095 * xScale, 0.5 + Math.sin(a) * 0.12];
-      }
-      if (idx < 20) {
-        const a = ((idx - 10) / 10) * Math.PI * 2 - time * 0.65;
-        return [0.82 + Math.cos(a) * 0.095 * xScale, 0.5 + Math.sin(a) * 0.12];
-      }
-      const k = idx - 20;
-      const ux = 0.32 + (k / 7) * 0.36;
-      return [ux, 0.5 + Math.sin(ux * 10 - time * 2.2) * 0.14];
-    };
-
-    const sampledRibbons: Array<Array<[number, number]>> = Array.from(
-      { length: FILAMENT_COUNT },
-      () => Array.from({ length: SAMPLES }, () => [0, 0])
-    );
-
-    let elapsed = 0;
-    let wheelPhase = 0;
-    let rafId = 0;
-    let lastNow = performance.now();
-
-    const drawFrame = (now: number) => {
-      rafId = window.requestAnimationFrame(drawFrame);
-      if (!inViewport) return;
-
-      const dt = Math.max(0, Math.min((now - lastNow) / 1000, 0.05));
-      lastNow = now;
-      const st = stateRef.current;
-
-      if (!prefersReduced) {
-        elapsed += dt;
-        wheelPhase += st.wheelVelocity * dt;
-        if (!st.isDragging) {
-          st.wheelVelocity = damp(st.wheelVelocity, 1.45, 2.0, dt);
-        }
-        st.shockwave = Math.max(0, st.shockwave - dt * 1.25);
-
-        if (st.autoPlay && !st.isDragging) {
-          st.actTimer += dt;
-          if (st.actTimer >= ACT_DURATION_SEC) {
-            st.actTimer = 0;
-            const nextAct = ((st.act + 1) % 4) as ActIndex;
-            st.act = nextAct;
-            setActiveAct(nextAct);
-          }
-        }
-      }
-
-      // Decay pointer fluid wake trail
-      for (let w = wakeTrail.length - 1; w >= 0; w--) {
-        wakeTrail[w].life -= dt * 2.1;
-        if (wakeTrail[w].life <= 0) {
-          wakeTrail.splice(w, 1);
-        }
-      }
-
-      if (st.pointerActive && !prefersReduced) {
-        const dvx = st.pointerX - st.prevPointerX;
-        const dvy = st.pointerY - st.prevPointerY;
-        if (Math.hypot(dvx, dvy) > 0.004) {
-          wakeTrail.push({
-            x: st.pointerX * width,
-            y: st.pointerY * height,
-            vx: dvx * width * 16,
-            vy: dvy * height * 16,
-            life: 1,
-          });
-          if (wakeTrail.length > 10) wakeTrail.shift();
-        }
-        st.prevPointerX = st.pointerX;
-        st.prevPointerY = st.pointerY;
-      }
-
-      // Sync chapter progress hairlines
-      for (let i = 0; i < 4; i++) {
-        const bar = progressBarRefs.current[i];
-        if (!bar) continue;
-        const ratio =
-          st.act === i
-            ? st.autoPlay && !prefersReduced
-              ? Math.min(1, st.actTimer / ACT_DURATION_SEC)
-              : 1
-            : 0;
-        bar.style.transform = `scaleX(${ratio.toFixed(3)})`;
-      }
-
-      // Blend Act weights
-      for (let a = 0; a < 4; a++) {
-        const targetW = st.act === a ? 1 : 0;
-        st.morphBlend[a] = prefersReduced ? targetW : damp(st.morphBlend[a], targetW, 4.8, dt);
-      }
-      const weightSum =
-        st.morphBlend[0] + st.morphBlend[1] + st.morphBlend[2] + st.morphBlend[3] || 1;
-
-      ctx.save();
-      ctx.scale(renderScale, renderScale);
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = "high";
-
-      // =======================================================================
-      // 1. ARCHIVAL COTTON-RAG GROUND + ISOMETRIC MICRO-DOT MATRIX
-      // =======================================================================
-      const bgGrad = ctx.createRadialGradient(
-        width * 0.5,
-        height * 0.48,
-        12,
-        width * 0.5,
-        height * 0.5,
-        Math.max(width, height) * 0.72
-      );
-      bgGrad.addColorStop(0, "#FCF9F2");
-      bgGrad.addColorStop(0.65, "#F5EFE3");
-      bgGrad.addColorStop(1, "#E9E1D0");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
-
-      // Precision 22px Isometric Blueprint Micro-Dot Matrix
-      ctx.fillStyle = "rgba(73, 69, 62, 0.13)";
-      const gridStep = 22;
-      for (let gx = 18; gx < width - 14; gx += gridStep) {
-        for (let gy = 18; gy < height - 14; gy += gridStep) {
-          ctx.fillRect(gx, gy, 1.1, 1.1);
-        }
-      }
-
-      // Golden-Ratio Axis Hairlines
-      const hubX = width * (0.35 * st.morphBlend[0] + 0.5 * (1 - st.morphBlend[0]));
-      const hubY = height * 0.5;
-
-      ctx.strokeStyle = "rgba(73, 69, 62, 0.09)";
-      ctx.lineWidth = 0.75;
-      ctx.beginPath();
-      ctx.moveTo(12, hubY);
-      ctx.lineTo(width - 12, hubY);
-      ctx.moveTo(hubX, 12);
-      ctx.lineTo(hubX, height - 12);
-      ctx.stroke();
-
-      // =======================================================================
-      // 2. COUNTER-ROTATING SWISS ASTROLABE VERNIER DIAL (120 TICKS + DEGREES)
-      // =======================================================================
-      const outerDialR = Math.min(width, height) * 0.44;
-      ctx.save();
-      ctx.translate(hubX, hubY);
-
-      // Outer Slow Counter-Rotating Degree Ring
-      ctx.save();
-      ctx.rotate(-elapsed * 0.06);
-      ctx.strokeStyle = "rgba(158, 150, 134, 0.38)";
-      ctx.lineWidth = 0.75;
-      ctx.beginPath();
-      ctx.arc(0, 0, outerDialR, 0, Math.PI * 2);
-      ctx.arc(0, 0, outerDialR - 11, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.font = "500 7.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-      ctx.fillStyle = "rgba(97, 92, 83, 0.65)";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      for (let t = 0; t < 120; t++) {
-        const ang = (t / 120) * Math.PI * 2;
-        const isMajor = t % 15 === 0;
-        const isMid = t % 5 === 0;
-        const rIn = isMajor ? outerDialR - 11 : isMid ? outerDialR - 6.5 : outerDialR - 3.5;
-
-        ctx.beginPath();
-        ctx.moveTo(Math.cos(ang) * rIn, Math.sin(ang) * rIn);
-        ctx.lineTo(Math.cos(ang) * outerDialR, Math.sin(ang) * outerDialR);
-        ctx.strokeStyle = isMajor
-          ? "rgba(184, 51, 42, 0.55)"
-          : isMid
-            ? "rgba(73, 69, 62, 0.32)"
-            : "rgba(73, 69, 62, 0.16)";
-        ctx.lineWidth = isMajor ? 1 : 0.6;
-        ctx.stroke();
-
-        if (isMajor && outerDialR > 95) {
-          const deg = String(Math.round((t / 120) * 360)).padStart(3, "0") + "°";
-          ctx.save();
-          ctx.rotate(ang + Math.PI / 2);
-          ctx.fillText(deg, 0, -(outerDialR + 7));
-          ctx.restore();
-        }
-      }
-      ctx.restore();
-
-      // Inner Wheel-Driven Vernier Compass Ring
-      ctx.save();
-      ctx.rotate(wheelPhase * 0.18);
-      ctx.strokeStyle = "rgba(182, 132, 52, 0.34)";
-      ctx.lineWidth = 0.8;
-      ctx.setLineDash([6, 3, 1.5, 3]);
-      ctx.beginPath();
-      ctx.arc(0, 0, outerDialR * 0.72, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.restore();
-
-      ctx.restore();
-
-      // Double Concentric Copperplate Shockwaves on Impulse
-      if (st.shockwave > 0.01) {
-        const prog = 1 - st.shockwave;
-        const maxR = Math.max(width, height) * 0.62;
-        for (let ring = 0; ring < 2; ring++) {
-          const rProg = Math.max(0, prog - ring * 0.12);
-          if (rProg <= 0) continue;
-          ctx.beginPath();
-          ctx.arc(st.shockX * width, st.shockY * height, 14 + rProg * maxR, 0, Math.PI * 2);
-          ctx.strokeStyle =
-            ring === 0
-              ? `rgba(184, 51, 42, ${(st.shockwave * 0.45).toFixed(3)})`
-              : `rgba(182, 132, 52, ${(st.shockwave * 0.32).toFixed(3)})`;
-          ctx.lineWidth = ring === 0 ? 1.5 : 0.9;
-          ctx.stroke();
-        }
-      }
-
-      // =======================================================================
-      // 3. SAMPLE ALL 22 RIBBONS WITH FLUID WAKE & MAGNETIC VORTEX DEFORMATION
-      // =======================================================================
-      for (let r = 0; r < FILAMENT_COUNT; r++) {
-        const row = sampledRibbons[r];
-        for (let s = 0; s < SAMPLES; s++) {
-          const u = s / (SAMPLES - 1);
-          let bx = 0;
-          let by = 0;
-          for (let a = 0; a < 4; a++) {
-            const w = st.morphBlend[a] / weightSum;
-            if (w < 0.002) continue;
-            const [ax, ay] = sampleActFilament(a, r, u, elapsed, wheelPhase);
-            bx += ax * w;
-            by += ay * w;
-          }
-
-          let px = bx * width;
-          let py = by * height;
-
-          // Cursor Magnetic Swirl
-          if (st.pointerActive && !prefersReduced) {
-            const mx = st.pointerX * width;
-            const my = st.pointerY * height;
-            const dx = px - mx;
-            const dy = py - my;
-            const d2 = dx * dx + dy * dy;
-            const rad = 110;
-            if (d2 < rad * rad && d2 > 0.2) {
-              const d = Math.sqrt(d2);
-              const f = Math.pow(1 - d / rad, 2) * 22;
-              px += (dx / d) * f - (dy / d) * f * 0.42;
-              py += (dy / d) * f + (dx / d) * f * 0.42;
-            }
-          }
-
-          // Trailing Fluid Velocity Wake
-          for (let w = 0; w < wakeTrail.length; w++) {
-            const wp = wakeTrail[w];
-            const dx = px - wp.x;
-            const dy = py - wp.y;
-            const d2 = dx * dx + dy * dy;
-            if (d2 < 4900) {
-              const k = (1 - d2 / 4900) * wp.life * 0.22;
-              px += wp.vx * k;
-              py += wp.vy * k;
-            }
-          }
-
-          row[s][0] = px;
-          row[s][1] = py;
-        }
-      }
-
-      // First Pass: 16 Ultra-Fine Guilloché Copperplate Filaments (0.65px crisp ink)
-      for (let r = 0; r < FILAMENT_COUNT; r++) {
-        if (r % 4 === 0) continue; // Save hero lanes for sculpted paper-silk ribbons!
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        if (r % 3 === 0) {
-          ctx.strokeStyle = "rgba(182, 132, 52, 0.44)";
-          ctx.lineWidth = 0.9;
-        } else if (r % 3 === 1) {
-          ctx.strokeStyle = "rgba(42, 92, 77, 0.38)";
-          ctx.lineWidth = 0.85;
-        } else {
-          ctx.strokeStyle = "rgba(38, 36, 32, 0.24)";
-          ctx.lineWidth = 0.65;
-        }
-        strokeSmoothCurve(ctx, sampledRibbons[r]);
-      }
-
-      // Second Pass: 6 Sculpted Tapered Washi-Paper & Vermilion Silk Ribbons (with relief shadow!)
-      for (let r = 0; r < FILAMENT_COUNT; r += 4) {
-        const idx = r / 4;
-        const isVermilionSilk = idx % 2 === 0;
-        const isAlabasterPaper = idx % 3 === 1;
-
-        const fill = isVermilionSilk
-          ? "rgba(184, 51, 42, 0.78)"
-          : isAlabasterPaper
-            ? "rgba(250, 247, 241, 0.92)"
-            : "rgba(201, 154, 62, 0.72)";
-        const edge = isVermilionSilk
-          ? "rgba(122, 26, 20, 0.9)"
-          : isAlabasterPaper
-            ? "rgba(73, 69, 62, 0.68)"
-            : "rgba(130, 92, 24, 0.85)";
-
-        drawTaperedSilkRibbon(
-          ctx,
-          sampledRibbons[r],
-          isAlabasterPaper ? 4.4 : 3.4,
-          fill,
-          edge,
-          true
-        );
-      }
-
-      // =======================================================================
-      // 4. INTRICATE CHAPTER-SPECIFIC HOROLOGICAL & ARCHITECTURAL MECHANISMS
-      // =======================================================================
-      // ACT I: Triple Interlocking SmoothScroll Escapement Gears
-      if (st.morphBlend[0] > 0.04) {
-        const a0 = st.morphBlend[0];
-        ctx.save();
-        ctx.globalAlpha = a0;
-
-        // Vertical laser gate line separating raw Win32 from 120Hz Silk
-        ctx.strokeStyle = "rgba(184, 51, 42, 0.38)";
-        ctx.lineWidth = 0.9;
-        ctx.setLineDash([4, 2.5]);
-        ctx.beginPath();
-        ctx.moveTo(hubX, 18);
-        ctx.lineTo(hubX, height - 18);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Secondary Upper Brass Pinion Gear (14 teeth, counter-rotates at -24/14 ratio)
-        drawPrecisionGear(
-          ctx,
-          hubX - 24,
-          hubY - 31,
-          17,
-          8.5,
-          14,
-          3.2,
-          -wheelPhase * 0.55 * (24 / 14) + 0.2,
-          "rgba(234, 227, 213, 0.95)",
-          "#8B6524",
-          4
-        );
-
-        // Tertiary Lower Patina Balance Gear (16 teeth)
-        drawPrecisionGear(
-          ctx,
-          hubX - 21,
-          hubY + 34,
-          19,
-          9.5,
-          16,
-          3.2,
-          -wheelPhase * 0.55 * (24 / 16),
-          "rgba(232, 240, 236, 0.95)",
-          "#2A5C4D",
-          4
-        );
-
-        // Primary Central Vermilion & Alabaster Scroll Escapement Wheel (24 teeth)
-        drawPrecisionGear(
-          ctx,
-          hubX,
-          hubY,
-          28,
-          16,
-          24,
-          3.8,
-          wheelPhase * 0.55,
-          "rgba(250, 247, 241, 0.97)",
-          "#B8332A",
-          6
-        );
-        ctx.restore();
-
-        if (width >= 440) {
-          drawEngravedCallout(
-            ctx,
-            width * 0.14,
-            height * 0.24,
-            width * 0.17,
-            26,
-            "WIN32 · 120Δ RAW",
-            "#49453E",
-            a0
-          );
-          drawEngravedCallout(
-            ctx,
-            hubX,
-            hubY - 28,
-            hubX + 18,
-            height - 24,
-            "RUST 120HZ ESCAPEMENT",
-            "#B8332A",
-            a0
-          );
-          drawEngravedCallout(
-            ctx,
-            width * 0.78,
-            height * 0.34,
-            width * 0.78,
-            26,
-            `SMOOTHSCROLL · ${st.liveDlLabel}`,
-            "#2A5C4D",
-            a0
-          );
-        }
-      }
-
-      // ACT II: Laravel 12 Central Dispatch Seal & Engraved RBAC Ring Callouts
-      if (st.morphBlend[1] > 0.04) {
-        const a1 = st.morphBlend[1];
-        ctx.save();
-        ctx.globalAlpha = a1;
-        drawPrecisionGear(
-          ctx,
-          width * 0.5,
-          height * 0.5,
-          22,
-          11,
-          18,
-          3,
-          wheelPhase * 0.35,
-          "rgba(250, 247, 241, 0.96)",
-          "#B8332A",
-          4
-        );
-        ctx.restore();
-
-        if (width >= 440) {
-          drawEngravedCallout(
-            ctx,
-            width * 0.5,
-            height * 0.5 - 22,
-            width * 0.22,
-            26,
-            "LARAVEL 12 · 4-TIER RBAC",
-            "#B8332A",
-            a1
-          );
-          drawEngravedCallout(
-            ctx,
-            width * 0.68,
-            height * 0.68,
-            width * 0.77,
-            height - 24,
-            "QUEUE · BILLING & PDF",
-            "#B68434",
-            a1
-          );
-        }
-      }
-
-      // ACT III: MySQL B+Tree Apex Jewel & Cymatic Redis Resonance Rings
-      if (st.morphBlend[2] > 0.04) {
-        const a2 = st.morphBlend[2];
-        const rx = width * 0.5;
-        const ry = height * 0.15;
-        ctx.save();
-        for (let w = 0; w < 3; w++) {
-          const p = ((elapsed * 0.65 + w * 0.33) % 1);
-          ctx.globalAlpha = a2 * (1 - p) * 0.55;
-          ctx.strokeStyle = w % 2 === 0 ? "#2A5C4D" : "#B68434";
-          ctx.lineWidth = 1.3;
-          ctx.beginPath();
-          ctx.arc(rx, ry, 8 + p * 48, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-        ctx.restore();
-
-        if (width >= 440) {
-          drawEngravedCallout(
-            ctx,
-            rx,
-            ry,
-            width * 0.23,
-            26,
-            "REDIS CACHE · O(1) HIT",
-            "#2A5C4D",
-            a2
-          );
-          drawEngravedCallout(
-            ctx,
-            width * 0.74,
-            height * 0.63,
-            width * 0.77,
-            26,
-            "MYSQL COMPOSITE B+TREE",
-            "#B8332A",
-            a2
-          );
-        }
-      }
-
-      // ACT IV: Dual Horological Gyroscopes at x=0.18 & x=0.82
-      if (st.morphBlend[3] > 0.04) {
-        const a3 = st.morphBlend[3];
-        ctx.save();
-        ctx.globalAlpha = a3;
-        drawPrecisionGear(
-          ctx,
-          width * 0.18,
-          height * 0.5,
-          23,
-          12,
-          16,
-          3.2,
-          wheelPhase * 0.45,
-          "rgba(250, 247, 241, 0.96)",
-          "#B8332A",
-          4
-        );
-        drawPrecisionGear(
-          ctx,
-          width * 0.82,
-          height * 0.5,
-          23,
-          12,
-          16,
-          3.2,
-          -wheelPhase * 0.45,
-          "rgba(232, 240, 236, 0.96)",
-          "#2A5C4D",
-          4
-        );
-        ctx.restore();
-
-        if (width >= 440) {
-          drawEngravedCallout(
-            ctx,
-            width * 0.18,
-            height * 0.5 - 23,
-            width * 0.24,
-            26,
-            "LARAVEL · SPRING BOOT",
-            "#B8332A",
-            a3
-          );
-          drawEngravedCallout(
-            ctx,
-            width * 0.82,
-            height * 0.5 - 23,
-            width * 0.76,
-            26,
-            "WORDPRESS · VNPAY · AI",
-            "#2A5C4D",
-            a3
-          );
-        }
-      }
-
-      // =======================================================================
-      // 5. SPRING-PHYSICS CONSTELLATION JEWELS & FINE ARCHITECTURAL WEBBING
-      // =======================================================================
-      for (let i = 0; i < JEWEL_COUNT; i++) {
-        let tx = 0;
-        let ty = 0;
-        for (let a = 0; a < 4; a++) {
-          const w = st.morphBlend[a] / weightSum;
-          if (w < 0.002) continue;
-          const [nx, ny] = targetJewelPos(a, i, elapsed);
-          tx += nx * w;
-          ty += ny * w;
-        }
-        const jw = jewels[i];
-        if (prefersReduced) {
-          jw.x = tx;
-          jw.y = ty;
-        } else {
-          const ax = (tx - jw.x) * 28 - jw.vx * 7.4;
-          const ay = (ty - jw.y) * 28 - jw.vy * 7.4;
-          jw.vx += ax * dt;
-          jw.vy += ay * dt;
-          jw.x += jw.vx * dt;
-          jw.y += jw.vy * dt;
-        }
-      }
-
-      ctx.lineWidth = 0.65;
-      for (let i = 0; i < JEWEL_COUNT; i++) {
-        const x1 = jewels[i].x * width;
-        const y1 = jewels[i].y * height;
-        for (let j = i + 1; j < JEWEL_COUNT; j++) {
-          const x2 = jewels[j].x * width;
-          const y2 = jewels[j].y * height;
-          const d2 = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-          if (d2 < 6400) {
-            const op = (1 - d2 / 6400) * 0.22;
-            ctx.strokeStyle = `rgba(73, 69, 62, ${op.toFixed(3)})`;
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
-          }
-        }
-      }
-
-      for (let i = 0; i < JEWEL_COUNT; i++) {
-        const px = jewels[i].x * width;
-        const py = jewels[i].y * height;
-        if (i % 3 === 0) {
-          // Diamond Watchmaker Bearing Node
-          ctx.save();
-          ctx.translate(px, py);
-          ctx.rotate(Math.PI / 4);
-          ctx.fillStyle = "#FAF7F1";
-          ctx.strokeStyle = i % 6 === 0 ? "#B8332A" : "#2A5C4D";
-          ctx.lineWidth = 1.25;
-          ctx.beginPath();
-          ctx.rect(-3.2, -3.2, 6.4, 6.4);
-          ctx.fill();
-          ctx.stroke();
-          ctx.restore();
-        } else {
-          ctx.beginPath();
-          ctx.arc(px, py, 2.1, 0, Math.PI * 2);
-          ctx.fillStyle = "#262420";
-          ctx.fill();
-        }
-      }
-
-      // =======================================================================
-      // 6. 54 LUMINOUS COURIER BEADS STREAMING ALONG RIBBON TRAJECTORIES
-      // =======================================================================
-      const flowBoost = prefersReduced
-        ? 0
-        : 1 + Math.abs(st.wheelVelocity) * 0.14 + st.shockwave * 1.9;
-
-      for (const c of couriers) {
-        c.u = (((c.u + dt * c.speed * flowBoost) % 1) + 1) % 1;
-        const sampleIdx = Math.min(SAMPLES - 1, Math.floor(c.u * (SAMPLES - 1)));
-        const [px, py] = sampledRibbons[c.lane][sampleIdx];
-        const env = Math.sin(c.u * Math.PI);
-        const rad = c.size * (0.65 + env * 0.6);
-
-        // Outer soft halo + razor crisp core
-        ctx.beginPath();
-        ctx.arc(px, py, rad * 2.1, 0, Math.PI * 2);
-        ctx.fillStyle =
-          c.tone === 0
-            ? `rgba(184, 51, 42, ${(0.18 * env).toFixed(2)})`
-            : c.tone === 1
-              ? `rgba(182, 132, 52, ${(0.18 * env).toFixed(2)})`
-              : `rgba(42, 92, 77, ${(0.18 * env).toFixed(2)})`;
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(px, py, rad, 0, Math.PI * 2);
-        ctx.fillStyle =
-          c.tone === 0
-            ? `rgba(184, 51, 42, ${(0.95 * env).toFixed(2)})`
-            : c.tone === 1
-              ? `rgba(182, 132, 52, ${(0.92 * env).toFixed(2)})`
-              : `rgba(42, 92, 77, ${(0.92 * env).toFixed(2)})`;
-        ctx.fill();
-      }
-
-      // =======================================================================
-      // 7. LEICA RANGEFINDER CURSOR CROSSHAIR & LIVE MICRO-TELEMETRY BAR
-      // =======================================================================
-      if (st.pointerActive && !prefersReduced) {
-        const mx = st.pointerX * width;
-        const my = st.pointerY * height;
-
-        ctx.save();
-        ctx.strokeStyle = "rgba(184, 51, 42, 0.22)";
-        ctx.lineWidth = 0.65;
-        ctx.setLineDash([3, 3]);
-        ctx.beginPath();
-        ctx.moveTo(mx, 10);
-        ctx.lineTo(mx, height - 10);
-        ctx.moveTo(10, my);
-        ctx.lineTo(width - 10, my);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.beginPath();
-        ctx.arc(mx, my, 16, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(184, 51, 42, 0.45)";
-        ctx.lineWidth = 0.85;
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // Crisp Vernier Corner Registration Brackets + Bottom-Left Micro Scale
-      ctx.strokeStyle = "rgba(97, 92, 83, 0.62)";
-      ctx.lineWidth = 1;
-      const m = 9;
-      const tk = 12;
-      ctx.beginPath();
-      ctx.moveTo(m, m + tk);
-      ctx.lineTo(m, m);
-      ctx.lineTo(m + tk, m);
-      ctx.moveTo(width - m - tk, m);
-      ctx.lineTo(width - m, m);
-      ctx.lineTo(width - m, m + tk);
-      ctx.moveTo(m, height - m - tk);
-      ctx.lineTo(m, height - m);
-      ctx.lineTo(m + tk, height - m);
-      ctx.moveTo(width - m - tk, height - m);
-      ctx.lineTo(width - m, height - m);
-      ctx.lineTo(width - m, height - m - tk);
-      ctx.stroke();
-
-      ctx.font = "500 8.5px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
-      ctx.fillStyle = "rgba(97, 92, 83, 0.72)";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "bottom";
-      ctx.fillText(
-        `ω ${Math.abs(st.wheelVelocity).toFixed(2)} rad/s · ${Math.round(renderScale)}X RETINA`,
-        16,
-        height - 11
-      );
-
-      ctx.restore();
-    };
-
-    rafId = window.requestAnimationFrame(drawFrame);
-
-    return () => {
-      window.cancelAnimationFrame(rafId);
-      ro.disconnect();
-      io.disconnect();
-      reducedQuery.removeEventListener("change", onReducedChange);
-    };
-  }, []);
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
-    const nx = (e.clientX - rect.left) / rect.width;
-    const ny = (e.clientY - rect.top) / rect.height;
-    stateRef.current.isDragging = true;
-    stateRef.current.dragLastAngle = Math.atan2(ny - 0.5, nx - 0.5);
-    triggerWave(nx, ny);
+    if (txStage >= 3) return;
+    const t = window.setTimeout(() => {
+      setTxStage((s) => Math.min(3, s + 1));
+    }, 420);
+    return () => window.clearTimeout(t);
+  }, [txStage]);
+
+  const profileConfigs = [
+    {
+      id: "vscode" as const,
+      label: "Code.exe",
+      meta: "110px · 340ms",
+    },
+    {
+      id: "browser" as const,
+      label: "chrome.exe",
+      meta: "135px · 460ms",
+    },
+    {
+      id: "game" as const,
+      label: isVi ? "Game (Loại trừ)" : "Game Bypass",
+      meta: "Raw Win32",
+    },
+  ];
+
+  const rbacScopes: Record<RbacRole, { en: string; vi: string }> = {
+    Owner: {
+      en: "Full portfolio: multi-building revenue, contracts, RBAC & audit",
+      vi: "Toàn quyền: doanh thu đa tòa nhà, hợp đồng, phân quyền & đối soát",
+    },
+    Admin: {
+      en: "System ops: room catalog, queued utility billing & PDF templates",
+      vi: "Quản trị: danh mục phòng, chạy hàng đợi điện nước & xuất PDF",
+    },
+    Manager: {
+      en: "Branch scope: assigned building leases, meter readings & invoices",
+      vi: "Theo chi nhánh: hợp đồng tòa nhà phụ trách, chốt điện nước & hóa đơn",
+    },
+    Sales: {
+      en: "Scoped read/book: available rooms & tenant reservation requests",
+      vi: "Giới hạn nghiệp vụ: xem phòng trống & tạo phiếu giữ chỗ khách thuê",
+    },
   };
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) return;
-    const nx = (e.clientX - rect.left) / rect.width;
-    const ny = (e.clientY - rect.top) / rect.height;
-    stateRef.current.pointerX = nx;
-    stateRef.current.pointerY = ny;
-    stateRef.current.pointerActive = true;
+  const queueStages = isVi
+    ? ["RBAC Guard", "Điện nước bậc", "Queue hóa đơn", "Xuất file PDF"]
+    : ["RBAC Guard", "Utility Tiers", "Invoice Queue", "Contract PDF"];
 
-    if (stateRef.current.isDragging) {
-      const ang = Math.atan2(ny - 0.5, nx - 0.5);
-      let delta = ang - stateRef.current.dragLastAngle;
-      if (delta > Math.PI) delta -= Math.PI * 2;
-      if (delta < -Math.PI) delta += Math.PI * 2;
-      stateRef.current.wheelVelocity = Math.max(-16, Math.min(16, delta * 28));
-      stateRef.current.dragLastAngle = ang;
-    }
-  };
+  const medicalSlots = isVi
+    ? [
+        { time: "08:30", dept: "Tim mạch · BS. Minh", fee: "350.000đ" },
+        { time: "10:15", dept: "Nội tổng quát · BS. Lan", fee: "250.000đ" },
+        { time: "14:00", dept: "Nhi khoa · BS. Hùng", fee: "300.000đ" },
+      ]
+    : [
+        { time: "08:30", dept: "Cardiology · Dr. Minh", fee: "350,000 VND" },
+        { time: "10:15", dept: "Internal Med · Dr. Lan", fee: "250,000 VND" },
+        { time: "14:00", dept: "Pediatrics · Dr. Hung", fee: "300,000 VND" },
+      ];
 
-  const handlePointerUpOrLeave = (leave: boolean) => {
-    stateRef.current.isDragging = false;
-    if (leave) stateRef.current.pointerActive = false;
-  };
+  const vnpaySteps = isVi
+    ? ["Xác thực JWT", "Khóa lịch khám", "VNPay IPN (00)", "Đã xác nhận"]
+    : ["JWT Guard", "MySQL Lock", "VNPay IPN (00)", "Confirmed"];
+
+  const cardMeta = [
+    {
+      idx: 0 as CardIndex,
+      icon: Mouse,
+      headerTitle: `SmoothScroll ${liveDownloads ? `· ${liveDownloads} dl` : "· Rust + Tauri 2"}`,
+      slug: "smoothscroll",
+      openText: isVi ? "Chi tiết SmoothScroll" : "SmoothScroll dossier",
+    },
+    {
+      idx: 1 as CardIndex,
+      icon: Layers,
+      headerTitle: isVi
+        ? "C3TEK Property · Laravel 12 + Queue + Redis"
+        : "C3TEK Property · Laravel 12 + Queue + Redis",
+      slug: "property-management",
+      openText: isVi ? "Chi tiết Property Platform" : "Property dossier",
+    },
+    {
+      idx: 2 as CardIndex,
+      icon: ShieldCheck,
+      headerTitle: isVi
+        ? "Medical Booking · Spring Boot + VNPay"
+        : "Medical Booking · Spring Boot + VNPay",
+      slug: "medical-booking",
+      openText: isVi ? "Chi tiết Medical Booking" : "Medical dossier",
+    },
+  ];
 
   return (
-    <div className="paper-stack paper-chamfer relative flex flex-col justify-between p-4 sm:p-5">
-      {/* Top Horological Plate Header */}
+    <div className="paper-well relative flex flex-col justify-between rounded-[4px] p-4 sm:p-5">
+      {/* Top Workbench Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--rule-cut)] pb-2.5 font-mono text-xs text-[var(--ink-secondary)]">
         <span className="truncate font-medium text-[var(--ink-primary)]">{stageLabel}</span>
-        <div className="flex items-center gap-1.5">
+        {activeCard === 0 && (
           <button
             type="button"
-            onClick={() => triggerWave(0.35, 0.5)}
-            className="inline-flex min-h-7 cursor-pointer items-center gap-1 rounded-[2px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-2 py-0.5 font-mono text-xs text-[var(--ink-primary)] transition-colors hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)]"
+            onClick={() => fireScrollBurst(112)}
+            className="inline-flex min-h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-[2px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] px-2.5 py-0.5 font-mono text-xs font-medium text-[var(--ink-primary)] transition-colors hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.97]"
           >
-            <Sparkles size={12} aria-hidden="true" />
+            <Play size={11} aria-hidden="true" />
             <span>{pulseLabel}</span>
           </button>
-
-          <button
-            type="button"
-            aria-pressed={autoPlay}
-            aria-label={autoPlay ? "Pause chapter cycle" : "Resume chapter cycle"}
-            onClick={() => setAutoPlay((v) => !v)}
-            className="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-[2px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] text-[var(--ink-primary)] transition-colors hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)]"
-          >
-            {autoPlay ? <Pause size={12} /> : <Play size={12} />}
-          </button>
-        </div>
+        )}
       </div>
 
-      {/* 100% Unobstructed Supersampled Engraving Canvas */}
-      <div
-        ref={stageWrapperRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={() => handlePointerUpOrLeave(false)}
-        onPointerLeave={() => handlePointerUpOrLeave(true)}
-        data-cursor="inspect"
-        className="relative my-2.5 h-[265px] w-full cursor-crosshair overflow-hidden rounded-[3px] border border-[var(--rule-strong)] bg-[#FAF7F1] select-none sm:h-[315px]"
-      >
-        <canvas
-          ref={canvasRef}
-          aria-label={stageLabel}
-          role="img"
-          className="block h-full w-full"
-        />
+      {/* Physical Stacked Paper-Window Deck (3 Real Interactive Project Interfaces) */}
+      <div className="relative mt-7 mb-3 h-[335px] w-full sm:h-[345px]">
+        {cardMeta.map((meta) => {
+          const depth = ((meta.idx - activeCard + 3) % 3) as 0 | 1 | 2;
+          const isFront = depth === 0;
+          const IconComp = meta.icon;
+
+          const targetY = depth === 0 ? 0 : depth === 1 ? -13 : -24;
+          const targetScale = depth === 0 ? 1 : depth === 1 ? 0.965 : 0.93;
+          const targetOpacity = depth === 0 ? 1 : depth === 1 ? 0.9 : 0.72;
+          const zIndex = depth === 0 ? 30 : depth === 1 ? 20 : 10;
+
+          return (
+            <motion.div
+              key={meta.idx}
+              style={{ zIndex }}
+              initial={false}
+              animate={
+                shouldReduceMotion
+                  ? { y: targetY, scale: targetScale, opacity: targetOpacity }
+                  : { y: targetY, scale: targetScale, opacity: targetOpacity }
+              }
+              transition={{
+                type: "spring",
+                stiffness: 320,
+                damping: 30,
+                mass: 0.75,
+              }}
+              onClick={!isFront ? () => setActiveCard(meta.idx) : undefined}
+              className={
+                "paper-sheet absolute inset-0 flex origin-top flex-col justify-between overflow-hidden rounded-[4px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] " +
+                (!isFront ? "cursor-pointer hover:border-[var(--accent-vermilion)]" : "")
+              }
+              aria-hidden={!isFront}
+            >
+              {/* Tactile Software Window Titlebar */}
+              <div className="flex items-center justify-between gap-2 border-b border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-3.5 py-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="flex items-center gap-1" aria-hidden="true">
+                    <span className="h-2 w-2 rounded-full bg-[var(--accent-vermilion)]" />
+                    <span className="h-2 w-2 rounded-full bg-[var(--accent-ochre)]" />
+                    <span className="h-2 w-2 rounded-full bg-[var(--accent-patina)]" />
+                  </span>
+                  <IconComp
+                    size={13}
+                    className="ml-1 shrink-0 text-[var(--ink-secondary)]"
+                    aria-hidden="true"
+                  />
+                  <span className="truncate font-mono text-xs font-medium text-[var(--ink-primary)]">
+                    {meta.headerTitle}
+                  </span>
+                </div>
+
+                {meta.idx === 0 && isFront && (
+                  <button
+                    type="button"
+                    onClick={() => setSmoothEnabled((v) => !v)}
+                    aria-pressed={smoothEnabled}
+                    className={
+                      "shrink-0 cursor-pointer rounded-[2px] border px-2 py-0.5 font-mono text-xs font-semibold transition-colors " +
+                      (smoothEnabled && appProfile !== "game"
+                        ? "border-[var(--accent-patina)] bg-[var(--accent-patina-wash)] text-[var(--accent-patina)]"
+                        : "border-[var(--rule-strong)] bg-[var(--bg-sheet-mid)] text-[var(--ink-secondary)]")
+                    }
+                  >
+                    {smoothEnabled && appProfile !== "game" ? "120HZ ON" : "BYPASS"}
+                  </button>
+                )}
+
+                {meta.idx !== 0 && isFront && (
+                  <span className="shrink-0 rounded-[2px] bg-[var(--accent-patina-wash)] px-2 py-0.5 font-mono text-xs font-medium text-[var(--accent-patina)]">
+                    200 OK
+                  </span>
+                )}
+              </div>
+
+              {/* ==================== BODY 01: SMOOTHSCROLL LIVE SPLIT APP ==================== */}
+              {meta.idx === 0 && (
+                <div className="flex min-h-0 flex-1 flex-col justify-between p-3 sm:p-3.5">
+                  {/* Per-App Profile Selector (Real SmoothScroll Feature) */}
+                  <div className="mb-2.5 flex shrink-0 flex-wrap items-center justify-between gap-1.5">
+                    <div className="flex flex-wrap gap-1.5">
+                      {profileConfigs.map((prof) => {
+                        const active = appProfile === prof.id;
+                        return (
+                          <button
+                            key={prof.id}
+                            type="button"
+                            tabIndex={isFront ? 0 : -1}
+                            onClick={() => {
+                              setAppProfile(prof.id);
+                              fireScrollBurst(84);
+                            }}
+                            className={
+                              "cursor-pointer rounded-[2px] border px-2 py-1 font-mono text-xs transition-colors " +
+                              (active
+                                ? "border-[var(--ink-primary)] bg-[var(--ink-primary)] font-medium text-[var(--bg-sheet-top)]"
+                                : "border-[var(--rule-cut)] bg-[var(--bg-canvas)] text-[var(--ink-secondary)] hover:border-[var(--rule-strong)]")
+                            }
+                          >
+                            {prof.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <span
+                      ref={velocityReadoutRef}
+                      className="hidden font-mono text-xs text-[var(--accent-patina)] tabular-nums sm:inline"
+                    >
+                      0 px/s
+                    </span>
+                  </div>
+
+                  {/* Side-by-Side Live Scrolling Code Panes: Raw Stepped vs SmoothScroll 120Hz */}
+                  <div
+                    ref={scrollStageRef}
+                    className="grid min-h-0 flex-1 grid-cols-2 gap-2.5 overflow-hidden"
+                  >
+                    {/* LEFT: Default Windows Stepped Scroll */}
+                    <div className="flex flex-col overflow-hidden rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)]">
+                      <div className="flex items-center justify-between border-b border-[var(--rule-cut)] bg-[var(--bg-sheet-mid)] px-2.5 py-1 font-mono text-xs text-[var(--ink-secondary)]">
+                        <span className="truncate">
+                          {isVi ? "Win32 gốc (Giật nấc)" : "Win32 Raw (Stepped)"}
+                        </span>
+                        <span className="shrink-0 text-[var(--ink-tertiary)]">120Δ</span>
+                      </div>
+                      <div className="relative flex-1 overflow-hidden p-2">
+                        <div ref={rawTrackRef} className="space-y-1.5 will-change-transform">
+                          {[...CODE_SAMPLE_LINES, ...CODE_SAMPLE_LINES].map((ln, i) => (
+                            <div
+                              key={`raw-${i}`}
+                              className="flex items-center gap-2 truncate font-mono text-xs leading-5 text-[var(--ink-secondary)]"
+                            >
+                              <span className="text-[var(--ink-tertiary)] opacity-60">{ln.num}</span>
+                              <span className="truncate">{ln.code}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RIGHT: SmoothScroll Rust 120Hz Interpolated Scroll */}
+                    <div className="flex flex-col overflow-hidden rounded-[3px] border border-[var(--accent-patina)]/55 bg-[var(--bg-sheet-top)]">
+                      <div className="flex items-center justify-between border-b border-[var(--accent-patina)]/25 bg-[var(--accent-patina-wash)] px-2.5 py-1 font-mono text-xs font-medium text-[var(--accent-patina)]">
+                        <span className="truncate">
+                          {smoothEnabled && appProfile !== "game"
+                            ? isVi
+                              ? "SmoothScroll (Mượt)"
+                              : "SmoothScroll (120Hz)"
+                            : isVi
+                              ? "Đã tạm ngưng (Raw)"
+                              : "Bypassed (Raw)"}
+                        </span>
+                        <span className="shrink-0">Rust</span>
+                      </div>
+                      <div className="relative flex-1 overflow-hidden p-2">
+                        <div ref={smoothTrackRef} className="space-y-1.5 will-change-transform">
+                          {[...CODE_SAMPLE_LINES, ...CODE_SAMPLE_LINES].map((ln, i) => (
+                            <div
+                              key={`smooth-${i}`}
+                              className={
+                                "flex items-center gap-2 truncate font-mono text-xs leading-5 " +
+                                (ln.accent
+                                  ? "font-medium text-[var(--ink-primary)]"
+                                  : "text-[var(--ink-secondary)]")
+                              }
+                            >
+                              <span className="text-[var(--accent-vermilion)]/75">{ln.num}</span>
+                              <span className="truncate">{ln.code}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Window Footer */}
+                  <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-[var(--rule-cut)] pt-2">
+                    <span className="truncate font-sans text-xs text-[var(--ink-secondary)]">
+                      {isVi
+                        ? "Lăn chuột ngay trên 2 khung code để thấy sự khác biệt"
+                        : "Roll your mouse wheel over both panes to feel the difference"}
+                    </span>
+                    <Link
+                      href="/projects/smoothscroll"
+                      tabIndex={isFront ? 0 : -1}
+                      transitionTypes={["folio-forward"]}
+                      className="inline-flex shrink-0 items-center gap-1 font-mono text-xs font-semibold text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+                    >
+                      <span>{meta.openText}</span>
+                      <ArrowUpRight size={13} aria-hidden="true" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== BODY 02: LARAVEL 12 PROPERTY API & QUEUE ==================== */}
+              {meta.idx === 1 && (
+                <div className="flex flex-1 flex-col justify-between p-3.5">
+                  {/* 4-Tier RBAC Interactive Switcher */}
+                  <div>
+                    <div className="flex flex-wrap items-center justify-between gap-1.5">
+                      <div className="flex flex-wrap gap-1.5">
+                        {(["Owner", "Admin", "Manager", "Sales"] as RbacRole[]).map((role) => (
+                          <button
+                            key={role}
+                            type="button"
+                            tabIndex={isFront ? 0 : -1}
+                            onClick={() => setRbacRole(role)}
+                            className={
+                              "cursor-pointer rounded-[2px] border px-2.5 py-1 font-mono text-xs transition-colors " +
+                              (rbacRole === role
+                                ? "border-[var(--ink-primary)] bg-[var(--ink-primary)] font-medium text-[var(--bg-sheet-top)]"
+                                : "border-[var(--rule-cut)] bg-[var(--bg-canvas)] text-[var(--ink-secondary)] hover:border-[var(--rule-strong)]")
+                            }
+                          >
+                            {role}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        tabIndex={isFront ? 0 : -1}
+                        onClick={() => setOptimizedQuery((v) => !v)}
+                        className="inline-flex cursor-pointer items-center gap-1 rounded-[2px] border border-[var(--rule-strong)] bg-[var(--bg-canvas)] px-2 py-1 font-mono text-xs font-medium text-[var(--ink-primary)] hover:border-[var(--accent-vermilion)]"
+                      >
+                        <Database size={12} aria-hidden="true" />
+                        <span>{optimizedQuery ? "Redis + Index" : "Legacy N+1"}</span>
+                      </button>
+                    </div>
+
+                    <p className="mt-2 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-2.5 py-1.5 font-sans text-xs text-[var(--ink-primary)]">
+                      <span className="font-mono font-semibold text-[var(--accent-patina)]">
+                        {`RBAC [${rbacRole}]: `}
+                      </span>
+                      {rbacScopes[rbacRole][isVi ? "vi" : "en"]}
+                    </p>
+                  </div>
+
+                  {/* MySQL + Redis Query Benchmark Bar */}
+                  <div className="rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] p-2.5">
+                    <div className="flex items-center justify-between font-mono text-xs">
+                      <span className="text-[var(--ink-secondary)]">
+                        {optimizedQuery
+                          ? "Eloquent::with(['room','meter']) + Redis"
+                          : "Unindexed N+1 Loop (64 queries)"}
+                      </span>
+                      <span
+                        className={
+                          "font-semibold tabular-nums " +
+                          (optimizedQuery
+                            ? "text-[var(--accent-patina)]"
+                            : "text-[var(--accent-vermilion)]")
+                        }
+                      >
+                        {optimizedQuery ? "14 ms · 2 SQL" : "286 ms · 64 SQL"}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-[var(--bg-sheet-mid)]">
+                      <motion.div
+                        initial={false}
+                        animate={{ width: optimizedQuery ? "11%" : "92%" }}
+                        transition={{ type: "spring", stiffness: 260, damping: 26 }}
+                        className={
+                          "h-full rounded-full " +
+                          (optimizedQuery
+                            ? "bg-[var(--accent-patina)]"
+                            : "bg-[var(--accent-vermilion)]")
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {/* Live Async Billing Queue Pipeline */}
+                  <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+                    {queueStages.map((stName, idx) => {
+                      const active = queueStep === idx;
+                      return (
+                        <div
+                          key={stName}
+                          className={
+                            "rounded-[3px] border px-2 py-1.5 font-mono text-xs transition-colors " +
+                            (active
+                              ? "border-[var(--accent-patina)] bg-[var(--accent-patina-wash)] font-semibold text-[var(--accent-patina)]"
+                              : "border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] text-[var(--ink-secondary)]")
+                          }
+                        >
+                          <span className="block truncate">{stName}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 border-t border-[var(--rule-cut)] pt-2">
+                    <span className="truncate font-mono text-xs text-[var(--ink-tertiary)]">
+                      Queue: billing-high · Worker OK
+                    </span>
+                    <Link
+                      href="/projects/property-management"
+                      tabIndex={isFront ? 0 : -1}
+                      transitionTypes={["folio-forward"]}
+                      className="inline-flex shrink-0 items-center gap-1 font-mono text-xs font-semibold text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+                    >
+                      <span>{meta.openText}</span>
+                      <ArrowUpRight size={13} aria-hidden="true" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* ==================== BODY 03: SPRING BOOT + VNPAY BOOKING ==================== */}
+              {meta.idx === 2 && (
+                <div className="flex flex-1 flex-col justify-between p-3.5">
+                  <div className="space-y-1.5">
+                    {medicalSlots.map((slot, sIdx) => {
+                      const chosen = selectedSlot === sIdx;
+                      return (
+                        <button
+                          key={slot.time}
+                          type="button"
+                          tabIndex={isFront ? 0 : -1}
+                          onClick={() => runVnpaySimulation(sIdx)}
+                          className={
+                            "flex w-full cursor-pointer items-center justify-between rounded-[3px] border px-3 py-2 text-left text-xs transition-colors " +
+                            (chosen
+                              ? "border-[var(--ink-primary)] bg-[var(--bg-canvas)] font-medium text-[var(--ink-primary)]"
+                              : "border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] text-[var(--ink-secondary)] hover:border-[var(--rule-strong)]")
+                          }
+                        >
+                          <span className="flex items-center gap-2 truncate">
+                            <span className="font-mono font-semibold text-[var(--accent-vermilion)] tabular-nums">
+                              {slot.time}
+                            </span>
+                            <span className="truncate font-sans">{slot.dept}</span>
+                          </span>
+                          <span className="shrink-0 font-mono text-xs text-[var(--accent-patina)] tabular-nums">
+                            {slot.fee}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Live 4-Step VNPay Settlement Verification Trace */}
+                  <div className="grid grid-cols-2 gap-1.5 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] p-2.5 sm:grid-cols-4">
+                    {vnpaySteps.map((stepText, idx) => {
+                      const done = idx <= txStage;
+                      return (
+                        <div key={stepText} className="flex items-center gap-1.5 font-mono text-xs">
+                          <CheckCircle2
+                            size={13}
+                            className={
+                              "shrink-0 transition-colors " +
+                              (done
+                                ? "text-[var(--accent-patina)]"
+                                : "text-[var(--ink-tertiary)] opacity-40")
+                            }
+                            aria-hidden="true"
+                          />
+                          <span
+                            className={
+                              "truncate " +
+                              (done ? "font-medium text-[var(--ink-primary)]" : "text-[var(--ink-tertiary)]")
+                            }
+                          >
+                            {stepText}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 border-t border-[var(--rule-cut)] pt-2">
+                    <button
+                      type="button"
+                      tabIndex={isFront ? 0 : -1}
+                      onClick={() => runVnpaySimulation((selectedSlot + 1) % 3)}
+                      className="inline-flex cursor-pointer items-center gap-1 font-mono text-xs font-medium text-[var(--accent-patina)] hover:underline"
+                    >
+                      <Zap size={12} aria-hidden="true" />
+                      <span>
+                        {isVi ? "Mô phỏng callback VNPay" : "Simulate VNPay callback"}
+                      </span>
+                    </button>
+
+                    <Link
+                      href="/projects/medical-booking"
+                      tabIndex={isFront ? 0 : -1}
+                      transitionTypes={["folio-forward"]}
+                      className="inline-flex shrink-0 items-center gap-1 font-mono text-xs font-semibold text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+                    >
+                      <span>{meta.openText}</span>
+                      <ArrowUpRight size={13} aria-hidden="true" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          );
+        })}
       </div>
 
-      {/* Dedicated Unobstructed Story Plaque + Direct Folio Jump */}
-      <div className="mb-2.5 flex flex-col items-start justify-between gap-2.5 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-3 py-2.5 sm:flex-row sm:items-center">
-        <div className="min-w-0 flex-1">
-          <p className="font-serif text-sm font-semibold text-[var(--ink-primary)] sm:truncate sm:text-base">
-            {currentChapter.title}
-          </p>
-          <p className="mt-0.5 font-sans text-xs leading-snug text-[var(--ink-secondary)] sm:line-clamp-1">
-            {currentChapter.caption}
-          </p>
-        </div>
+      {/* Bottom 3-Project Deck Switcher */}
+      <div className="space-y-2 border-t border-[var(--rule-cut)] pt-2.5">
+        <p className="font-sans text-xs text-[var(--ink-secondary)]">{strataHint}</p>
 
-        <Link
-          href={`/projects/${currentChapter.slug}`}
-          transitionTypes={["folio-forward"]}
-          data-cursor="open"
-          className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-[3px] border border-[var(--ink-primary)] bg-[var(--ink-primary)] px-3 font-mono text-xs font-medium text-[var(--bg-sheet-top)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:bg-[var(--accent-vermilion)] active:scale-[0.97]"
-        >
-          <span>{currentChapter.cta}</span>
-          <ArrowUpRight size={13} aria-hidden="true" />
-        </Link>
-      </div>
-
-      {/* 4 Interactive Portfolio Chapter Tabs with Live Progress Hairlines */}
-      <div className="space-y-1.5 border-t border-[var(--rule-cut)] pt-2">
-        <p className="font-sans text-xs text-[var(--ink-tertiary)]">{strataHint}</p>
-
-        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4" role="tablist" aria-label={stageLabel}>
-          {chapters.map((ch, idx) => {
-            const act = idx as ActIndex;
-            const isSelected = activeAct === act;
+        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3" role="tablist" aria-label={stageLabel}>
+          {layers.map((label, idx) => {
+            const cardIdx = idx as CardIndex;
+            const selected = activeCard === cardIdx;
             return (
               <button
-                key={ch.code}
+                key={label}
                 type="button"
                 role="tab"
-                aria-selected={isSelected}
-                onClick={() => {
-                  setActiveAct(act);
-                  triggerWave(idx === 0 ? 0.35 : 0.5, 0.5);
-                }}
+                aria-selected={selected}
+                onClick={() => setActiveCard(cardIdx)}
                 className={
-                  "relative min-h-9 cursor-pointer overflow-hidden rounded-[3px] border px-2 py-1.5 text-left font-mono text-xs transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] " +
-                  (isSelected
-                    ? "border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] font-semibold text-[var(--ink-primary)] shadow-[0_2px_8px_rgba(24,23,21,0.06)]"
-                    : "border-[var(--rule-cut)] bg-[var(--bg-canvas)]/75 text-[var(--ink-secondary)] hover:border-[var(--rule-strong)] hover:text-[var(--ink-primary)]")
+                  "min-h-10 cursor-pointer rounded-[3px] border px-3 py-1.5 text-left font-mono text-xs transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] " +
+                  (selected
+                    ? "border-[var(--ink-primary)] bg-[var(--ink-primary)] font-semibold text-[var(--bg-sheet-top)]"
+                    : "border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] text-[var(--ink-secondary)] hover:border-[var(--rule-strong)] hover:text-[var(--ink-primary)]")
                 }
               >
-                <span className="block truncate">{`${ch.code} · ${ch.short}`}</span>
-                <span
-                  ref={(el) => {
-                    progressBarRefs.current[idx] = el;
-                  }}
-                  aria-hidden="true"
-                  style={{ transform: isSelected ? "scaleX(1)" : "scaleX(0)" }}
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left bg-[var(--accent-vermilion)]"
-                />
+                <span className="block truncate">{label}</span>
               </button>
             );
           })}
