@@ -7,6 +7,7 @@ import { ArrowDownRight, ArrowUpRight, FileText } from "lucide-react";
 import Button from "@/components/ui/Button";
 import CVModal from "@/components/ui/CVModal";
 import { OWNER_INFO } from "@/data/portfolio";
+import { formatRepoDownloads, useGitHubRepos } from "@/hooks/useGitHubRepos";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const PaperKineticSculpture = dynamic(
@@ -24,8 +25,10 @@ const PaperKineticSculpture = dynamic(
 export default function HeroSection() {
   const [isCVOpen, setIsCVOpen] = useState(false);
   const { language, dictionary } = useLanguage();
+  const { smoothScrollRepo, loading: statsLoading } = useGitHubRepos();
   const { hero } = dictionary;
   const ownerName = language === "vi" ? OWNER_INFO.nameVi : OWNER_INFO.nameEn;
+  const liveDownloads = formatRepoDownloads(smoothScrollRepo, language);
 
   return (
     <section
@@ -89,9 +92,26 @@ export default function HeroSection() {
                   <div>
                     <p className="font-mono text-xs text-[var(--ink-tertiary)]">
                       {`${hero.proofLabel} / SmoothScroll`}
+                      {smoothScrollRepo?.latest_release
+                        ? ` · ${smoothScrollRepo.latest_release}`
+                        : ""}
                     </p>
-                    <p className="mt-1.5 font-serif text-4xl font-semibold leading-none tracking-[-0.03em] text-[var(--accent-vermilion)] tabular-nums sm:text-5xl">
-                      30,000+
+                    <p
+                      aria-live="polite"
+                      className="mt-1.5 min-h-[2.5rem] font-serif text-4xl font-semibold leading-none tracking-[-0.03em] text-[var(--accent-vermilion)] tabular-nums sm:min-h-[3rem] sm:text-5xl"
+                    >
+                      {liveDownloads ? (
+                        <span className="inline-block animate-[quietFade_320ms_ease-out_both]">
+                          {liveDownloads}
+                        </span>
+                      ) : statsLoading ? (
+                        <span
+                          className="inline-block h-9 w-36 animate-pulse rounded-[3px] bg-[var(--bg-sheet-mid)] align-middle sm:h-11 sm:w-44"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        "—"
+                      )}
                     </p>
                     <p className="mt-1.5 font-mono text-xs text-[var(--ink-secondary)]">
                       {`${hero.proofCaption} / Rust & Tauri 2`}

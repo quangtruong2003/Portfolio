@@ -8,6 +8,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProjectSchematic from "@/components/projects/ProjectSchematic";
 import type { ProjectItem } from "@/data/portfolio";
+import { formatRepoDownloads, useGitHubRepos } from "@/hooks/useGitHubRepos";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 interface ProjectDossierViewProps {
@@ -22,8 +23,23 @@ export default function ProjectDossierView({
   nextProject,
 }: ProjectDossierViewProps) {
   const { dictionary, language } = useLanguage();
+  const { smoothScrollRepo, loading: statsLoading } = useGitHubRepos();
   const text = dictionary.projects;
   const d = text.dossier;
+  const isSmoothScroll = project.slug === "smoothscroll";
+  const liveDownloads = isSmoothScroll
+    ? formatRepoDownloads(smoothScrollRepo, language)
+    : null;
+  const badgeValue = isSmoothScroll
+    ? liveDownloads
+    : project.highlightBadge?.value ?? null;
+  const craftNotesText = isSmoothScroll
+    ? liveDownloads
+      ? project.caseStudy.craftNotes[language].replace("{downloads}", liveDownloads)
+      : project.caseStudy.craftNotes[language]
+          .replace(" với {downloads} lượt tải trên GitHub Releases", "")
+          .replace(" with {downloads} GitHub release downloads", "")
+    : project.caseStudy.craftNotes[language];
 
   return (
     <>
@@ -92,8 +108,17 @@ export default function ProjectDossierView({
 
                     {project.highlightBadge && (
                       <div className="paper-well rounded-[4px] p-4 lg:col-span-4">
-                        <p className="font-serif text-3xl font-semibold leading-none text-[var(--accent-vermilion)] tabular-nums sm:text-4xl">
-                          {project.highlightBadge.value}
+                        <p className="min-h-[2.25rem] font-serif text-3xl font-semibold leading-none text-[var(--accent-vermilion)] tabular-nums sm:text-4xl">
+                          {badgeValue ? (
+                            badgeValue
+                          ) : isSmoothScroll && statsLoading ? (
+                            <span
+                              className="inline-block h-8 w-32 animate-pulse rounded-[3px] bg-[var(--bg-sheet-deep)]"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            "—"
+                          )}
                         </p>
                         <p className="mt-1.5 font-mono text-xs text-[var(--ink-secondary)]">
                           {project.highlightBadge.caption[language]}
@@ -195,7 +220,7 @@ export default function ProjectDossierView({
                       {d.craftHeading}
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
-                      {project.caseStudy.craftNotes[language]}
+                      {craftNotesText}
                     </p>
                   </div>
                 </section>

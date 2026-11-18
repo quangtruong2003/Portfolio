@@ -4,13 +4,21 @@ import { useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { CAPABILITIES } from "@/data/portfolio";
+import { formatRepoDownloads, useGitHubRepos } from "@/hooks/useGitHubRepos";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 export default function PressPlateZone() {
   const { dictionary, language } = useLanguage();
+  const { smoothScrollRepo } = useGitHubRepos();
   const aboutText = dictionary.about;
   const skillsText = dictionary.skills;
   const shouldReduceMotion = useReducedMotion();
+  const liveDownloads = formatRepoDownloads(smoothScrollRepo, language);
+  const resolvedBio2 = liveDownloads
+    ? aboutText.bio2.replace("{downloads}", liveDownloads)
+    : aboutText.bio2
+        .replace(" với {downloads} lượt tải trên GitHub Releases", "")
+        .replace(" with {downloads} GitHub release downloads", "");
 
   const [activePlate, setActivePlate] = useState(0);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -73,7 +81,7 @@ export default function PressPlateZone() {
               <div className="flex flex-col justify-center lg:col-span-6 lg:col-start-7">
                 <div className="space-y-6 text-base leading-[1.78] text-[var(--ink-on-press)]/92 sm:text-lg">
                   <p>{aboutText.bio1}</p>
-                  <p>{aboutText.bio2}</p>
+                  <p>{resolvedBio2}</p>
                 </div>
               </div>
             </div>

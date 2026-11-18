@@ -87,10 +87,10 @@ export const PROJECTS: ProjectItem[] = [
       vi: "Mã nguồn mở công khai & trang phát hành chính thức",
     },
     highlightBadge: {
-      value: "30,000+",
+      value: "LIVE",
       caption: {
-        en: "user-reported downloads",
-        vi: "lượt tải ghi nhận",
+        en: "GitHub release downloads",
+        vi: "lượt tải GitHub Releases",
       },
     },
     architectureTitle: {
@@ -159,8 +159,8 @@ export const PROJECTS: ProjectItem[] = [
         },
       ],
       craftNotes: {
-        en: "Reached over 30,000+ user-reported downloads while maintaining an active open-source feedback loop.",
-        vi: "Vượt mốc 30.000+ lượt tải (ghi nhận từ dự án) và duy trì cập nhật dựa trên phản hồi thực tế từ cộng đồng GitHub.",
+        en: "Actively maintained with {downloads} GitHub release downloads and continuous community issue triage.",
+        vi: "Duy trì phát hành đều đặn với {downloads} lượt tải trên GitHub Releases và tiếp nhận phản hồi trực tiếp từ cộng đồng.",
       },
     },
   },

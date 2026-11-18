@@ -97,8 +97,16 @@ export interface Dictionary {
     empty: string;
     stars: string;
     forks: string;
+    downloads: string;
+    latestRelease: string;
+    flagshipLabel: string;
+    telemetryHeading: string;
+    viewRepo: string;
+    viewReleases: string;
+    viewWebsite: string;
     viewAll: string;
     retry: string;
+    highlights: [string, string, string, string];
   };
   contact: {
     title: string;
@@ -157,7 +165,7 @@ export const vi: Dictionary = {
     viewProjects: "Khám phá hồ sơ dự án",
     viewCV: "Xem & tải CV",
     proofLabel: "Sản phẩm mã nguồn mở",
-    proofCaption: "lượt tải ghi nhận",
+    proofCaption: "lượt tải GitHub Releases",
     viewProject: "Mở hồ sơ SmoothScroll",
     stageLabel: "Mô hình cắt lớp 3D · Kiến trúc & Xung cuộn",
     explodeStrata: "Tách lớp kiến trúc",
@@ -174,7 +182,7 @@ export const vi: Dictionary = {
     title: "Tư duy sản phẩm trên nền tảng backend vững chắc.",
     subtitle: "Tôi tập trung vào những tầng ít phô trương nhưng quyết định độ tin cậy của toàn hệ thống.",
     bio1: "Công việc hằng ngày của tôi xoay quanh PHP 8+, Laravel 12, RESTful API, MySQL và Redis. Tôi ưu tiên cấu trúc mã tuân thủ SOLID, ranh giới phân quyền rõ ràng, xử lý hàng đợi bất đồng bộ để giữ phản hồi nhanh và ổn định.",
-    bio2: "Tại Penalty, tôi bảo trì hệ thống PHP/Laravel nội bộ và kiến trúc luồng tải sản phẩm hàng loạt đồng bộ trực tiếp với kho WordPress. Trước đó tại C3TEK, tôi phát triển nghiệp vụ hợp đồng, hàng đợi hóa đơn điện nước lũy tiến và tối ưu N+1 bằng eager loading, composite index cùng Redis. Ngoài giờ làm việc, tiện ích Windows mã nguồn mở SmoothScroll viết bằng Rust & Tauri 2 của tôi đã vượt mốc 30.000 lượt tải.",
+    bio2: "Tại Penalty, tôi bảo trì hệ thống PHP/Laravel nội bộ và kiến trúc luồng tải sản phẩm hàng loạt đồng bộ trực tiếp với kho WordPress. Trước đó tại C3TEK, tôi phát triển nghiệp vụ hợp đồng, hàng đợi hóa đơn điện nước lũy tiến và tối ưu N+1 bằng eager loading, composite index cùng Redis. Ngoài giờ làm việc, tôi phát triển SmoothScroll — tiện ích Windows mã nguồn mở viết bằng Rust & Tauri 2 với {downloads} lượt tải trên GitHub Releases.",
     educationLabel: "Nền tảng học vấn",
     educationSchool: "Đại học Công nghệ Sài Gòn (STU)",
     educationMeta: "Kỹ sư Công nghệ Thông tin · Quận 8, TP.HCM · 2021–2025",
@@ -230,15 +238,28 @@ export const vi: Dictionary = {
     },
   },
   openSource: {
-    title: "Lưu trữ mã nguồn mở trên GitHub",
-    subtitle: "Dữ liệu trực tiếp từ các repository tiêu biểu được duy trì công khai.",
-    loading: "Đang đồng bộ danh sách repository từ GitHub…",
-    error: "Chưa thể kết nối GitHub API lúc này. Bạn vẫn có thể mở trực tiếp trang GitHub cá nhân.",
-    empty: "Hiện chưa có repository công khai để hiển thị.",
-    stars: "sao",
+    title: "Dự án mã nguồn mở tiêu biểu",
+    subtitle: "Số liệu lượt tải, phiên bản phát hành và tương tác đồng bộ trực tiếp theo thời gian thực từ GitHub.",
+    loading: "Đang đồng bộ số liệu trực tiếp của SmoothScroll từ GitHub…",
+    error: "Chưa thể kết nối GitHub lúc này. Bạn vẫn có thể mở trực tiếp trang dự án trên GitHub.",
+    empty: "Hiện chưa có dữ liệu repository để hiển thị.",
+    stars: "lượt sao",
     forks: "nhánh fork",
+    downloads: "tổng lượt tải bản phát hành",
+    latestRelease: "Bản phát hành mới nhất",
+    flagshipLabel: "Tiện ích hệ thống chủ lực · Windows 10/11",
+    telemetryHeading: "Số liệu thời gian thực (GitHub & Releases)",
+    viewRepo: "Mã nguồn & README",
+    viewReleases: "Tải bản cài đặt",
+    viewWebsite: "Trang chủ smoothscroll.top",
     viewAll: "Mở hồ sơ GitHub",
     retry: "Thử đồng bộ lại",
+    highlights: [
+      "Low-level Win32 mouse-wheel hook",
+      "Nội suy vận tốc mượt 120 Hz bằng Rust",
+      "Cấu hình & loại trừ riêng từng ứng dụng",
+      "Không thu thập dữ liệu (Zero telemetry)",
+    ],
   },
   contact: {
     title: "Cần củng cố một hệ thống backend hoặc hợp tác sản phẩm mới?",
@@ -297,7 +318,7 @@ export const en: Dictionary = {
     viewProjects: "Explore project folios",
     viewCV: "Inspect & download CV",
     proofLabel: "Open-source utility",
-    proofCaption: "user-reported downloads",
+    proofCaption: "GitHub release downloads",
     viewProject: "Open SmoothScroll dossier",
     stageLabel: "3D Cut-Paper Model · Strata & Scroll Rotor",
     explodeStrata: "Explode strata",
@@ -314,7 +335,7 @@ export const en: Dictionary = {
     title: "Product thinking anchored in backend reliability.",
     subtitle: "I focus on the unseen layers that keep software fast, predictable, and maintainable under real load.",
     bio1: "My daily craft centers on PHP 8+, Laravel 12, RESTful APIs, MySQL, and Redis. I care deeply about SOLID boundaries, role-based access control, background queue workers, and query plans that stay fast as data grows.",
-    bio2: "At Penalty, I maintained internal PHP/Laravel web systems and built an automated bulk product upload pipeline synchronized with WordPress inventory. Previously at C3TEK, I engineered lease contract workflows, queued monthly invoice and tiered utility jobs, and eliminated N+1 bottlenecks with eager loading, composite indexes, and Redis. Outside client systems, SmoothScroll—my open-source Rust and Tauri 2 Windows utility—has passed 30,000 downloads.",
+    bio2: "At Penalty, I maintained internal PHP/Laravel web systems and built an automated bulk product upload pipeline synchronized with WordPress inventory. Previously at C3TEK, I engineered lease contract workflows, queued monthly invoice and tiered utility jobs, and eliminated N+1 bottlenecks with eager loading, composite indexes, and Redis. Outside client systems, I maintain SmoothScroll—an open-source Rust and Tauri 2 Windows utility with {downloads} GitHub release downloads.",
     educationLabel: "Academic foundation",
     educationSchool: "SaiGon Technology University (STU)",
     educationMeta: "B.Eng. Information Technology · District 8, HCMC · 2021–2025",
@@ -370,15 +391,28 @@ export const en: Dictionary = {
     },
   },
   openSource: {
-    title: "Curated GitHub repositories",
-    subtitle: "Live public repository metadata fetched directly from GitHub.",
-    loading: "Fetching repository ledger from GitHub…",
-    error: "GitHub API is temporarily unreachable. You can still browse repositories directly on GitHub.",
-    empty: "No public repositories available right now.",
-    stars: "stars",
+    title: "Featured GitHub repository",
+    subtitle: "Live release downloads, version telemetry, and community metrics fetched directly from GitHub.",
+    loading: "Syncing live SmoothScroll telemetry from GitHub…",
+    error: "GitHub telemetry is temporarily unreachable. You can still inspect SmoothScroll directly on GitHub.",
+    empty: "Repository telemetry is unavailable right now.",
+    stars: "GitHub stars",
     forks: "forks",
+    downloads: "total release downloads",
+    latestRelease: "Latest published build",
+    flagshipLabel: "Flagship Desktop Utility · Windows 10/11",
+    telemetryHeading: "Live telemetry (GitHub & Releases)",
+    viewRepo: "Repository & README",
+    viewReleases: "GitHub Releases",
+    viewWebsite: "Visit smoothscroll.top",
     viewAll: "Open GitHub profile",
-    retry: "Retry fetch",
+    retry: "Retry sync",
+    highlights: [
+      "Low-level Win32 mouse-wheel hook",
+      "Velocity-based 120 Hz Rust easing engine",
+      "Per-app profiles & game-mode bypass",
+      "Lightweight Tauri 2 shell · zero telemetry",
+    ],
   },
   contact: {
     title: "Working on a backend system that needs care?",
