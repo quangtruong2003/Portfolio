@@ -34,7 +34,7 @@ export default function Footer() {
   return (
     <footer
       id="footer"
-      className="border-t border-[var(--rule-strong)] bg-[var(--bg-sheet-mid)] pb-[calc(3rem+env(safe-area-inset-bottom,0px))] pt-12 md:pt-16"
+      className="border-t border-[var(--border-subtle)] bg-[var(--surface-subtle)] pb-[calc(3rem+env(safe-area-inset-bottom,0px))] pt-14 md:pt-16"
     >
       <div className="site-container">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8">
@@ -42,7 +42,7 @@ export default function Footer() {
             {isHome ? (
               <a
                 href="#hero"
-                className="inline-flex min-h-11 items-center gap-2.5 font-serif text-xl font-medium tracking-[-0.02em] text-[var(--ink-primary)]"
+                className="inline-flex min-h-11 items-center gap-2.5 font-display text-lg font-semibold tracking-[-0.025em] text-[var(--ink-primary)]"
               >
                 <Image src="/favicon.svg" alt="" width={28} height={28} />
                 <span>{ownerName}</span>
@@ -51,19 +51,19 @@ export default function Footer() {
               <Link
                 href="/"
                 transitionTypes={["folio-back"]}
-                className="inline-flex min-h-11 items-center gap-2.5 font-serif text-xl font-medium tracking-[-0.02em] text-[var(--ink-primary)]"
+                className="inline-flex min-h-11 items-center gap-2.5 font-display text-lg font-semibold tracking-[-0.025em] text-[var(--ink-primary)]"
               >
                 <Image src="/favicon.svg" alt="" width={28} height={28} />
                 <span>{ownerName}</span>
               </Link>
             )}
-            <p className="mt-3 max-w-[40ch] text-sm leading-relaxed text-[var(--ink-secondary)]">
+            <p className="mt-3 max-w-[42ch] text-sm leading-relaxed text-[var(--ink-secondary)]">
               {footer.tagline}
             </p>
           </div>
 
           <div className="md:col-span-4">
-            <h2 className="font-mono text-xs font-medium text-[var(--ink-primary)]">
+            <h2 className="font-display text-sm font-semibold text-[var(--ink-primary)]">
               {footer.navigate}
             </h2>
             <nav aria-label={footer.navigate} className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1">
@@ -72,7 +72,7 @@ export default function Footer() {
                   <a
                     key={id}
                     href={`#${id}`}
-                    className="link-draw flex min-h-11 items-center text-sm text-[var(--ink-secondary)] hover:text-[var(--accent-vermilion)]"
+                    className="link-draw flex min-h-11 items-center text-sm text-[var(--ink-secondary)] hover:text-[var(--accent-primary)]"
                   >
                     {nav[key]}
                   </a>
@@ -81,7 +81,7 @@ export default function Footer() {
                     key={id}
                     href={`/#${id}`}
                     transitionTypes={["folio-back"]}
-                    className="link-draw flex min-h-11 items-center text-sm text-[var(--ink-secondary)] hover:text-[var(--accent-vermilion)]"
+                    className="link-draw flex min-h-11 items-center text-sm text-[var(--ink-secondary)] hover:text-[var(--accent-primary)]"
                   >
                     {nav[key]}
                   </Link>
@@ -90,7 +90,7 @@ export default function Footer() {
             </nav>
           </div>
 
-          <div className="flex items-start gap-3 md:col-span-3 md:justify-end">
+          <div className="flex items-start gap-2.5 md:col-span-3 md:justify-end">
             {socialLinks.map(({ icon: Icon, key, href }) => (
               <a
                 key={key}
@@ -98,7 +98,7 @@ export default function Footer() {
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                 aria-label={contact[key]}
-                className="flex min-h-11 min-w-11 items-center justify-center rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] transition-[background-color,border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.96]"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-[var(--ink-primary)] transition-[background-color,border-color,color,transform] duration-150 hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] active:scale-[0.96]"
               >
                 <Icon size={17} aria-hidden="true" />
               </a>
@@ -106,13 +106,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-3 border-t border-[var(--rule-cut)] pt-5 text-xs text-[var(--ink-secondary)] sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <div className="mt-10 flex flex-col gap-3 border-t border-[var(--border-subtle)] pt-6 text-xs text-[var(--ink-secondary)] sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span>{footer.copyright}</span>
-            <span className="hidden text-[var(--rule-strong)] sm:inline" aria-hidden="true">
-              |
+            <span className="hidden text-[var(--border-strong)] sm:inline" aria-hidden="true">
+              /
             </span>
-            <span className="font-mono text-xs text-[var(--ink-tertiary)]">
+            <span className="font-mono text-xs text-[var(--ink-muted)]">
               {footer.colophon}
             </span>
           </div>
@@ -120,7 +120,7 @@ export default function Footer() {
           {isHome ? (
             <a
               href="#hero"
-              className="inline-flex min-h-11 items-center gap-1.5 font-mono text-xs font-medium text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+              className="inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-[var(--ink-primary)] transition-colors duration-150 hover:text-[var(--accent-primary)]"
             >
               <span>{footer.backToTop}</span>
               <ArrowUp size={14} aria-hidden="true" />
@@ -129,9 +129,9 @@ export default function Footer() {
             <Link
               href="/"
               transitionTypes={["folio-back"]}
-              className="inline-flex min-h-11 items-center gap-1.5 font-mono text-xs font-medium text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+              className="inline-flex min-h-11 items-center gap-1.5 text-xs font-medium text-[var(--ink-primary)] transition-colors duration-150 hover:text-[var(--accent-primary)]"
             >
-              <span>{nav.homeAtelier}</span>
+              <span>{nav.home}</span>
             </Link>
           )}
         </div>

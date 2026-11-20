@@ -16,35 +16,37 @@ import { OWNER_INFO } from "@/data/portfolio";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 const NAV_LINKS = [
-  { key: "work", id: "projects", code: "01" },
-  { key: "about", id: "about", code: "02" },
-  { key: "capabilities", id: "skills", code: "03" },
-  { key: "experience", id: "experience", code: "04" },
-  { key: "openSource", id: "open-source", code: "05" },
-  { key: "contact", id: "contact", code: "06" },
+  { key: "work", id: "projects" },
+  { key: "about", id: "about" },
+  { key: "capabilities", id: "skills" },
+  { key: "experience", id: "experience" },
+  { key: "openSource", id: "open-source" },
+  { key: "contact", id: "contact" },
 ] as const;
 
-const EASE_UNFOLD: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const EASE_FOLD: [number, number, number, number] = [0.4, 0, 0.2, 1];
+// Non-uniform organic stagger offsets (shrinking gaps, never robotic linear)
+const MENU_STAGGER_DELAYS = [0.09, 0.145, 0.19, 0.225, 0.255, 0.28];
+const EASE_CURTAIN_OPEN: [number, number, number, number] = [0.23, 1, 0.32, 1];
+const EASE_CURTAIN_CLOSE: [number, number, number, number] = [0.32, 0.72, 0, 1];
 
 function MenuMorphGlyph({ isOpen }: { isOpen: boolean }) {
   return (
     <span className="relative flex h-5 w-5 items-center justify-center" aria-hidden="true">
       <span
         className={
-          "absolute h-[1.5px] w-4.5 rounded-full bg-current transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] " +
+          "absolute h-[1.5px] w-4.5 rounded-full bg-current transition-[transform,opacity] duration-250 ease-[var(--ease-out-strong)] " +
           (isOpen ? "translate-y-0 rotate-45" : "-translate-y-[5px] rotate-0")
         }
       />
       <span
         className={
-          "absolute h-[1.5px] w-4.5 rounded-full bg-current transition-[transform,opacity] duration-200 ease-out " +
+          "absolute h-[1.5px] w-4.5 rounded-full bg-current transition-[transform,opacity] duration-180 ease-out " +
           (isOpen ? "scale-x-0 opacity-0" : "scale-x-100 opacity-100")
         }
       />
       <span
         className={
-          "absolute h-[1.5px] w-4.5 rounded-full bg-current transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] " +
+          "absolute h-[1.5px] w-4.5 rounded-full bg-current transition-[transform,opacity] duration-250 ease-[var(--ease-out-strong)] " +
           (isOpen ? "translate-y-0 -rotate-45" : "translate-y-[5px] rotate-0")
         }
       />
@@ -74,6 +76,7 @@ export default function Navbar() {
     const sections = ["hero", ...NAV_LINKS.map(({ id }) => id)]
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => section !== null);
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -91,6 +94,7 @@ export default function Navbar() {
 
     const prevOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -116,7 +120,7 @@ export default function Navbar() {
 
   const ownerName = language === "vi" ? OWNER_INFO.nameVi : OWNER_INFO.nameEn;
 
-  const renderLanguageButton = () => (
+  const renderLanguageButton = (dark = false) => (
     <button
       type="button"
       onClick={toggleLanguage}
@@ -125,7 +129,12 @@ export default function Navbar() {
           ? "Switch language to English"
           : "Chuyển ngôn ngữ sang tiếng Việt"
       }
-      className="inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center whitespace-nowrap rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] px-2.5 font-mono text-xs font-medium text-[var(--ink-primary)] transition-[background-color,border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.96]"
+      className={
+        "inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center whitespace-nowrap rounded-lg border px-3 font-mono text-xs font-medium transition-[background-color,border-color,color,transform] duration-150 ease-[var(--ease-out-strong)] active:scale-[0.96] " +
+        (dark
+          ? "border-[var(--engine-border-strong)] bg-[var(--engine-surface)] text-[var(--engine-ink)] hover:border-[var(--accent-on-engine)] hover:text-[var(--accent-on-engine)]"
+          : "border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-[var(--ink-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]")
+      }
     >
       <span className="sm:hidden">{language === "vi" ? "VI/EN" : "EN/VI"}</span>
       <span className="hidden sm:inline">{language === "vi" ? "VI / EN" : "EN / VI"}</span>
@@ -139,8 +148,9 @@ export default function Navbar() {
       </a>
 
       <header
+        inert={isOpen}
         style={{ viewTransitionName: "site-header" }}
-        className="sticky top-0 z-40 border-b border-[var(--rule-cut)] bg-[var(--bg-canvas)] pt-[env(safe-area-inset-top,0px)]"
+        className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-[var(--surface-ground)]/92 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md"
       >
         <nav
           className="site-container flex min-h-16 items-center justify-between gap-2 sm:gap-4"
@@ -149,7 +159,7 @@ export default function Navbar() {
           {isHome ? (
             <a
               href="#hero"
-              className="inline-flex min-h-11 min-w-0 items-center gap-2 font-serif text-base font-medium tracking-[-0.02em] text-[var(--ink-primary)] sm:gap-2.5 sm:text-xl"
+              className="inline-flex min-h-11 min-w-0 items-center gap-2.5 font-display text-base font-semibold tracking-[-0.025em] text-[var(--ink-primary)] sm:text-lg"
             >
               <Image src="/favicon.svg" alt="" width={28} height={28} className="shrink-0" />
               <span className="truncate">{ownerName}</span>
@@ -158,20 +168,20 @@ export default function Navbar() {
             <Link
               href="/"
               transitionTypes={["folio-back"]}
-              className="inline-flex min-h-11 min-w-0 items-center gap-2 font-serif text-base font-medium tracking-[-0.02em] text-[var(--ink-primary)] sm:gap-2.5 sm:text-xl"
+              className="inline-flex min-h-11 min-w-0 items-center gap-2.5 font-display text-base font-semibold tracking-[-0.025em] text-[var(--ink-primary)] sm:text-lg"
             >
               <Image src="/favicon.svg" alt="" width={28} height={28} className="shrink-0" />
               <span className="truncate">{ownerName}</span>
             </Link>
           )}
 
-          <div className="hidden items-center gap-5 lg:flex">
-            <div className="flex items-center gap-5 xl:gap-6">
+          <div className="hidden items-center gap-6 lg:flex">
+            <div className="flex items-center gap-6">
               {NAV_LINKS.map(({ key, id }) => {
                 const isActive = isHome ? activeSection === id : key === "work";
                 const className =
-                  "relative flex min-h-11 items-center text-sm font-medium transition-colors duration-150 hover:text-[var(--accent-vermilion)] " +
-                  (isActive ? "text-[var(--accent-vermilion)]" : "text-[var(--ink-secondary)]");
+                  "relative flex min-h-11 items-center text-sm font-medium transition-colors duration-150 hover:text-[var(--accent-primary)] " +
+                  (isActive ? "text-[var(--accent-primary)]" : "text-[var(--ink-secondary)]");
 
                 return isHome ? (
                   <a
@@ -183,7 +193,7 @@ export default function Navbar() {
                     {dictionary.nav[key]}
                     <span
                       className={
-                        "absolute inset-x-0 -bottom-px h-[2px] origin-left bg-[var(--accent-vermilion)] transition-transform duration-200 ease-[var(--ease-out-strong)] " +
+                        "absolute inset-x-0 -bottom-px h-[2px] origin-left rounded-full bg-[var(--accent-primary)] transition-transform duration-200 ease-[var(--ease-out-strong)] " +
                         (isActive ? "scale-x-100" : "scale-x-0")
                       }
                       aria-hidden="true"
@@ -199,7 +209,7 @@ export default function Navbar() {
                     {dictionary.nav[key]}
                     <span
                       className={
-                        "absolute inset-x-0 -bottom-px h-[2px] origin-left bg-[var(--accent-vermilion)] transition-transform duration-200 ease-[var(--ease-out-strong)] " +
+                        "absolute inset-x-0 -bottom-px h-[2px] origin-left rounded-full bg-[var(--accent-primary)] transition-transform duration-200 ease-[var(--ease-out-strong)] " +
                         (isActive ? "scale-x-100" : "scale-x-0")
                       }
                       aria-hidden="true"
@@ -208,11 +218,11 @@ export default function Navbar() {
                 );
               })}
             </div>
-            {renderLanguageButton()}
+            {renderLanguageButton(false)}
           </div>
 
           <div className="flex items-center gap-2 lg:hidden">
-            {renderLanguageButton()}
+            {renderLanguageButton(false)}
             <button
               ref={menuButtonRef}
               type="button"
@@ -220,57 +230,50 @@ export default function Navbar() {
               aria-controls="mobile-navigation"
               aria-label={isOpen ? dictionary.nav.closeMenu : dictionary.nav.openMenu}
               onClick={() => setIsOpen((open) => !open)}
-              className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.96]"
+              className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-elevated)] text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] active:scale-[0.96]"
             >
               <MenuMorphGlyph isOpen={isOpen} />
             </button>
           </div>
         </nav>
 
-        {/* Tactile Ink Scroll Progress Hairline */}
+        {/* Spring-Damped Scroll Progress Hairline */}
         <motion.div
           aria-hidden="true"
           style={{ scaleX: smoothProgress }}
-          className="h-[2px] w-full origin-left bg-[var(--accent-vermilion)]"
+          className="h-[2px] w-full origin-left bg-[var(--accent-primary)]"
         />
       </header>
 
-      {/* Full-Screen Artistic Paper-Curtain Navigation Overlay (Sibling outside viewTransition header) */}
+      {/* Full-Screen 100dvh Artistic Forest-Obsidian Navigation Curtain (Sibling outside viewTransition header) */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            key="fullscreen-atelier-menu"
+            key="fullscreen-monograph-menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: shouldReduceMotion ? 0.18 : 0.36, ease: "easeOut" }}
+            transition={{ duration: shouldReduceMotion ? 0.16 : 0.34, ease: "easeOut" }}
             className="fixed inset-0 z-50 h-[100dvh] w-full overflow-hidden lg:hidden"
           >
-            {/* Dimmed Ink Backdrop Scrim */}
-            <div
-              aria-hidden="true"
-              onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-[#181715]/30"
-            />
-
-            {/* Secondary Offset Paper Ply (Leads on Unfold, Trails on Fold) */}
+            {/* Leading Forest Pine Curtain Layer */}
             {!shouldReduceMotion && (
               <motion.div
                 aria-hidden="true"
                 initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
                 animate={{
                   clipPath: "inset(0% 0% 0% 0%)",
-                  transition: { duration: 0.46, ease: EASE_UNFOLD },
+                  transition: { duration: 0.42, ease: EASE_CURTAIN_OPEN },
                 }}
                 exit={{
                   clipPath: "inset(0% 0% 100% 0%)",
-                  transition: { duration: 0.4, delay: 0.05, ease: EASE_FOLD },
+                  transition: { duration: 0.34, delay: 0.04, ease: EASE_CURTAIN_CLOSE },
                 }}
-                className="pointer-events-none absolute inset-0 bg-[var(--bg-sheet-deep)]"
+                className="pointer-events-none absolute inset-0 bg-[var(--accent-primary)]"
               />
             )}
 
-            {/* Main Full-Viewport Archival Paper Sheet */}
+            {/* Main Full-Viewport Forest-Obsidian Navigation Canvas */}
             <motion.nav
               id="mobile-navigation"
               aria-label={language === "vi" ? "Điều hướng toàn màn hình" : "Full-screen navigation"}
@@ -291,72 +294,36 @@ export default function Navbar() {
                       clipPath: "inset(0% 0% 0% 0%)",
                       scale: 1,
                       transition: {
-                        clipPath: { duration: 0.56, delay: 0.04, ease: EASE_UNFOLD },
-                        opacity: { duration: 0.38, delay: 0.02, ease: "easeOut" },
-                        scale: { duration: 0.56, delay: 0.04, ease: EASE_UNFOLD },
+                        clipPath: { duration: 0.5, delay: 0.045, ease: EASE_CURTAIN_OPEN },
+                        opacity: { duration: 0.32, delay: 0.02, ease: "easeOut" },
+                        scale: { duration: 0.5, delay: 0.045, ease: EASE_CURTAIN_OPEN },
                       },
                     }
               }
               exit={
                 shouldReduceMotion
-                  ? { opacity: 0, transition: { duration: 0.16 } }
+                  ? { opacity: 0, transition: { duration: 0.15 } }
                   : {
                       opacity: 0,
                       clipPath: "inset(0% 0% 100% 0%)",
                       scale: 0.995,
                       transition: {
-                        opacity: { duration: 0.3, ease: "easeInOut" },
-                        clipPath: { duration: 0.38, ease: EASE_FOLD },
-                        scale: { duration: 0.38, ease: EASE_FOLD },
+                        opacity: { duration: 0.24, ease: "easeOut" },
+                        clipPath: { duration: 0.32, ease: EASE_CURTAIN_CLOSE },
+                        scale: { duration: 0.32, ease: EASE_CURTAIN_CLOSE },
                       },
                     }
               }
-              className="relative flex h-full w-full flex-col justify-between overflow-y-auto overscroll-contain bg-[var(--bg-canvas)] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pt-[env(safe-area-inset-top,0px)]"
+              className="engine-room relative flex h-full w-full flex-col justify-between overflow-y-auto overscroll-contain pb-[max(1.75rem,env(safe-area-inset-bottom,0px))] pt-[env(safe-area-inset-top,0px)]"
             >
-              {/* Subtle Architectural Drafting Watermark Rings + Corner Registration Marks */}
-              <svg
-                viewBox="0 0 600 600"
-                aria-hidden="true"
-                className="pointer-events-none absolute -bottom-28 -right-28 h-[420px] w-[420px] text-[var(--rule-strong)] opacity-30 sm:h-[520px] sm:w-[520px]"
-              >
-                <circle
-                  cx="300"
-                  cy="300"
-                  r="240"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                  strokeDasharray="4 4"
-                />
-                <circle
-                  cx="300"
-                  cy="300"
-                  r="175"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                />
-                <circle
-                  cx="300"
-                  cy="300"
-                  r="96"
-                  fill="none"
-                  stroke="#B8332A"
-                  strokeOpacity="0.45"
-                  strokeWidth="1.2"
-                />
-                <line x1="60" y1="300" x2="540" y2="300" stroke="currentColor" strokeWidth="0.75" />
-                <line x1="300" y1="60" x2="300" y2="540" stroke="currentColor" strokeWidth="0.75" />
-              </svg>
-
-              {/* Overlay Top Header Bar (Pixel-Aligned with Main Header) */}
-              <div className="border-b border-[var(--rule-cut)] bg-[var(--bg-canvas)]/90">
+              {/* Top Overlay Header */}
+              <div className="border-b border-[var(--engine-border)]">
                 <div className="site-container flex min-h-16 items-center justify-between gap-2 sm:gap-4">
                   {isHome ? (
                     <a
                       href="#hero"
                       onClick={() => setIsOpen(false)}
-                      className="inline-flex min-h-11 min-w-0 items-center gap-2 font-serif text-base font-medium tracking-[-0.02em] text-[var(--ink-primary)] sm:gap-2.5 sm:text-xl"
+                      className="inline-flex min-h-11 min-w-0 items-center gap-2.5 font-display text-base font-semibold tracking-[-0.025em] text-[var(--engine-ink)] sm:text-lg"
                     >
                       <Image src="/favicon.svg" alt="" width={28} height={28} className="shrink-0" />
                       <span className="truncate">{ownerName}</span>
@@ -366,7 +333,7 @@ export default function Navbar() {
                       href="/"
                       transitionTypes={["folio-back"]}
                       onClick={() => setIsOpen(false)}
-                      className="inline-flex min-h-11 min-w-0 items-center gap-2 font-serif text-base font-medium tracking-[-0.02em] text-[var(--ink-primary)] sm:gap-2.5 sm:text-xl"
+                      className="inline-flex min-h-11 min-w-0 items-center gap-2.5 font-display text-base font-semibold tracking-[-0.025em] text-[var(--engine-ink)] sm:text-lg"
                     >
                       <Image src="/favicon.svg" alt="" width={28} height={28} className="shrink-0" />
                       <span className="truncate">{ownerName}</span>
@@ -374,7 +341,7 @@ export default function Navbar() {
                   )}
 
                   <div className="flex items-center gap-2">
-                    {renderLanguageButton()}
+                    {renderLanguageButton(true)}
                     <button
                       ref={closeButtonRef}
                       type="button"
@@ -383,7 +350,7 @@ export default function Navbar() {
                         setIsOpen(false);
                         menuButtonRef.current?.focus();
                       }}
-                      className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.96]"
+                      className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg border border-[var(--engine-border-strong)] bg-[var(--engine-surface)] text-[var(--engine-ink)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-on-engine)] hover:text-[var(--accent-on-engine)] active:scale-[0.96]"
                     >
                       <MenuMorphGlyph isOpen={true} />
                     </button>
@@ -391,51 +358,39 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* Centerpiece Staggered Editorial Navigation Spread */}
+              {/* Centerpiece Sculptural Navigation Links */}
               <div className="site-container relative z-10 my-auto py-6 sm:py-10">
-                <ul className="divide-y divide-[var(--rule-cut)] border-y border-[var(--rule-cut)]">
-                  {NAV_LINKS.map(({ key, id, code }, index) => {
+                <ul className="divide-y divide-[var(--engine-border)] border-y border-[var(--engine-border)]">
+                  {NAV_LINKS.map(({ key, id }, index) => {
                     const isActive = isHome ? activeSection === id : key === "work";
                     const itemContent = (
                       <>
-                        <div className="flex items-baseline gap-4 sm:gap-6">
-                          <span
-                            className={
-                              "font-mono text-xs font-semibold tabular-nums transition-colors duration-200 " +
-                              (isActive
-                                ? "text-[var(--accent-vermilion)]"
-                                : "text-[var(--ink-tertiary)] group-hover:text-[var(--accent-vermilion)]")
-                            }
-                          >
-                            {`FIG.${code}`}
-                          </span>
-                          <span
-                            className={
-                              "font-serif text-[clamp(1.75rem,4.6vh,2.85rem)] font-medium leading-[1.12] tracking-[-0.025em] transition-[color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2 " +
-                              (isActive
-                                ? "text-[var(--accent-vermilion)]"
-                                : "text-[var(--ink-primary)] group-hover:text-[var(--accent-vermilion)]")
-                            }
-                          >
-                            {dictionary.nav[key]}
-                          </span>
-                        </div>
+                        <span
+                          className={
+                            "font-display text-[clamp(1.75rem,4.6vh,2.8rem)] font-semibold leading-[1.12] tracking-[-0.03em] transition-[color,transform] duration-250 ease-[var(--ease-out-strong)] group-hover:translate-x-1.5 " +
+                            (isActive
+                              ? "text-[var(--accent-on-engine)]"
+                              : "text-[var(--engine-ink)] group-hover:text-[var(--accent-on-engine)]")
+                          }
+                        >
+                          {dictionary.nav[key]}
+                        </span>
 
-                        <span className="flex items-center gap-2.5">
+                        <span className="flex items-center gap-3">
                           {isActive && (
                             <span
-                              className="h-2 w-2 rounded-full bg-[var(--accent-vermilion)]"
+                              className="h-2 w-2 rounded-full bg-[var(--accent-on-engine)]"
                               aria-hidden="true"
                             />
                           )}
                           <ArrowUpRight
-                            size={20}
+                            size={22}
                             aria-hidden="true"
                             className={
-                              "transition-[color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 " +
+                              "transition-[color,transform] duration-250 ease-[var(--ease-out-strong)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 " +
                               (isActive
-                                ? "text-[var(--accent-vermilion)]"
-                                : "text-[var(--ink-tertiary)] group-hover:text-[var(--accent-vermilion)]")
+                                ? "text-[var(--accent-on-engine)]"
+                                : "text-[var(--engine-muted)] group-hover:text-[var(--accent-on-engine)]")
                             }
                           />
                         </span>
@@ -445,27 +400,20 @@ export default function Navbar() {
                     return (
                       <motion.li
                         key={id}
-                        initial={
-                          shouldReduceMotion
-                            ? { opacity: 1 }
-                            : { opacity: 0, y: 18 }
-                        }
+                        initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 16 }}
                         animate={{
                           opacity: 1,
                           y: 0,
                           transition: {
-                            duration: 0.44,
-                            delay: shouldReduceMotion ? 0 : 0.1 + index * 0.045,
-                            ease: EASE_UNFOLD,
+                            duration: 0.4,
+                            delay: shouldReduceMotion ? 0 : MENU_STAGGER_DELAYS[index] ?? 0.28,
+                            ease: EASE_CURTAIN_OPEN,
                           },
                         }}
                         exit={{
                           opacity: 0,
                           y: -8,
-                          transition: {
-                            duration: 0.18,
-                            ease: "easeIn",
-                          },
+                          transition: { duration: 0.16, ease: "easeOut" },
                         }}
                       >
                         {isHome ? (
@@ -473,7 +421,7 @@ export default function Navbar() {
                             href={`#${id}`}
                             aria-current={isActive ? "location" : undefined}
                             onClick={() => setIsOpen(false)}
-                            className="group flex min-h-14 items-center justify-between py-3 sm:py-4"
+                            className="group flex min-h-14 items-center justify-between py-3.5 sm:py-4"
                           >
                             {itemContent}
                           </a>
@@ -482,7 +430,7 @@ export default function Navbar() {
                             href={`/#${id}`}
                             transitionTypes={["folio-back"]}
                             onClick={() => setIsOpen(false)}
-                            className="group flex min-h-14 items-center justify-between py-3 sm:py-4"
+                            className="group flex min-h-14 items-center justify-between py-3.5 sm:py-4"
                           >
                             {itemContent}
                           </Link>
@@ -493,45 +441,45 @@ export default function Navbar() {
                 </ul>
               </div>
 
-              {/* Bottom Archival Colophon & Direct Channels */}
+              {/* Bottom Direct Channels */}
               <motion.div
-                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 10 }}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
                 animate={{
                   opacity: 1,
                   y: 0,
                   transition: {
-                    duration: 0.4,
-                    delay: shouldReduceMotion ? 0 : 0.36,
-                    ease: EASE_UNFOLD,
+                    duration: 0.36,
+                    delay: shouldReduceMotion ? 0 : 0.32,
+                    ease: EASE_CURTAIN_OPEN,
                   },
                 }}
-                exit={{ opacity: 0, transition: { duration: 0.15 } }}
-                className="site-container relative z-10 flex flex-wrap items-center justify-between gap-4 pt-2 font-mono text-xs text-[var(--ink-secondary)]"
+                exit={{ opacity: 0, transition: { duration: 0.14 } }}
+                className="site-container relative z-10 flex flex-wrap items-center justify-between gap-4 pt-2 text-sm text-[var(--engine-muted)]"
               >
                 <span className="inline-flex items-center gap-2">
                   <span
-                    className="h-2 w-2 rounded-full bg-[var(--accent-patina)]"
+                    className="h-2 w-2 rounded-full bg-[var(--accent-on-engine)]"
                     aria-hidden="true"
                   />
                   <span>{dictionary.hero.location}</span>
                 </span>
 
-                <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-wrap items-center gap-5">
                   <a
                     href={OWNER_INFO.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="link-draw inline-flex min-h-9 items-center gap-1 text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+                    className="link-draw inline-flex min-h-11 items-center gap-1 text-[var(--engine-ink)] hover:text-[var(--accent-on-engine)]"
                   >
                     <span>GitHub</span>
-                    <ArrowUpRight size={13} aria-hidden="true" />
+                    <ArrowUpRight size={14} aria-hidden="true" />
                   </a>
                   <a
                     href={`mailto:${OWNER_INFO.email}`}
-                    className="link-draw inline-flex min-h-9 items-center gap-1 text-[var(--ink-primary)] hover:text-[var(--accent-vermilion)]"
+                    className="link-draw inline-flex min-h-11 items-center gap-1 text-[var(--engine-ink)] hover:text-[var(--accent-on-engine)]"
                   >
                     <span>Email</span>
-                    <ArrowUpRight size={13} aria-hidden="true" />
+                    <ArrowUpRight size={14} aria-hidden="true" />
                   </a>
                 </div>
               </motion.div>

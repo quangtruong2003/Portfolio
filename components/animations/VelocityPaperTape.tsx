@@ -29,10 +29,10 @@ export default function VelocityPaperTape() {
   const { scrollY } = useScroll();
   const scrollVelocity = useVelocity(scrollY);
   const smoothVelocity = useSpring(scrollVelocity, {
-    damping: 42,
-    stiffness: 320,
+    damping: 44,
+    stiffness: 300,
   });
-  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 3.8], {
+  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 3.4], {
     clamp: false,
   });
 
@@ -49,9 +49,9 @@ export default function VelocityPaperTape() {
       directionRef.current = -1;
     }
 
-    const baseSpeed = 2.6; // % per second gentle ambient drift
+    const baseSpeed = 2.2;
     const moveBy =
-      directionRef.current * baseSpeed * dt * (1 + Math.min(Math.abs(vf), 6));
+      directionRef.current * baseSpeed * dt * (1 + Math.min(Math.abs(vf), 5.5));
     baseX.set(wrapRange(-50, 0, baseX.get() + moveBy));
   });
 
@@ -64,46 +64,46 @@ export default function VelocityPaperTape() {
             ? `SmoothScroll · ${downloads} lượt tải`
             : "SmoothScroll · Rust & Tauri 2",
           "PHP 8+ & Laravel 12",
-          "Hàng đợi hóa đơn & Phân quyền 4 tầng",
-          "Tối ưu MySQL Index & Đệm Redis",
-          "Đồng bộ WordPress hàng loạt",
-          "Spring Boot & Cổng VNPay",
-          "Kotlin Android · Gemini AI",
+          "Hàng đợi hóa đơn & Phân quyền RBAC 4 tầng",
+          "MySQL Composite Index & Redis Cache",
+          "Đồng bộ kho WordPress hàng loạt",
+          "Spring Boot & Cổng thanh toán VNPay",
+          "Kotlin Android & Firebase",
         ]
       : [
           downloads
             ? `SmoothScroll · ${downloads} downloads`
             : "SmoothScroll · Rust & Tauri 2",
           "PHP 8+ & Laravel 12",
-          "Async Queues & 4-Tier RBAC",
-          "MySQL Composite Indexes & Redis",
+          "Async Billing Queues & 4-Tier RBAC",
+          "MySQL Composite Indexes & Redis Cache",
           "Bulk WordPress Inventory Sync",
           "Spring Boot & VNPay Settlement",
-          "Kotlin Android · Gemini AI",
+          "Kotlin Android & Firebase",
         ];
 
   return (
     <div
       aria-hidden="true"
-      className="relative overflow-hidden border-b border-[var(--rule-cut)] bg-[var(--bg-sheet-mid)] py-3 select-none"
+      className="relative overflow-hidden border-b border-[var(--border-subtle)] bg-[var(--surface-subtle)] py-3 select-none"
     >
       <motion.div
         style={shouldReduceMotion ? undefined : { x }}
         className="flex w-max items-center will-change-transform"
       >
         {[0, 1].map((copyIdx) => (
-          <div key={copyIdx} className="flex shrink-0 items-center gap-7 pr-7">
+          <div key={copyIdx} className="flex shrink-0 items-center gap-8 pr-8">
             {items.map((item, idx) => (
               <span
                 key={`${copyIdx}-${item}`}
-                className="inline-flex items-center gap-7 font-mono text-xs font-medium text-[var(--ink-primary)]"
+                className="inline-flex items-center gap-8 font-mono text-xs font-medium text-[var(--ink-secondary)]"
               >
                 <span>{item}</span>
                 <span
                   className={
                     idx % 2 === 0
-                      ? "h-1.5 w-1.5 rotate-45 bg-[var(--accent-vermilion)]"
-                      : "h-1.5 w-1.5 rounded-full bg-[var(--accent-patina)]"
+                      ? "h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]"
+                      : "h-1.5 w-1.5 rounded-full bg-[var(--signal-rust)]"
                   }
                 />
               </span>

@@ -1,28 +1,33 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
-import { Be_Vietnam_Pro, Brygada_1918, Chivo_Mono } from "next/font/google";
+import {
+  Be_Vietnam_Pro,
+  Bricolage_Grotesque,
+  IBM_Plex_Mono,
+} from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import MotionProvider from "@/components/animations/MotionProvider";
 
-const brygadaDisplay = Brygada_1918({
+const bricolageDisplay = Bricolage_Grotesque({
   subsets: ["latin", "latin-ext", "vietnamese"],
-  style: ["normal", "italic"],
-  variable: "--font-brygada",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
   display: "swap",
 });
 
 const beVietnamSans = Be_Vietnam_Pro({
   subsets: ["latin", "latin-ext", "vietnamese"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-be-vietnam",
+  variable: "--font-sans-ui",
   display: "swap",
 });
 
-const chivoMono = Chivo_Mono({
+const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin", "latin-ext", "vietnamese"],
-  variable: "--font-chivo-mono",
+  weight: ["400", "500", "600"],
+  variable: "--font-mono-tech",
   display: "swap",
 });
 
@@ -31,8 +36,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#EFECE4" },
-    { media: "(prefers-color-scheme: dark)", color: "#1A1D1A" },
+    { media: "(prefers-color-scheme: light)", color: "#F5F6F3" },
+    { media: "(prefers-color-scheme: dark)", color: "#0F1713" },
   ],
 };
 
@@ -98,7 +103,7 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Nguyen Quang Truong",
-    jobTitle: "PHP Engineer",
+    jobTitle: "PHP & Systems Engineer",
     url: "https://quangtruong.dev",
     email: "nguyentruongk530042003@gmail.com",
     address: {
@@ -128,7 +133,7 @@ export default async function RootLayout({
     <html
       lang={initialLanguage}
       suppressHydrationWarning
-      className={`${brygadaDisplay.variable} ${beVietnamSans.variable} ${chivoMono.variable}`}
+      className={`${bricolageDisplay.variable} ${beVietnamSans.variable} ${ibmPlexMono.variable}`}
     >
       <head>
         <script

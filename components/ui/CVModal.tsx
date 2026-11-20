@@ -47,19 +47,19 @@ export default function CVModal({ isOpen, onClose }: CVModalProps) {
       onClick={(event) => {
         if (event.target === event.currentTarget) dialogRef.current?.close();
       }}
-      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-screen max-w-none overscroll-contain border-0 bg-[var(--ink-primary)]/75 p-2 text-[var(--ink-primary)] backdrop:bg-[var(--ink-primary)]/70 sm:p-6"
+      className="fixed inset-0 m-0 h-[100dvh] max-h-none w-full max-w-none overscroll-contain border-0 bg-[var(--engine-ground)]/78 p-2 text-[var(--ink-primary)] backdrop:bg-[var(--engine-ground)]/72 sm:p-6"
     >
       {isOpen && (
-        <div className="paper-sheet mx-auto flex h-full max-w-5xl flex-col overflow-hidden rounded-[4px]">
-          <div className="flex items-center justify-between gap-3 border-b border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-4 py-2.5 sm:px-5">
-            <p className="truncate font-mono text-xs font-medium text-[var(--ink-primary)]">
+        <div className="studio-surface mx-auto flex h-full max-w-5xl flex-col overflow-hidden">
+          <div className="flex items-center justify-between gap-3 border-b border-[var(--border-subtle)] bg-[var(--surface-ground)] px-4 py-3 sm:px-5">
+            <p className="truncate font-display text-sm font-medium text-[var(--ink-primary)] sm:text-base">
               {previewTitle}
             </p>
             <div className="flex items-center gap-2">
               <a
                 href={OWNER_INFO.cvPath}
                 download={OWNER_INFO.cvDownloadName}
-                className="inline-flex min-h-11 items-center gap-2 rounded-[3px] border border-[var(--accent-vermilion)] bg-[var(--accent-vermilion)] px-3.5 font-sans text-xs font-medium text-[var(--bg-sheet-top)] transition-[background-color,transform] duration-150 ease-out hover:bg-[var(--accent-vermilion-hover)] active:scale-[0.97]"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-3.5 font-sans text-xs font-medium text-[var(--surface-elevated)] transition-[background-color,transform] duration-150 ease-[var(--ease-out-strong)] hover:bg-[var(--accent-primary-hover)] active:scale-[0.96]"
               >
                 <Download size={15} aria-hidden="true" />
                 <span>{language === "vi" ? "Tải PDF" : "Download PDF"}</span>
@@ -69,7 +69,7 @@ export default function CVModal({ isOpen, onClose }: CVModalProps) {
                 ref={closeButtonRef}
                 onClick={() => dialogRef.current?.close()}
                 aria-label={language === "vi" ? "Đóng bản xem trước CV" : "Close CV preview"}
-                className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] transition-[background-color,transform] duration-150 hover:bg-[var(--bg-sheet-mid)] active:scale-[0.97]"
+                className="flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-elevated)] text-[var(--ink-primary)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--ink-primary)] hover:bg-[var(--surface-subtle)] active:scale-[0.96]"
               >
                 <X size={18} aria-hidden="true" />
               </button>
@@ -78,7 +78,7 @@ export default function CVModal({ isOpen, onClose }: CVModalProps) {
 
           <iframe
             src={`${OWNER_INFO.cvPath}#toolbar=0&navpanes=0`}
-            className="h-full w-full flex-1 bg-[var(--bg-sheet-top)]"
+            className="h-full w-full flex-1 bg-[var(--surface-elevated)]"
             title={previewTitle}
           />
         </div>

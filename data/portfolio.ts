@@ -70,14 +70,14 @@ export const OWNER_INFO = {
 export const PROJECTS: ProjectItem[] = [
   {
     slug: "smoothscroll",
-    figureCode: "FIG. I",
+    figureCode: "Rust · Tauri 2",
     title: "SmoothScroll",
     category: "personal",
     period: { en: "May 2026–Present", vi: "05/2026–nay" },
     role: { en: "Creator · Windows Desktop Utility", vi: "Tác giả · Tiện ích Desktop Windows" },
     summary: {
-      en: "An open-source Windows mouse-wheel engine built in Rust and Tauri 2 with low-level input hooks, custom easing physics, and per-application exclusion rules.",
-      vi: "Tiện ích cuộn chuột Windows mã nguồn mở viết bằng Rust và Tauri 2 với low-level input hook, thuật toán vật lý cuộn tùy chỉnh và quy tắc loại trừ theo từng ứng dụng.",
+      en: "An open-source Windows mouse-wheel engine built in Rust and Tauri 2 with low-level input hooks, custom 120 Hz easing physics, and per-application exclusion rules.",
+      vi: "Tiện ích cuộn chuột Windows mã nguồn mở viết bằng Rust và Tauri 2 với low-level input hook, thuật toán vật lý cuộn 120 Hz và quy tắc loại trừ theo từng ứng dụng.",
     },
     technologies: ["Rust", "Tauri 2", "React", "TypeScript", "Win32 Hooks"],
     href: "https://github.com/quangtruong2003/SmoothScroll",
@@ -126,7 +126,7 @@ export const PROJECTS: ProjectItem[] = [
           en: "Accumulates wheel impulses into a continuous velocity curve for natural acceleration and smooth deceleration.",
           vi: "Tích lũy xung lực cuộn thành đường cong vận tốc liên tục, tạo cảm giác tăng tốc và dừng tự nhiên.",
         },
-        metricOrTag: "Custom Curve",
+        metricOrTag: "120 Hz Curve",
       },
       {
         id: "tauri-shell",
@@ -166,7 +166,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     slug: "property-management",
-    figureCode: "FIG. II",
+    figureCode: "Laravel 12 · PHP 8+",
     title: "Property Management Platform",
     category: "work",
     period: { en: "Feb 2025–Apr 2026", vi: "02/2025–04/2026" },
@@ -253,7 +253,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     slug: "medical-booking",
-    figureCode: "FIG. III",
+    figureCode: "Spring Boot · React",
     title: "Medical Appointment Booking",
     category: "thesis",
     period: { en: "2025", vi: "2025" },
@@ -341,7 +341,7 @@ export const PROJECTS: ProjectItem[] = [
   },
   {
     slug: "chatbot",
-    figureCode: "FIG. IV",
+    figureCode: "Kotlin · Firebase",
     title: "ChatBot",
     category: "personal",
     period: { en: "2024–2025", vi: "2024–2025" },
@@ -428,7 +428,7 @@ export const PROJECTS: ProjectItem[] = [
 export const CAPABILITIES: CapabilityGroup[] = [
   {
     id: "backend-workflows",
-    plateCode: "PLATE A",
+    plateCode: "Core Backend",
     title: { en: "Backend workflows", vi: "Nghiệp vụ backend" },
     summary: {
       en: "Maintainable RESTful APIs, contract lifecycles, asynchronous queue workers, and multi-role access boundaries built with SOLID principles.",
@@ -451,7 +451,7 @@ export const CAPABILITIES: CapabilityGroup[] = [
   },
   {
     id: "data-performance",
-    plateCode: "PLATE B",
+    plateCode: "Data & Cache",
     title: { en: "Data performance", vi: "Hiệu năng dữ liệu" },
     summary: {
       en: "Relational schema design, N+1 elimination via eager loading, composite indexing, and Redis caching for responsive high-volume workflows.",
@@ -472,7 +472,7 @@ export const CAPABILITIES: CapabilityGroup[] = [
   },
   {
     id: "product-integrations",
-    plateCode: "PLATE C",
+    plateCode: "Systems & Native",
     title: { en: "Product integrations & native tools", vi: "Tích hợp sản phẩm & công cụ hệ thống" },
     summary: {
       en: "Connecting backends to WordPress inventory pipelines, VNPay payment gateways, PDF generators, React interfaces, and Rust/Tauri Windows utilities.",
@@ -499,7 +499,7 @@ export const CAPABILITIES: CapabilityGroup[] = [
 export const EXPERIENCES: ExperienceEntry[] = [
   {
     id: "penalty",
-    ledgerCode: "ROLE 01",
+    ledgerCode: "Penalty",
     company: "Penalty Co., Ltd.",
     location: { en: "District 10, Ho Chi Minh City", vi: "Quận 10, TP. Hồ Chí Minh" },
     role: { en: "Full Stack Developer", vi: "Lập trình viên Full Stack" },
@@ -526,7 +526,7 @@ export const EXPERIENCES: ExperienceEntry[] = [
   },
   {
     id: "c3tek",
-    ledgerCode: "ROLE 02",
+    ledgerCode: "C3TEK",
     company: "C3TEK Digital Marketing Solutions",
     location: { en: "District 10, Ho Chi Minh City", vi: "Quận 10, TP. Hồ Chí Minh" },
     role: { en: "PHP Developer", vi: "Lập trình viên PHP" },

@@ -3,14 +3,7 @@
 import React, { forwardRef } from "react";
 import type { LucideIcon } from "lucide-react";
 
-type ButtonVariant =
-  | "vermilion"
-  | "terracotta"
-  | "paper"
-  | "warm-sand"
-  | "dark"
-  | "ghost"
-  | "outline";
+type ButtonVariant = "primary" | "secondary" | "dark" | "ghost" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -23,20 +16,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  vermilion:
-    "border border-[var(--accent-vermilion)] bg-[var(--accent-vermilion)] text-[var(--bg-sheet-top)] hover:border-[var(--accent-vermilion-hover)] hover:bg-[var(--accent-vermilion-hover)]",
-  terracotta:
-    "border border-[var(--accent-vermilion)] bg-[var(--accent-vermilion)] text-[var(--bg-sheet-top)] hover:border-[var(--accent-vermilion-hover)] hover:bg-[var(--accent-vermilion-hover)]",
-  paper:
-    "border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] shadow-[0_2px_4px_rgba(24,23,21,0.06)] hover:border-[var(--ink-primary)] hover:bg-[var(--bg-sheet-mid)]",
-  "warm-sand":
-    "border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] shadow-[0_2px_4px_rgba(24,23,21,0.06)] hover:border-[var(--ink-primary)] hover:bg-[var(--bg-sheet-mid)]",
+  primary:
+    "border border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--surface-elevated)] shadow-[0_1px_2px_rgba(17,23,20,0.12)] hover:border-[var(--accent-primary-hover)] hover:bg-[var(--accent-primary-hover)]",
+  secondary:
+    "border border-[var(--border-strong)] bg-[var(--surface-elevated)] text-[var(--ink-primary)] shadow-[0_1px_2px_rgba(17,23,20,0.05)] hover:border-[var(--ink-primary)] hover:bg-[var(--surface-subtle)]",
   dark:
-    "border border-[var(--ink-primary)] bg-[var(--ink-primary)] text-[var(--bg-sheet-top)] hover:border-[var(--accent-vermilion)] hover:bg-[var(--accent-vermilion)]",
+    "border border-[var(--ink-primary)] bg-[var(--ink-primary)] text-[var(--surface-elevated)] hover:border-[var(--accent-primary)] hover:bg-[var(--accent-primary)]",
   ghost:
-    "border border-transparent bg-transparent text-[var(--ink-primary)] hover:border-[var(--rule-cut)] hover:bg-[var(--bg-sheet-top)]",
+    "border border-transparent bg-transparent text-[var(--ink-primary)] hover:border-[var(--border-subtle)] hover:bg-[var(--surface-elevated)]",
   outline:
-    "border border-[var(--accent-vermilion)] bg-transparent text-[var(--accent-vermilion)] hover:bg-[var(--accent-vermilion)] hover:text-[var(--bg-sheet-top)]",
+    "border border-[var(--accent-primary)] bg-transparent text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--surface-elevated)]",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -48,7 +37,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      variant = "vermilion",
+      variant = "primary",
       size = "md",
       icon: Icon,
       iconPosition = "left",
@@ -62,13 +51,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const isDisabled = disabled || loading;
-    const iconSize = size === "sm" ? 14 : size === "lg" ? 18 : 16;
+    const iconSize = size === "sm" ? 15 : size === "lg" ? 18 : 16;
 
     return (
       <button
         ref={ref}
         disabled={isDisabled}
-        className={`inline-flex cursor-pointer items-center justify-center rounded-[3px] font-sans font-medium transition-[background-color,color,border-color,transform] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--focus-ring)] ${variantClasses[variant]} ${sizeClasses[size]} ${fullWidth ? "w-full" : ""} ${isDisabled ? "cursor-not-allowed opacity-55" : "enabled:active:scale-[0.97]"} ${className}`}
+        className={`inline-flex cursor-pointer items-center justify-center rounded-lg font-sans font-medium transition-[background-color,color,border-color,transform] duration-150 ease-[var(--ease-out-strong)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--focus-ring)] ${variantClasses[variant]} ${sizeClasses[size]} ${fullWidth ? "w-full" : ""} ${isDisabled ? "cursor-not-allowed opacity-55" : "enabled:active:scale-[0.96]"} ${className}`}
         {...props}
       >
         {loading ? (

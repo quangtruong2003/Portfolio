@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Download, GitFork, RefreshCw, Star, Tag } from "lucide-react";
+import { ArrowUpRight, Check, Download, GitFork, RefreshCw, Star, Tag } from "lucide-react";
 import SectionTitle from "@/components/ui/SectionTitle";
 import { OWNER_INFO } from "@/data/portfolio";
 import { formatRepoDownloads, useGitHubRepos } from "@/hooks/useGitHubRepos";
@@ -14,18 +14,17 @@ export default function OpenSourceSection() {
   const downloadsDisplay = formatRepoDownloads(smoothScrollRepo, language);
 
   return (
-    <section id="open-source" className="border-b border-[var(--rule-cut)] py-16 md:py-24">
+    <section
+      id="open-source"
+      className="border-b border-[var(--border-subtle)] py-16 md:py-24"
+    >
       <div className="site-container">
-        <SectionTitle
-          title={text.title}
-          subtitle={text.subtitle}
-          asideMeta="github.com/quangtruong2003/SmoothScroll"
-        >
+        <SectionTitle title={text.title} subtitle={text.subtitle}>
           <a
             href={OWNER_INFO.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] px-4 font-mono text-xs font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.97]"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-elevated)] px-4 font-sans text-sm font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] active:scale-[0.96]"
           >
             <span>{text.viewAll}</span>
             <ArrowUpRight size={15} aria-hidden="true" />
@@ -34,26 +33,26 @@ export default function OpenSourceSection() {
 
         {loading && (
           <div
-            className="paper-stack paper-chamfer grid grid-cols-1 gap-8 p-6 opacity-80 sm:p-8 lg:grid-cols-12"
+            className="studio-surface grid grid-cols-1 gap-8 p-6 opacity-85 sm:p-8 lg:grid-cols-12"
             role="status"
           >
             <span className="sr-only">{text.loading}</span>
             <div className="space-y-4 lg:col-span-7">
-              <div className="h-4 w-48 animate-pulse rounded-[2px] bg-[var(--bg-sheet-mid)]" />
-              <div className="h-10 w-64 animate-pulse rounded-[3px] bg-[var(--bg-sheet-mid)]" />
-              <div className="h-16 w-full animate-pulse rounded-[3px] bg-[var(--bg-sheet-mid)]" />
+              <div className="h-5 w-48 animate-pulse rounded-md bg-[var(--surface-muted)]" />
+              <div className="h-10 w-64 animate-pulse rounded-md bg-[var(--surface-muted)]" />
+              <div className="h-16 w-full animate-pulse rounded-md bg-[var(--surface-muted)]" />
               <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                <div className="h-10 animate-pulse rounded-[3px] bg-[var(--bg-sheet-mid)]" />
-                <div className="h-10 animate-pulse rounded-[3px] bg-[var(--bg-sheet-mid)]" />
+                <div className="h-11 animate-pulse rounded-lg bg-[var(--surface-muted)]" />
+                <div className="h-11 animate-pulse rounded-lg bg-[var(--surface-muted)]" />
               </div>
             </div>
-            <div className="paper-well h-56 animate-pulse rounded-[4px] lg:col-span-5" />
+            <div className="h-60 animate-pulse rounded-xl bg-[var(--surface-subtle)] lg:col-span-5" />
           </div>
         )}
 
         {error && (
           <div
-            className="paper-well flex flex-wrap items-center justify-between gap-4 rounded-[4px] p-6"
+            className="studio-inset flex flex-wrap items-center justify-between gap-4 p-6"
             role="status"
           >
             <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--ink-secondary)]">
@@ -62,7 +61,7 @@ export default function OpenSourceSection() {
             <button
               type="button"
               onClick={retry}
-              className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-[3px] border border-[var(--ink-primary)] bg-[var(--bg-sheet-top)] px-4 font-mono text-xs font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.97]"
+              className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-[var(--ink-primary)] bg-[var(--surface-elevated)] px-4 font-sans text-sm font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] active:scale-[0.96]"
             >
               <RefreshCw size={14} aria-hidden="true" />
               <span>{text.retry}</span>
@@ -71,39 +70,37 @@ export default function OpenSourceSection() {
         )}
 
         {!loading && !error && !smoothScrollRepo && (
-          <p
-            className="paper-well rounded-[4px] p-6 text-sm text-[var(--ink-secondary)]"
-            role="status"
-          >
+          <p className="studio-inset p-6 text-sm text-[var(--ink-secondary)]" role="status">
             {text.empty}
           </p>
         )}
 
         {smoothScrollRepo && (
-          <article className="paper-stack paper-chamfer p-6 sm:p-8 lg:p-9">
+          <article className="studio-surface overflow-hidden p-6 sm:p-8 lg:p-9">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-stretch lg:gap-10">
-              {/* Left 7 Columns: Flagship Repository Identity, Highlights & Links */}
+              {/* Left 7 Columns: SmoothScroll Flagship Identity, Highlights & Actions */}
               <div className="flex flex-col justify-between lg:col-span-7">
                 <div>
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--rule-cut)] pb-3 font-mono text-xs text-[var(--ink-tertiary)]">
-                    <span>{text.flagshipLabel}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 text-xs text-[var(--ink-muted)]">
+                    <span className="font-medium text-[var(--accent-primary)]">
+                      {text.flagshipLabel}
+                    </span>
                     {smoothScrollRepo.language && (
-                      <span className="rounded-[2px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-2.5 py-0.5 font-medium text-[var(--ink-primary)]">
+                      <span className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface-ground)] px-2.5 py-1 font-mono text-xs text-[var(--ink-secondary)]">
                         {smoothScrollRepo.language}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="mt-4">
+                  <h3 className="mt-2">
                     <a
                       href={smoothScrollRepo.html_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      data-cursor="open"
-                      className="inline-flex min-h-11 items-center gap-2.5 font-serif text-3xl font-medium tracking-[-0.025em] text-[var(--ink-primary)] transition-colors duration-150 hover:text-[var(--accent-vermilion)] sm:text-4xl"
+                      className="inline-flex min-h-11 items-center gap-2.5 font-display text-3xl font-semibold tracking-[-0.03em] text-[var(--ink-primary)] transition-colors duration-150 hover:text-[var(--accent-primary)] sm:text-4xl"
                     >
                       <span>{smoothScrollRepo.name}</span>
-                      <ArrowUpRight size={22} aria-hidden="true" />
+                      <ArrowUpRight size={24} aria-hidden="true" />
                     </a>
                   </h3>
 
@@ -111,29 +108,30 @@ export default function OpenSourceSection() {
                     {smoothScrollRepo.description}
                   </p>
 
-                  {/* 4 Key System Highlights from README */}
-                  <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    {text.highlights.map((item, idx) => (
+                  <ul className="mt-6 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                    {text.highlights.map((item) => (
                       <li
                         key={item}
-                        className="flex items-center gap-2.5 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-3 py-2 text-xs font-medium text-[var(--ink-primary)] sm:text-sm"
+                        className="flex items-start gap-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-ground)] px-3.5 py-2.5 text-sm text-[var(--ink-primary)]"
                       >
-                        <span className="font-mono text-xs font-semibold text-[var(--accent-vermilion)] tabular-nums">
-                          {`0${idx + 1}`}
-                        </span>
+                        <Check
+                          size={15}
+                          className="mt-0.5 shrink-0 text-[var(--accent-primary)]"
+                          aria-hidden="true"
+                        />
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Direct Repository, Releases & Product Website Actions */}
-                <div className="mt-6 flex flex-wrap items-center gap-2.5 border-t border-[var(--rule-cut)] pt-5">
+                {/* Primary Release Download + Source + Website Actions */}
+                <div className="mt-7 flex flex-wrap items-center gap-2.5 border-t border-[var(--border-subtle)] pt-5">
                   <a
                     href={smoothScrollRepo.releases_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center gap-2 rounded-[3px] border border-[var(--accent-vermilion)] bg-[var(--accent-vermilion)] px-4 font-sans text-xs font-medium text-[var(--bg-sheet-top)] transition-[background-color,border-color,transform] duration-150 hover:border-[var(--accent-vermilion-hover)] hover:bg-[var(--accent-vermilion-hover)] active:scale-[0.97]"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-4 font-sans text-sm font-medium text-[var(--surface-elevated)] transition-[background-color,border-color,transform] duration-150 ease-[var(--ease-out-strong)] hover:border-[var(--accent-primary-hover)] hover:bg-[var(--accent-primary-hover)] active:scale-[0.96]"
                   >
                     <Download size={15} aria-hidden="true" />
                     <span>
@@ -148,17 +146,17 @@ export default function OpenSourceSection() {
                     href={smoothScrollRepo.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] px-4 font-sans text-xs font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.97]"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-elevated)] px-4 font-sans text-sm font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] active:scale-[0.96]"
                   >
                     <span>{text.viewRepo}</span>
-                    <ArrowUpRight size={14} aria-hidden="true" />
+                    <ArrowUpRight size={15} aria-hidden="true" />
                   </a>
 
                   <a
                     href={smoothScrollRepo.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-3.5 font-sans text-xs font-medium text-[var(--ink-secondary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--rule-strong)] hover:text-[var(--ink-primary)] active:scale-[0.97]"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-ground)] px-3.5 font-sans text-sm font-medium text-[var(--ink-secondary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--border-strong)] hover:text-[var(--ink-primary)] active:scale-[0.96]"
                   >
                     <span>{text.viewWebsite}</span>
                     <ArrowUpRight size={14} aria-hidden="true" />
@@ -166,77 +164,75 @@ export default function OpenSourceSection() {
                 </div>
               </div>
 
-              {/* Right 5 Columns: Live GitHub & README Shields Telemetry Ledger */}
-              <div className="paper-well relative flex flex-col justify-between rounded-[4px] p-5 sm:p-6 lg:col-span-5">
-                <div className="flex items-center justify-between gap-2 border-b border-[var(--rule-cut)] pb-3 font-mono text-xs text-[var(--ink-secondary)]">
+              {/* Right 5 Columns: Deep Forest-Obsidian Live Telemetry Console */}
+              <div className="engine-room flex flex-col justify-between rounded-xl border border-[var(--engine-border)] p-5 sm:p-6 lg:col-span-5">
+                <div className="flex items-center justify-between gap-2 border-b border-[var(--engine-border)] pb-3.5 text-xs text-[var(--engine-muted)]">
                   <span>{text.telemetryHeading}</span>
                   <span
-                    className="h-2 w-2 shrink-0 rounded-full bg-[var(--accent-patina)]"
+                    className="h-2 w-2 shrink-0 rounded-full bg-[var(--accent-on-engine)]"
                     aria-hidden="true"
                   />
                 </div>
 
-                {/* Primary Realtime Download Count */}
-                <div className="my-5 rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-sheet-top)] p-5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs text-[var(--ink-tertiary)]">
-                      README · GitHub Releases
-                    </span>
+                {/* Live Realtime Downloads Counter */}
+                <div className="engine-inset my-5 p-5">
+                  <div className="flex items-center justify-between gap-2 text-xs text-[var(--engine-muted)]">
+                    <span className="font-mono">GitHub Releases</span>
                     <Download
                       size={15}
-                      className="text-[var(--accent-vermilion)]"
+                      className="text-[var(--signal-on-engine)]"
                       aria-hidden="true"
                     />
                   </div>
-                  <p className="mt-2 font-serif text-4xl font-semibold leading-none tracking-[-0.03em] text-[var(--accent-vermilion)] tabular-nums sm:text-5xl">
+                  <p className="mt-2 font-display text-4xl font-semibold leading-none tracking-[-0.03em] text-[var(--signal-on-engine)] tabular-nums sm:text-5xl">
                     {downloadsDisplay ?? "—"}
                   </p>
-                  <p className="mt-2 font-mono text-xs text-[var(--ink-secondary)]">
+                  <p className="mt-2 text-xs text-[var(--engine-muted)]">
                     {text.downloads}
                   </p>
                 </div>
 
-                {/* Secondary Live Metrics: Stars, Forks & Latest Tag */}
-                <div className="grid grid-cols-2 gap-3 font-mono text-xs tabular-nums">
-                  <div className="rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] p-3.5">
-                    <div className="flex items-center gap-1.5 text-[var(--ink-tertiary)]">
+                {/* Live Secondary Metrics */}
+                <div className="grid grid-cols-2 gap-3 tabular-nums">
+                  <div className="engine-inset p-3.5">
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--engine-muted)]">
                       <Star
                         size={14}
-                        className="text-[var(--accent-ochre)]"
+                        className="text-[var(--signal-on-engine)]"
                         aria-hidden="true"
                       />
                       <span>{text.stars}</span>
                     </div>
-                    <p className="mt-1.5 font-serif text-2xl font-semibold text-[var(--ink-primary)]">
+                    <p className="mt-1.5 font-display text-2xl font-semibold text-[var(--engine-ink)]">
                       {numberFormat.format(smoothScrollRepo.stargazers_count)}
                     </p>
                   </div>
 
-                  <div className="rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] p-3.5">
-                    <div className="flex items-center gap-1.5 text-[var(--ink-tertiary)]">
+                  <div className="engine-inset p-3.5">
+                    <div className="flex items-center gap-1.5 text-xs text-[var(--engine-muted)]">
                       <GitFork
                         size={14}
-                        className="text-[var(--accent-patina)]"
+                        className="text-[var(--accent-on-engine)]"
                         aria-hidden="true"
                       />
                       <span>{text.forks}</span>
                     </div>
-                    <p className="mt-1.5 font-serif text-2xl font-semibold text-[var(--ink-primary)]">
+                    <p className="mt-1.5 font-display text-2xl font-semibold text-[var(--engine-ink)]">
                       {numberFormat.format(smoothScrollRepo.forks_count)}
                     </p>
                   </div>
 
                   {smoothScrollRepo.latest_release && (
-                    <div className="col-span-2 flex items-center justify-between rounded-[3px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-3.5 py-2.5">
-                      <span className="inline-flex items-center gap-1.5 text-[var(--ink-secondary)]">
+                    <div className="engine-inset col-span-2 flex items-center justify-between px-3.5 py-2.5 text-xs">
+                      <span className="inline-flex items-center gap-1.5 text-[var(--engine-muted)]">
                         <Tag
                           size={13}
-                          className="text-[var(--accent-patina)]"
+                          className="text-[var(--accent-on-engine)]"
                           aria-hidden="true"
                         />
                         <span>{text.latestRelease}</span>
                       </span>
-                      <span className="rounded-[2px] bg-[var(--accent-patina-wash)] px-2 py-0.5 font-semibold text-[var(--accent-patina)]">
+                      <span className="rounded-md bg-[var(--accent-on-engine-soft)] px-2.5 py-0.5 font-mono font-semibold text-[var(--accent-on-engine)]">
                         {smoothScrollRepo.latest_release}
                       </span>
                     </div>

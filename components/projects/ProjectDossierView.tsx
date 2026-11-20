@@ -62,65 +62,65 @@ export default function ProjectDossierView({
       >
         <main id="main-content" className="py-10 md:py-16">
           <div className="site-container">
-            {/* Top Return Breadcrumb */}
+            {/* Return Navigation Row */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <Link
                 href="/#projects"
                 transitionTypes={["folio-back"]}
-                className="inline-flex min-h-11 items-center gap-2 rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] px-4 font-mono text-xs font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.97]"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-elevated)] px-4 font-sans text-sm font-medium text-[var(--ink-primary)] transition-[border-color,color,transform] duration-150 hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)] active:scale-[0.96]"
               >
                 <ArrowLeft size={15} aria-hidden="true" />
                 <span>{d.backToWork}</span>
               </Link>
 
-              <span className="font-mono text-xs text-[var(--ink-tertiary)] tabular-nums">
-                {`${project.figureCode} · ${project.period[language]}`}
+              <span className="font-mono text-xs text-[var(--ink-muted)] tabular-nums">
+                {project.period[language]}
               </span>
             </div>
 
-            {/* Main Die-Cut Architectural Dossier Sheet */}
-            <article className="paper-stack paper-chamfer p-6 sm:p-10">
+            {/* Main Technical Dossier Surface */}
+            <article className="studio-surface p-6 sm:p-10">
               {/* Shared-Element Morph Header */}
               <ViewTransition
                 name={`project-header-${project.slug}`}
                 share="morph-folio"
                 default="none"
               >
-                <header className="border-b border-[var(--rule-cut)] pb-7">
-                  <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs text-[var(--ink-tertiary)]">
-                    <span className="font-semibold text-[var(--accent-vermilion)] tabular-nums">
-                      {project.figureCode}
+                <header className="border-b border-[var(--border-subtle)] pb-8">
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--ink-muted)]">
+                    <span className="rounded-md bg-[var(--accent-primary-soft)] px-2.5 py-1 font-medium text-[var(--accent-primary)]">
+                      {text.category[project.category]}
                     </span>
-                    <span>
-                      {text.category[project.category]} · {project.period[language]}
+                    <span className="font-mono tabular-nums">
+                      {project.period[language]}
                     </span>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end">
+                  <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-end">
                     <div className="lg:col-span-8">
                       <h1 className="display-hero text-[var(--ink-primary)]">
                         {project.title}
                       </h1>
-                      <p className="mt-3 font-mono text-sm font-medium text-[var(--accent-patina)]">
+                      <p className="mt-3 text-base font-medium text-[var(--accent-primary)]">
                         {project.role[language]}
                       </p>
                     </div>
 
                     {project.highlightBadge && (
-                      <div className="paper-well rounded-[4px] p-4 lg:col-span-4">
-                        <p className="min-h-[2.25rem] font-serif text-3xl font-semibold leading-none text-[var(--accent-vermilion)] tabular-nums sm:text-4xl">
+                      <div className="engine-room rounded-xl border border-[var(--engine-border)] p-5 lg:col-span-4">
+                        <p className="min-h-[2.5rem] font-display text-3xl font-semibold leading-none text-[var(--signal-on-engine)] tabular-nums sm:text-4xl">
                           {badgeValue ? (
                             badgeValue
                           ) : isSmoothScroll && statsLoading ? (
                             <span
-                              className="inline-block h-8 w-32 animate-pulse rounded-[3px] bg-[var(--bg-sheet-deep)]"
+                              className="inline-block h-8 w-32 animate-pulse rounded-md bg-[var(--engine-surface)]"
                               aria-hidden="true"
                             />
                           ) : (
                             "—"
                           )}
                         </p>
-                        <p className="mt-1.5 font-mono text-xs text-[var(--ink-secondary)]">
+                        <p className="mt-1.5 text-xs text-[var(--engine-muted)]">
                           {project.highlightBadge.caption[language]}
                         </p>
                       </div>
@@ -130,9 +130,9 @@ export default function ProjectDossierView({
               </ViewTransition>
 
               {/* Summary, Stack & Verified Links Bar */}
-              <div className="mt-7 grid grid-cols-1 gap-8 border-b border-[var(--rule-cut)] pb-8 lg:grid-cols-12">
+              <div className="mt-8 grid grid-cols-1 gap-8 border-b border-[var(--border-subtle)] pb-8 lg:grid-cols-12">
                 <div className="lg:col-span-7">
-                  <p className="text-base leading-relaxed text-[var(--ink-primary)] sm:text-lg">
+                  <p className="max-w-[65ch] text-base leading-relaxed text-[var(--ink-primary)] sm:text-lg">
                     {project.summary[language]}
                   </p>
 
@@ -140,7 +140,7 @@ export default function ProjectDossierView({
                     {project.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="rounded-[2px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] px-2.5 py-1 font-mono text-xs text-[var(--ink-primary)]"
+                        className="rounded-md border border-[var(--border-subtle)] bg-[var(--surface-ground)] px-2.5 py-1 font-mono text-xs text-[var(--ink-primary)]"
                       >
                         {tech}
                       </span>
@@ -148,15 +148,15 @@ export default function ProjectDossierView({
                   </div>
                 </div>
 
-                <div className="flex flex-col justify-between gap-4 rounded-[4px] border border-[var(--rule-cut)] bg-[var(--bg-canvas)] p-5 lg:col-span-5">
+                <div className="studio-inset flex flex-col justify-between gap-4 p-5 lg:col-span-5">
                   <div>
-                    <p className="font-mono text-xs uppercase tracking-[0.05em] text-[var(--ink-tertiary)]">
+                    <p className="text-xs font-medium text-[var(--ink-muted)]">
                       {d.sourceStatusLabel}
                     </p>
                     <p className="mt-1.5 inline-flex items-start gap-2 text-sm text-[var(--ink-secondary)]">
                       <ShieldCheck
                         size={16}
-                        className="mt-0.5 shrink-0 text-[var(--accent-patina)]"
+                        className="mt-0.5 shrink-0 text-[var(--accent-primary)]"
                         aria-hidden="true"
                       />
                       <span>{project.sourceStatus[language]}</span>
@@ -170,10 +170,10 @@ export default function ProjectDossierView({
                           href={project.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex min-h-11 items-center gap-1.5 rounded-[3px] border border-[var(--accent-vermilion)] bg-[var(--accent-vermilion)] px-4 font-sans text-xs font-medium text-[var(--bg-sheet-top)] transition-[background-color,transform] duration-150 hover:bg-[var(--accent-vermilion-hover)] active:scale-[0.97]"
+                          className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-[var(--accent-primary)] bg-[var(--accent-primary)] px-4 font-sans text-sm font-medium text-[var(--surface-elevated)] transition-[background-color,transform] duration-150 hover:bg-[var(--accent-primary-hover)] active:scale-[0.96]"
                         >
                           <span>{text.viewWebsite}</span>
-                          <ArrowUpRight size={14} aria-hidden="true" />
+                          <ArrowUpRight size={15} aria-hidden="true" />
                         </a>
                       )}
                       {project.href && (
@@ -182,14 +182,14 @@ export default function ProjectDossierView({
                           target="_blank"
                           rel="noopener noreferrer"
                           className={
-                            "inline-flex min-h-11 items-center gap-1.5 rounded-[3px] border px-4 font-sans text-xs font-medium transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.97] " +
+                            "inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-4 font-sans text-sm font-medium transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.96] " +
                             (project.website
-                              ? "border-[var(--rule-strong)] bg-[var(--bg-sheet-top)] text-[var(--ink-primary)] hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)]"
-                              : "border-[var(--ink-primary)] bg-[var(--ink-primary)] text-[var(--bg-sheet-top)] hover:border-[var(--accent-vermilion)] hover:bg-[var(--accent-vermilion)]")
+                              ? "border-[var(--border-strong)] bg-[var(--surface-elevated)] text-[var(--ink-primary)] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
+                              : "border-[var(--accent-primary)] bg-[var(--accent-primary)] text-[var(--surface-elevated)] hover:bg-[var(--accent-primary-hover)]")
                           }
                         >
                           <span>{text.viewSource}</span>
-                          <ArrowUpRight size={14} aria-hidden="true" />
+                          <ArrowUpRight size={15} aria-hidden="true" />
                         </a>
                       )}
                     </div>
@@ -197,26 +197,26 @@ export default function ProjectDossierView({
                 </div>
               </div>
 
-              {/* Interactive System Blueprint & Simulator */}
-              <section className="mt-9 border-b border-[var(--rule-cut)] pb-9">
-                <h2 className="mb-5 font-serif text-2xl font-medium text-[var(--ink-primary)] sm:text-3xl">
+              {/* Interactive System Diagram & 120Hz Simulator */}
+              <section className="mt-9 border-b border-[var(--border-subtle)] pb-9">
+                <h2 className="mb-5 font-display text-2xl font-semibold tracking-[-0.025em] text-[var(--ink-primary)] sm:text-3xl">
                   {d.interactiveBlueprintHeading}
                 </h2>
                 <ProjectSchematic project={project} showLiveLab={true} />
               </section>
 
-              {/* Detailed Engineering Case Study Breakdown */}
+              {/* Context & Architecture Decisions */}
               <div className="mt-9 grid grid-cols-1 gap-10 lg:grid-cols-12">
                 <section className="lg:col-span-5">
-                  <h2 className="font-serif text-2xl font-medium text-[var(--ink-primary)]">
+                  <h2 className="font-display text-2xl font-semibold tracking-[-0.025em] text-[var(--ink-primary)]">
                     {d.contextHeading}
                   </h2>
-                  <p className="mt-4 text-base leading-[1.75] text-[var(--ink-secondary)]">
+                  <p className="mt-4 text-base leading-[1.72] text-[var(--ink-secondary)]">
                     {project.caseStudy.context[language]}
                   </p>
 
-                  <div className="paper-well mt-6 rounded-[4px] p-5">
-                    <h3 className="font-mono text-xs font-semibold uppercase tracking-[0.05em] text-[var(--ink-primary)]">
+                  <div className="studio-inset mt-6 p-5">
+                    <h3 className="text-xs font-semibold text-[var(--accent-primary)]">
                       {d.craftHeading}
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-[var(--ink-secondary)]">
@@ -226,17 +226,17 @@ export default function ProjectDossierView({
                 </section>
 
                 <section className="lg:col-span-7">
-                  <h2 className="font-serif text-2xl font-medium text-[var(--ink-primary)]">
+                  <h2 className="font-display text-2xl font-semibold tracking-[-0.025em] text-[var(--ink-primary)]">
                     {d.architectureHeading}
                   </h2>
-                  <ol className="mt-4 space-y-4">
+                  <ol className="mt-4 space-y-3.5">
                     {project.caseStudy.architecture.map((decision, idx) => (
                       <li
                         key={decision.en}
-                        className="paper-sheet flex items-start gap-4 rounded-[4px] p-4 sm:p-5"
+                        className="flex items-start gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-ground)] p-4 sm:p-5"
                       >
-                        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-[2px] bg-[var(--ink-primary)] font-mono text-xs font-semibold text-[var(--bg-sheet-top)] tabular-nums">
-                          {`0${idx + 1}`}
+                        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--accent-primary)] font-mono text-xs font-semibold text-[var(--surface-elevated)] tabular-nums">
+                          {`${idx + 1}`}
                         </span>
                         <p className="text-sm leading-relaxed text-[var(--ink-primary)] sm:text-base">
                           {decision[language]}
@@ -248,24 +248,23 @@ export default function ProjectDossierView({
               </div>
             </article>
 
-            {/* Directional Folio Switcher (Prev / Next with ViewTransition Paper Shutter) */}
+            {/* Directional Prev / Next Navigation */}
             <nav
-              aria-label="Project folio pagination"
+              aria-label="Project pagination"
               className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2"
             >
               <Link
                 href={`/projects/${prevProject.slug}`}
                 prefetch={true}
                 transitionTypes={["folio-back"]}
-                data-cursor="open"
-                className="paper-sheet paper-lift flex flex-col justify-between rounded-[4px] p-5"
+                className="studio-surface surface-lift flex flex-col justify-between p-5"
               >
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--ink-tertiary)]">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--ink-muted)]">
                   <ArrowLeft size={14} aria-hidden="true" />
                   <span>{d.prevFolio}</span>
                 </span>
-                <span className="mt-2 font-serif text-2xl font-medium text-[var(--ink-primary)]">
-                  {prevProject.figureCode} · {prevProject.title}
+                <span className="mt-2 font-display text-xl font-semibold tracking-[-0.02em] text-[var(--ink-primary)] sm:text-2xl">
+                  {prevProject.title}
                 </span>
               </Link>
 
@@ -273,15 +272,14 @@ export default function ProjectDossierView({
                 href={`/projects/${nextProject.slug}`}
                 prefetch={true}
                 transitionTypes={["folio-forward"]}
-                data-cursor="open"
-                className="paper-sheet paper-lift flex flex-col items-start justify-between rounded-[4px] p-5 sm:items-end sm:text-right"
+                className="studio-surface surface-lift flex flex-col items-start justify-between p-5 sm:items-end sm:text-right"
               >
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--ink-tertiary)]">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--ink-muted)]">
                   <span>{d.nextFolio}</span>
                   <ArrowRight size={14} aria-hidden="true" />
                 </span>
-                <span className="mt-2 font-serif text-2xl font-medium text-[var(--ink-primary)]">
-                  {nextProject.figureCode} · {nextProject.title}
+                <span className="mt-2 font-display text-xl font-semibold tracking-[-0.02em] text-[var(--ink-primary)] sm:text-2xl">
+                  {nextProject.title}
                 </span>
               </Link>
             </nav>

@@ -1,105 +1,98 @@
 @import "tailwindcss";
 
 :root {
-  /* Material 1: Raw Cotton Rag & Layered Cut-Paper Stock */
-  --bg-canvas: #efece4;
-  --bg-sheet-top: #f9f7f1;
-  --bg-sheet-mid: #e5e0d5;
-  --bg-sheet-deep: #d8d1c3;
+  /* ==========================================================================
+     THE KINETIC STUDIO MONOGRAPH — SEMANTIC COLOR SYSTEM
+     Derived directly from the studio portrait's deep forest overshirt (#194A38)
+     paired with daylight gallery stone and a forest-obsidian engine darkroom.
+     ========================================================================== */
 
-  /* Material 2: Deep Pine-Walnut Letterpress Plate */
-  --bg-press: #1a1d1a;
-  --bg-press-raised: #232823;
-  --bg-press-well: #121512;
-  --ink-on-press: #f4f0e6;
-  --muted-on-press: #b5b0a4;
-  --rule-on-press: #353b35;
+  /* Daylight Gallery Surfaces */
+  --surface-ground: #f5f6f3;
+  --surface-elevated: #ffffff;
+  --surface-subtle: #eaede7;
+  --surface-muted: #dfe4dc;
+  --border-subtle: #d7dcd3;
+  --border-strong: #9aa397;
+  --border-input: #7c877a;
 
-  /* Material 3: Drafting & Archival Inks (All >= 4.5:1 AA against light stock) */
-  --ink-primary: #181715;
-  --ink-secondary: #49453e;
-  --ink-tertiary: #615c53;
-  --rule-cut: #cfc8b8;
-  --rule-strong: #9e9686;
+  /* Forest-Tinted Charcoal Ink (All >= 4.5:1 AA on daylight surfaces) */
+  --ink-primary: #111714;
+  --ink-secondary: #3f4a43;
+  --ink-muted: #556159;
 
-  /* Material 4: Distinct Pigments (>15deg OKLCH separation, single semantic job each) */
-  --accent-vermilion: #b8332a;
-  --accent-vermilion-hover: #8f241d;
-  --accent-vermilion-wash: #f5e4e1;
-  --accent-patina: #2b5b4e;
-  --accent-patina-on-press: #7cc0ac;
-  --accent-patina-wash: #e1ece8;
-  --accent-ochre: #8e6119;
-  --accent-ochre-on-press: #ddb05c;
-  --focus-ring: #1f5c6e;
-  --error-crimson: #9e261f;
+  /* Engine Room Dark Surfaces (#about, #skills, instrument panels) */
+  --engine-ground: #0f1713;
+  --engine-surface: #16211b;
+  --engine-inset: #0a100d;
+  --engine-border: #28382f;
+  --engine-border-strong: #3b5245;
+  --engine-ink: #f3f6f2;
+  --engine-muted: #a9b8ae;
 
-  /* Legacy semantic aliases kept aligned for primitive compatibility */
-  --paper: var(--bg-canvas);
-  --parchment: var(--bg-canvas);
-  --ivory: var(--bg-sheet-top);
-  --ink: var(--ink-primary);
-  --near-black: var(--ink-primary);
-  --muted: var(--ink-secondary);
-  --olive-gray: var(--ink-secondary);
-  --charcoal-warm: var(--ink-primary);
-  --hairline: var(--rule-cut);
-  --border-warm: var(--rule-cut);
-  --border-cream: var(--bg-sheet-mid);
-  --rust: var(--accent-vermilion);
-  --terracotta: var(--accent-vermilion);
-  --warm-sand: var(--bg-sheet-mid);
-  --diagram-surface: var(--bg-sheet-mid);
-  --focus-blue: var(--focus-ring);
+  /* Brand Primary Accent: Botanical Forest Pine (Synced to authentic portrait) */
+  --accent-primary: #194a38;
+  --accent-primary-hover: #12372a;
+  --accent-primary-soft: #e4efe9;
+  --accent-on-engine: #68d3a4;
+  --accent-on-engine-soft: rgba(104, 211, 164, 0.14);
 
-  /* Motion & Tactile Physics Tokens */
+  /* Kinetic Telemetry Accent: Rust Signal (>15deg OKLCH away, telemetry & motion curves only) */
+  --signal-rust: #b8421f;
+  --signal-rust-hover: #963417;
+  --signal-rust-soft: #faeae4;
+  --signal-on-engine: #f39567;
+
+  /* Accessibility & Semantic Status */
+  --focus-ring: #0f6e8c;
+  --focus-ring-engine: #68d3a4;
+  --status-error: #b42318;
+  --status-error-bg: #fef2f2;
+
+  /* Precision Motion Curves (Emil Kowalski / Apple HIG aligned) */
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out-paper: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @theme inline {
-  --color-canvas: var(--bg-canvas);
-  --color-sheet-top: var(--bg-sheet-top);
-  --color-sheet-mid: var(--bg-sheet-mid);
-  --color-sheet-deep: var(--bg-sheet-deep);
-  --color-press: var(--bg-press);
-  --color-press-raised: var(--bg-press-raised);
-  --color-press-well: var(--bg-press-well);
-  --color-ink-on-press: var(--ink-on-press);
-  --color-muted-on-press: var(--muted-on-press);
-  --color-rule-on-press: var(--rule-on-press);
+  --color-ground: var(--surface-ground);
+  --color-elevated: var(--surface-elevated);
+  --color-subtle: var(--surface-subtle);
+  --color-muted-surface: var(--surface-muted);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-border-input: var(--border-input);
+
   --color-ink-primary: var(--ink-primary);
   --color-ink-secondary: var(--ink-secondary);
-  --color-ink-tertiary: var(--ink-tertiary);
-  --color-rule-cut: var(--rule-cut);
-  --color-rule-strong: var(--rule-strong);
-  --color-vermilion: var(--accent-vermilion);
-  --color-vermilion-hover: var(--accent-vermilion-hover);
-  --color-vermilion-wash: var(--accent-vermilion-wash);
-  --color-patina: var(--accent-patina);
-  --color-patina-on-press: var(--accent-patina-on-press);
-  --color-patina-wash: var(--accent-patina-wash);
-  --color-ochre: var(--accent-ochre);
-  --color-ochre-on-press: var(--accent-ochre-on-press);
+  --color-ink-muted: var(--ink-muted);
+
+  --color-engine-ground: var(--engine-ground);
+  --color-engine-surface: var(--engine-surface);
+  --color-engine-inset: var(--engine-inset);
+  --color-engine-border: var(--engine-border);
+  --color-engine-border-strong: var(--engine-border-strong);
+  --color-engine-ink: var(--engine-ink);
+  --color-engine-muted: var(--engine-muted);
+
+  --color-accent: var(--accent-primary);
+  --color-accent-hover: var(--accent-primary-hover);
+  --color-accent-soft: var(--accent-primary-soft);
+  --color-accent-engine: var(--accent-on-engine);
+
+  --color-signal: var(--signal-rust);
+  --color-signal-hover: var(--signal-rust-hover);
+  --color-signal-soft: var(--signal-rust-soft);
+  --color-signal-engine: var(--signal-on-engine);
+
   --color-focus-ring: var(--focus-ring);
-  --color-error-crimson: var(--error-crimson);
+  --color-status-error: var(--status-error);
+  --color-status-error-bg: var(--status-error-bg);
 
-  --color-parchment: var(--parchment);
-  --color-ivory: var(--ivory);
-  --color-near-black: var(--near-black);
-  --color-terracotta: var(--terracotta);
-  --color-warm-sand: var(--warm-sand);
-  --color-charcoal-warm: var(--charcoal-warm);
-  --color-olive-gray: var(--olive-gray);
-  --color-border-cream: var(--border-cream);
-  --color-border-warm: var(--border-warm);
-  --color-focus-blue: var(--focus-blue);
-  --color-diagram-surface: var(--diagram-surface);
-
-  --font-serif: var(--font-brygada), Georgia, serif;
-  --font-sans: var(--font-be-vietnam), system-ui, sans-serif;
-  --font-mono: var(--font-chivo-mono), ui-monospace, monospace;
+  --font-display: var(--font-display), system-ui, sans-serif;
+  --font-sans: var(--font-sans-ui), system-ui, sans-serif;
+  --font-mono: var(--font-mono-tech), ui-monospace, monospace;
 }
 
 * {
@@ -108,24 +101,22 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 4.5rem;
+  scroll-padding-block-start: 4.75rem;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
-  scrollbar-color: var(--rule-strong) var(--bg-canvas);
+  scrollbar-color: var(--border-strong) var(--surface-ground);
   scrollbar-width: thin;
 }
 
 body {
   min-width: 320px;
   overflow-x: clip;
-  background-color: var(--bg-canvas);
-  /* Subtle static cotton-rag paper fiber weave via inline SVG data URI */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");
+  background-color: var(--surface-ground);
   color: var(--ink-primary);
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.6;
-  caret-color: var(--accent-vermilion);
+  caret-color: var(--accent-primary);
 }
 
 ::-webkit-scrollbar {
@@ -134,12 +125,12 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-canvas);
+  background: var(--surface-ground);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--rule-strong);
-  border: 2px solid var(--bg-canvas);
+  background: var(--border-strong);
+  border: 2px solid var(--surface-ground);
   border-radius: 999px;
 }
 
@@ -151,7 +142,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   text-wrap: balance;
 }
 
@@ -178,6 +169,7 @@ button,
   -webkit-user-select: none;
 }
 
+/* Prevent iOS Safari auto-zoom on form fields */
 input,
 textarea,
 select {
@@ -189,12 +181,12 @@ select {
 }
 
 section[id]:not(#hero) {
-  scroll-margin-top: 4.5rem;
+  scroll-margin-block-start: 4.75rem;
 }
 
 ::selection {
-  background: var(--accent-vermilion);
-  color: var(--bg-sheet-top);
+  background: var(--accent-primary);
+  color: var(--surface-elevated);
 }
 
 :focus-visible {
@@ -202,20 +194,24 @@ section[id]:not(#hero) {
   outline-offset: 3px;
 }
 
+.engine-room :focus-visible {
+  outline-color: var(--focus-ring-engine);
+}
+
 :is(input, textarea, select):focus-visible {
-  border-color: var(--accent-vermilion);
+  border-color: var(--accent-primary);
   outline: 2px solid var(--focus-ring);
   outline-offset: 1px;
 }
 
 .site-container {
-  width: min(100% - 3rem, 1340px);
+  width: min(100% - 3rem, 1320px);
   margin-inline: auto;
 }
 
 @media (max-width: 639px) {
   .site-container {
-    width: min(100% - 2rem, 1340px);
+    width: min(100% - 2rem, 1320px);
   }
 }
 
@@ -224,13 +220,14 @@ section[id]:not(#hero) {
   top: 0.75rem;
   left: 0.75rem;
   z-index: 120;
-  transform: translateY(-180%);
-  padding: 0.75rem 1.1rem;
-  border-radius: 3px;
-  background: var(--ink-primary);
-  color: var(--bg-sheet-top);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  transform: translateY(-200%);
+  padding: 0.75rem 1.15rem;
+  border-radius: 8px;
+  background: var(--accent-primary);
+  color: var(--surface-elevated);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
   transition: transform 180ms var(--ease-out-strong);
 }
 
@@ -240,190 +237,131 @@ section[id]:not(#hero) {
 
 @layer components {
   /* ==========================================================================
-     TACTILE PAPER-CUT ARCHITECTURE SURFACES
+     UNIFIED SURFACE HIERARCHY (Consistent radius & layered subtle elevation)
      ========================================================================== */
 
-  /* Raised matboard cut-sheet with studio bevel & penumbra shadow */
-  .paper-sheet {
+  .studio-surface {
     position: relative;
-    background-color: var(--bg-sheet-top);
-    border: 1px solid var(--rule-cut);
+    background-color: var(--surface-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.85),
-      0 2px 4px rgba(24, 23, 21, 0.055),
-      0 12px 28px -10px rgba(24, 23, 21, 0.11);
+      0 1px 2px rgba(17, 23, 20, 0.04),
+      0 12px 32px -12px rgba(17, 23, 20, 0.08);
   }
 
-  /* Stacked multi-ply paper deckle illusion */
-  .paper-stack {
+  .studio-inset {
     position: relative;
-    background-color: var(--bg-sheet-top);
-    border: 1px solid var(--rule-cut);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.88),
-      0 3px 0 -1px var(--bg-sheet-mid),
-      0 3px 0 0 var(--rule-cut),
-      0 7px 0 -2px var(--bg-canvas),
-      0 7px 0 -1px var(--rule-cut),
-      0 16px 32px -12px rgba(24, 23, 21, 0.14);
+    background-color: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
   }
 
-  /* Recessed die-cut paper aperture (carved well) */
-  .paper-well {
+  /* Deep Forest-Obsidian Engine Darkroom (#about, #skills, live instruments) */
+  .engine-room {
     position: relative;
-    background-color: var(--bg-sheet-mid);
-    border: 1px solid var(--rule-cut);
-    box-shadow:
-      inset 0 2px 6px rgba(24, 23, 21, 0.085),
-      inset 0 1px 1px rgba(24, 23, 21, 0.06),
-      0 1px 0 rgba(255, 255, 255, 0.7);
+    background-color: var(--engine-ground);
+    color: var(--engine-ink);
   }
 
-  .paper-well-deep {
+  .engine-panel {
     position: relative;
-    background-color: var(--bg-sheet-deep);
-    border: 1px solid var(--rule-strong);
+    background-color: var(--engine-surface);
+    border: 1px solid var(--engine-border);
+    border-radius: 14px;
     box-shadow:
-      inset 0 3px 9px rgba(24, 23, 21, 0.12),
-      0 1px 0 rgba(255, 255, 255, 0.65);
+      inset 0 1px 0 rgba(243, 246, 242, 0.05),
+      0 18px 36px -16px rgba(0, 0, 0, 0.42);
   }
 
-  /* Unclipped multi-ply 45-deg chamfered folio: zero-filter GPU geometry with crisp 1px diagonal bevel & offset ply */
-  .paper-chamfer {
-    --chamfer-poly: polygon(
-      0 0,
-      calc(100% - 22px) 0,
-      100% 22px,
-      100% 100%,
-      18px 100%,
-      0 calc(100% - 18px)
-    );
+  .engine-inset {
     position: relative;
-    isolation: isolate;
-    background: transparent;
-    border: 0;
-    box-shadow: 0 16px 30px -14px rgba(24, 23, 21, 0.16);
+    background-color: var(--engine-inset);
+    border: 1px solid var(--engine-border);
+    border-radius: 10px;
   }
 
-  .paper-chamfer::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    transform: translate3d(5px, 6px, 0);
-    background-color: var(--bg-sheet-deep);
-    background-image:
-      linear-gradient(225deg, var(--rule-cut) calc(50% + 1.15px), transparent calc(50% + 1.15px)),
-      linear-gradient(45deg, var(--rule-cut) calc(50% + 1.15px), transparent calc(50% + 1.15px));
-    background-size: 22px 22px, 18px 18px;
-    background-position: top right, bottom left;
-    background-repeat: no-repeat;
-    box-shadow: inset 0 0 0 1px var(--rule-cut);
-    clip-path: var(--chamfer-poly);
-    pointer-events: none;
-  }
-
-  .paper-chamfer::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background-color: var(--bg-sheet-top);
-    background-image:
-      linear-gradient(225deg, var(--rule-strong) calc(50% + 1.15px), transparent calc(50% + 1.15px)),
-      linear-gradient(45deg, var(--rule-strong) calc(50% + 1.15px), transparent calc(50% + 1.15px));
-    background-size: 22px 22px, 18px 18px;
-    background-position: top right, bottom left;
-    background-repeat: no-repeat;
-    box-shadow:
-      inset 0 0 0 1px var(--rule-strong),
-      inset 0 2px 0 rgba(255, 255, 255, 0.85);
-    clip-path: var(--chamfer-poly);
-    pointer-events: none;
-  }
-
-  /* Committed Deep Pine-Walnut Press Plate (#about + #skills) */
-  .press-plate {
-    position: relative;
-    background-color: var(--bg-press);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23p)' opacity='0.045'/%3E%3C/svg%3E");
-    color: var(--ink-on-press);
-  }
-
-  .press-card {
-    background-color: var(--bg-press-raised);
-    border: 1px solid var(--rule-on-press);
-    box-shadow:
-      inset 0 1px 0 rgba(244, 240, 230, 0.06),
-      0 12px 28px -10px rgba(0, 0, 0, 0.45);
-  }
-
-  /* Typography Scale (craft-floor compliant: display <= 5.5rem, tracking >= -0.035em, unitless line-height) */
+  /* Architectural Type Scale (Unitless line-height, balanced headings) */
   .display-hero {
-    font-family: var(--font-serif);
-    font-size: clamp(2.5rem, 5.1vw, 5.25rem);
-    font-weight: 500;
+    font-family: var(--font-display);
+    font-size: clamp(2.65rem, 5.4vw, 5.15rem);
+    font-weight: 600;
     line-height: 1.03;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
   }
 
   .section-heading {
-    max-width: 19ch;
-    font-family: var(--font-serif);
-    font-size: clamp(2.1rem, 4.2vw, 3.75rem);
-    font-weight: 500;
+    max-width: 20ch;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3.9vw, 3.4rem);
+    font-weight: 600;
     line-height: 1.08;
-    letter-spacing: -0.028em;
+    letter-spacing: -0.03em;
   }
 
   .section-copy {
     max-width: 64ch;
     color: var(--ink-secondary);
-    font-size: clamp(1rem, 1.25vw, 1.125rem);
-    line-height: 1.65;
+    font-size: clamp(1rem, 1.15vw, 1.125rem);
+    line-height: 1.62;
   }
 }
 
-/* Pointer-gated tactile hover states */
+/* Pointer-gated hover micro-interactions (prevents sticky hover on touch) */
 @media (hover: hover) and (pointer: fine) {
-  .paper-lift {
+  .surface-lift {
     transition:
-      transform 240ms var(--ease-out-strong),
-      border-color 220ms ease;
+      transform 220ms var(--ease-out-strong),
+      border-color 180ms ease,
+      box-shadow 220ms var(--ease-out-strong);
   }
 
-  .paper-lift:hover {
-    transform: translate3d(0, -3px, 0);
-    border-color: var(--rule-strong);
+  .surface-lift:hover {
+    transform: translate3d(0, -2px, 0);
+    border-color: var(--border-strong);
+    box-shadow:
+      0 4px 10px rgba(17, 23, 20, 0.06),
+      0 18px 36px -14px rgba(17, 23, 20, 0.11);
   }
 
   .link-draw {
     background-image: linear-gradient(currentColor, currentColor);
     background-position: 0% 100%;
     background-repeat: no-repeat;
-    background-size: 0% 1px;
+    background-size: 0% 1.5px;
     text-decoration: none;
     transition:
-      background-size 220ms var(--ease-out-strong),
-      color 180ms ease;
+      background-size 200ms var(--ease-out-strong),
+      color 160ms ease;
   }
 
   .link-draw:hover {
-    background-size: 100% 1px;
+    background-size: 100% 1.5px;
   }
 }
 
-/*Choreographed Hero Entrance (runs once on load on compositor + clip-path)*/
-@keyframes paperUnfold {
+/* ==========================================================================
+   ONE AUTHORED HERO ENTRANCE (Compositor-only, non-uniform wave)
+   ========================================================================== */
+@keyframes heroWaveIn {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0) scale(0.985);
-    clip-path: inset(0 0 14% 0);
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes heroPortraitIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.975);
   }
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
-    clip-path: inset(-32px -32px -32px -32px);
   }
 }
 
@@ -436,24 +374,24 @@ section[id]:not(#hero) {
   }
 }
 
+.hero-meta-enter {
+  animation: quietFade 380ms var(--ease-out-strong) both;
+}
+
 .hero-lead-enter {
-  animation: paperUnfold 620ms var(--ease-out-strong) both;
+  animation: heroWaveIn 560ms var(--ease-out-strong) both;
 }
 
 .hero-support-enter {
-  animation: paperUnfold 560ms var(--ease-out-strong) 90ms both;
+  animation: heroWaveIn 520ms var(--ease-out-strong) 80ms both;
 }
 
 .hero-stage-enter {
-  animation: paperUnfold 680ms var(--ease-out-strong) 150ms both;
-}
-
-.hero-meta-enter {
-  animation: quietFade 420ms ease-out both;
+  animation: heroPortraitIn 620ms var(--ease-out-strong) 130ms both;
 }
 
 /* ==========================================================================
-   REACT 19 + NEXT.JS VIEW TRANSITIONS (Shared Element Morph & Paper Shutter)
+   REACT 19 + NEXT.JS VIEW TRANSITIONS (Shared Element Morph & Clean Glide)
    ========================================================================== */
 
 ::view-transition-group(site-header) {
@@ -469,48 +407,43 @@ section[id]:not(#hero) {
   animation: none;
 }
 
-/* Shared project folio sheet geometry morph */
 ::view-transition-group(.morph-folio) {
-  animation-duration: 440ms;
+  animation-duration: 420ms;
   animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
   z-index: 40;
 }
 
 ::view-transition-image-pair(.morph-folio) {
-  animation: 440ms cubic-bezier(0.23, 1, 0.32, 1) both viaPaperFocus;
+  animation: 420ms cubic-bezier(0.23, 1, 0.32, 1) both vtSoftFocus;
 }
 
-@keyframes viaPaperFocus {
+@keyframes vtSoftFocus {
   35% {
     filter: blur(2px);
   }
 }
 
-/* Directional Paper-Shutter Unfold (Forward: Home -> Dossier / Next Folio) */
 ::view-transition-old(.folio-forward) {
   animation:
-    180ms ease-out both vtPaperFadeOut,
-    380ms cubic-bezier(0.77, 0, 0.175, 1) both vtSlideOutLeft;
+    160ms ease-out both vtFadeOut,
+    340ms cubic-bezier(0.77, 0, 0.175, 1) both vtSlideOutLeft;
 }
 
 ::view-transition-new(.folio-forward) {
-  animation:
-    420ms cubic-bezier(0.23, 1, 0.32, 1) 80ms both vtPaperShutterInRight;
+  animation: 380ms cubic-bezier(0.23, 1, 0.32, 1) 60ms both vtGlideInRight;
 }
 
-/* Directional Paper-Shutter Fold Back (Back: Dossier -> Home / Prev Folio) */
 ::view-transition-old(.folio-back) {
   animation:
-    180ms ease-out both vtPaperFadeOut,
-    380ms cubic-bezier(0.77, 0, 0.175, 1) both vtSlideOutRight;
+    160ms ease-out both vtFadeOut,
+    340ms cubic-bezier(0.77, 0, 0.175, 1) both vtSlideOutRight;
 }
 
 ::view-transition-new(.folio-back) {
-  animation:
-    420ms cubic-bezier(0.23, 1, 0.32, 1) 80ms both vtPaperShutterInLeft;
+  animation: 380ms cubic-bezier(0.23, 1, 0.32, 1) 60ms both vtGlideInLeft;
 }
 
-@keyframes vtPaperFadeOut {
+@keyframes vtFadeOut {
   from {
     opacity: 1;
   }
@@ -524,7 +457,7 @@ section[id]:not(#hero) {
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(-44px, 0, 0);
+    transform: translate3d(-32px, 0, 0);
   }
 }
 
@@ -533,47 +466,34 @@ section[id]:not(#hero) {
     transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translate3d(44px, 0, 0);
+    transform: translate3d(32px, 0, 0);
   }
 }
 
-@keyframes vtPaperShutterInRight {
+@keyframes vtGlideInRight {
   from {
     opacity: 0;
-    transform: translate3d(38px, 0, 0);
-    clip-path: inset(0 0 0 18%);
+    transform: translate3d(32px, 0, 0);
   }
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
-    clip-path: inset(0 0 0 0);
   }
 }
 
-@keyframes vtPaperShutterInLeft {
+@keyframes vtGlideInLeft {
   from {
     opacity: 0;
-    transform: translate3d(-38px, 0, 0);
-    clip-path: inset(0 18% 0 0);
+    transform: translate3d(-32px, 0, 0);
   }
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
-    clip-path: inset(0 0 0 0);
   }
-}
-
-/* Suspense Loading Reveal */
-::view-transition-old(.folio-skeleton-out) {
-  animation: 150ms ease-out both vtPaperFadeOut;
-}
-
-::view-transition-new(.folio-content-in) {
-  animation: 260ms cubic-bezier(0.23, 1, 0.32, 1) 90ms both paperUnfold;
 }
 
 /* ==========================================================================
-   REDUCED MOTION: Collapse positional choreography, preserve comprehension
+   REDUCED MOTION: Collapse positional motion, preserve comprehension crossfade
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -585,7 +505,6 @@ section[id]:not(#hero) {
   .hero-stage-enter,
   .hero-meta-enter {
     animation: quietFade 200ms ease-out both !important;
-    clip-path: none !important;
     transform: none !important;
   }
 
