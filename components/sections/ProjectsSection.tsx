@@ -126,9 +126,6 @@ export default function ProjectsSection() {
                   <h2 className="font-serif text-2xl font-medium leading-tight tracking-[-0.028em] text-[var(--ink-primary)] xl:text-3xl">
                     {text.title}
                   </h2>
-                  <p className="mt-1 max-w-[62ch] text-xs text-[var(--ink-secondary)] sm:text-sm">
-                    {text.scrollHint}
-                  </p>
                 </div>
 
                 {/* Interactive Folio Index Strip */}

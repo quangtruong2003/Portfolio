@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Layers, RotateCcw } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import {
   motion,
   useMotionTemplate,
@@ -28,10 +28,6 @@ interface PaperKineticSculptureProps {
 type FocusIdx = 0 | 1 | 2;
 
 export default function PaperKineticSculpture({
-  stageLabel,
-  pulseLabel,
-  strataHint,
-  layers,
   liveDownloads,
   language = "en",
 }: PaperKineticSculptureProps) {
@@ -73,28 +69,7 @@ export default function PaperKineticSculpture({
   // Dynamic Studio Softbox Key-Light Spotlight Percentage
   const lightPctX = useTransform(sx, [-1, 1], [22, 78]);
   const lightPctY = useTransform(sy, [-1, 1], [18, 72]);
-  const spotlightBg = useMotionTemplate`radial-gradient(340px circle at ${lightPctX}% ${lightPctY}%, rgba(255, 253, 248, 0.85), rgba(244, 239, 230, 0) 72%)`;
-
-  const applyFocusAngle = useCallback(
-    (idx: FocusIdx) => {
-      setActiveFocus(idx);
-      if (shouldReduceMotion) return;
-      if (idx === 0) {
-        // Tilt toward bottom-right SmoothScroll card
-        rawX.set(0.45);
-        rawY.set(0.32);
-      } else if (idx === 1) {
-        // Tilt toward top-left Laravel 12 card
-        rawX.set(-0.52);
-        rawY.set(-0.35);
-      } else {
-        // Tilt toward top-right MySQL / Redis card
-        rawX.set(0.52);
-        rawY.set(-0.32);
-      }
-    },
-    [rawX, rawY, shouldReduceMotion]
-  );
+  const spotlightBg = useMotionTemplate`radial-gradient(360px circle at ${lightPctX}% ${lightPctY}%, rgba(255, 253, 248, 0.88), rgba(244, 239, 230, 0) 72%)`;
 
   const resetAngle = useCallback(() => {
     rawX.set(0);
@@ -135,7 +110,7 @@ export default function PaperKineticSculpture({
   const floatingCards = [
     {
       idx: 0 as FocusIdx,
-      posClass: "bottom-3 right-3 hidden sm:block",
+      posClass: "bottom-3.5 right-3.5 hidden sm:block",
       code: "01 · RUST & TAURI 2",
       title: liveDownloads ? `SmoothScroll · ${liveDownloads}` : "SmoothScroll · 120Hz",
       meta: isVi ? "Tiện ích cuộn chuột Windows" : "Windows 120Hz wheel engine",
@@ -144,7 +119,7 @@ export default function PaperKineticSculpture({
     },
     {
       idx: 1 as FocusIdx,
-      posClass: "left-3 top-3 hidden sm:block",
+      posClass: "left-3.5 top-3.5 hidden sm:block",
       code: "02 · PHP 8+ & LARAVEL 12",
       title: isVi ? "Kiến trúc API & Queue" : "REST APIs & Async Queues",
       meta: isVi ? "Phân quyền RBAC 4 tầng · C3TEK" : "4-Tier RBAC · Billing Workers",
@@ -153,7 +128,7 @@ export default function PaperKineticSculpture({
     },
     {
       idx: 2 as FocusIdx,
-      posClass: "right-3 top-3 hidden sm:block",
+      posClass: "right-3.5 top-3.5 hidden sm:block",
       code: "03 · DATA & SETTLEMENT",
       title: "MySQL · Redis · VNPay",
       meta: isVi ? "Tối ưu N+1 & Composite Index" : "N+1 Elimination & Cache Hit",
@@ -163,31 +138,14 @@ export default function PaperKineticSculpture({
   ];
 
   return (
-    <div className="paper-stack paper-chamfer relative flex flex-col justify-between p-4 sm:p-5">
-      {/* Top Studio Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--rule-cut)] pb-2.5 font-mono text-xs text-[var(--ink-secondary)]">
-        <span className="inline-flex min-w-0 items-center gap-2 truncate font-medium text-[var(--ink-primary)]">
-          <Layers size={13} className="shrink-0 text-[var(--accent-vermilion)]" aria-hidden="true" />
-          <span className="truncate">{stageLabel}</span>
-        </span>
-
-        <button
-          type="button"
-          onClick={resetAngle}
-          className="inline-flex min-h-7 shrink-0 cursor-pointer items-center gap-1.5 rounded-[2px] border border-[var(--rule-strong)] bg-[var(--bg-canvas)] px-2.5 py-0.5 font-mono text-xs font-medium text-[var(--ink-primary)] transition-colors hover:border-[var(--accent-vermilion)] hover:text-[var(--accent-vermilion)] active:scale-[0.97]"
-        >
-          <RotateCcw size={11} aria-hidden="true" />
-          <span>{pulseLabel}</span>
-        </button>
-      </div>
-
+    <div className="paper-stack paper-chamfer relative p-3.5 sm:p-4">
       {/* 3D Perspective Viewport (1100px focal length) */}
       <div
         ref={stageRef}
         onPointerMove={handleStagePointerMove}
         onPointerLeave={resetAngle}
         style={{ perspective: "1100px" }}
-        className="relative my-3 h-[335px] w-full select-none sm:h-[375px]"
+        className="relative h-[370px] w-full select-none sm:h-[430px]"
       >
         <motion.div
           style={
@@ -207,7 +165,7 @@ export default function PaperKineticSculpture({
             className="pointer-events-none absolute -inset-5"
             aria-hidden="true"
           >
-            <svg viewBox="0 0 560 420" className="h-full w-full">
+            <svg viewBox="0 0 560 440" className="h-full w-full">
               <defs>
                 <radialGradient id="atelier-halo" cx="50%" cy="40%" r="54%">
                   <stop offset="0%" stopColor="#FFFDF9" stopOpacity="0.96" />
@@ -215,13 +173,13 @@ export default function PaperKineticSculpture({
                   <stop offset="100%" stopColor="#E1D8C7" stopOpacity="0.3" />
                 </radialGradient>
               </defs>
-              <rect width="560" height="420" fill="url(#atelier-halo)" />
+              <rect width="560" height="440" fill="url(#atelier-halo)" />
 
               {/* Subtle Architectural Drafting Halo Behind Portrait */}
               <circle
                 cx="280"
-                cy="168"
-                r="142"
+                cy="176"
+                r="148"
                 fill="none"
                 stroke="#9E9686"
                 strokeOpacity="0.34"
@@ -230,8 +188,8 @@ export default function PaperKineticSculpture({
               />
               <circle
                 cx="280"
-                cy="168"
-                r="104"
+                cy="176"
+                r="108"
                 fill="none"
                 stroke="#B8332A"
                 strokeOpacity="0.24"
@@ -239,9 +197,9 @@ export default function PaperKineticSculpture({
               />
               <line
                 x1="48"
-                y1="168"
+                y1="176"
                 x2="512"
-                y2="168"
+                y2="176"
                 stroke="#9E9686"
                 strokeOpacity="0.22"
                 strokeWidth="0.8"
@@ -250,7 +208,7 @@ export default function PaperKineticSculpture({
                 x1="280"
                 y1="20"
                 x2="280"
-                y2="395"
+                y2="415"
                 stroke="#9E9686"
                 strokeOpacity="0.22"
                 strokeWidth="0.8"
@@ -268,15 +226,15 @@ export default function PaperKineticSculpture({
           {/* PLANE 2 (Dynamic 3D Cast Silhouette Shadow on Studio Wall, Z = -16px) */}
           <motion.div
             style={shouldReduceMotion ? undefined : { x: shadowX, y: shadowY }}
-            className="pointer-events-none absolute inset-x-0 bottom-0 top-3 z-10 flex items-end justify-center opacity-18 blur-[7px]"
+            className="pointer-events-none absolute inset-x-0 bottom-0 top-4 z-10 flex items-end justify-center opacity-18 blur-[7px]"
             aria-hidden="true"
           >
-            <div className="relative h-full w-[290px] sm:w-[320px]">
+            <div className="relative h-full w-[310px] sm:w-[355px]">
               <Image
                 src="/portrait/truong-portrait.png"
                 alt=""
                 fill
-                sizes="340px"
+                sizes="360px"
                 className="object-contain object-bottom brightness-0"
               />
             </div>
@@ -285,9 +243,9 @@ export default function PaperKineticSculpture({
           {/* PLANE 3 (100% Authentic, Untouched Studio Portrait Subject, Z = +18px) */}
           <motion.div
             style={shouldReduceMotion ? undefined : { x: portraitX, y: portraitY }}
-            className="pointer-events-none absolute inset-x-0 bottom-0 top-2 z-20 flex items-end justify-center will-change-transform"
+            className="pointer-events-none absolute inset-x-0 bottom-0 top-3 z-20 flex items-end justify-center will-change-transform"
           >
-            <div className="relative h-full w-[290px] sm:w-[325px]">
+            <div className="relative h-full w-[310px] sm:w-[360px]">
               <Image
                 src="/portrait/truong-portrait.png"
                 alt={
@@ -297,7 +255,7 @@ export default function PaperKineticSculpture({
                 }
                 fill
                 priority
-                sizes="(max-width: 640px) 290px, 340px"
+                sizes="(max-width: 640px) 310px, 370px"
                 className="object-contain object-bottom drop-shadow-[0_14px_24px_rgba(24,23,21,0.16)]"
               />
             </div>
@@ -305,12 +263,12 @@ export default function PaperKineticSculpture({
 
           {/* Patent Corner Frame Registration Ticks */}
           <svg
-            viewBox="0 0 520 380"
+            viewBox="0 0 520 420"
             className="pointer-events-none absolute inset-0 z-25 h-full w-full"
             aria-hidden="true"
           >
             <path
-              d="M 10 24 L 10 10 L 24 10 M 496 10 L 510 10 L 510 24 M 10 356 L 10 370 L 24 370 M 496 370 L 510 370 L 510 356"
+              d="M 10 24 L 10 10 L 24 10 M 496 10 L 510 10 L 510 24 M 10 396 L 10 410 L 24 410 M 496 410 L 510 410 L 510 396"
               fill="none"
               stroke="#8E8677"
               strokeWidth="1.1"
@@ -330,7 +288,6 @@ export default function PaperKineticSculpture({
                   href={card.href}
                   transitionTypes={["folio-forward"]}
                   onMouseEnter={() => setActiveFocus(card.idx)}
-                  data-cursor="open"
                   className={
                     `pointer-events-auto absolute ${card.posClass} group max-w-[205px] rounded-[3px] border bg-[var(--bg-sheet-top)]/95 px-3 py-2 shadow-[0_12px_26px_-6px_rgba(24,23,21,0.22)] transition-[border-color,transform] duration-200 hover:-translate-y-0.5 ` +
                     (isSelected
@@ -362,7 +319,7 @@ export default function PaperKineticSculpture({
             })}
 
             {/* Bottom-Left Identity Plaque on Desktop + Compact Dual Pill Strip on Mobile */}
-            <div className="absolute bottom-3 left-3 hidden rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)]/95 px-3 py-1.5 shadow-[0_10px_22px_-6px_rgba(24,23,21,0.18)] sm:block">
+            <div className="absolute bottom-3.5 left-3.5 hidden rounded-[3px] border border-[var(--rule-strong)] bg-[var(--bg-sheet-top)]/95 px-3 py-1.5 shadow-[0_10px_22px_-6px_rgba(24,23,21,0.18)] sm:block">
               <p className="font-serif text-sm font-semibold text-[var(--ink-primary)]">
                 {isVi ? "Nguyễn Quang Trường" : "Nguyen Quang Truong"}
               </p>
@@ -376,45 +333,16 @@ export default function PaperKineticSculpture({
                 {isVi ? "Nguyễn Quang Trường" : "Nguyen Quang Truong"}
               </span>
               <Link
-                href={floatingCards[activeFocus].href}
+                href={floatingCards[0].href}
                 transitionTypes={["folio-forward"]}
                 className="inline-flex shrink-0 items-center gap-1 rounded-[3px] border border-[var(--ink-primary)] bg-[var(--ink-primary)] px-2.5 py-1 font-mono text-xs font-medium text-[var(--bg-sheet-top)] shadow-[0_6px_16px_rgba(24,23,21,0.18)]"
               >
-                <span>{floatingCards[activeFocus].title}</span>
+                <span>{floatingCards[0].title}</span>
                 <ArrowUpRight size={12} aria-hidden="true" />
               </Link>
             </div>
           </motion.div>
         </motion.div>
-      </div>
-
-      {/* Bottom 3D Perspective Focus Switcher */}
-      <div className="space-y-2 border-t border-[var(--rule-cut)] pt-2.5">
-        <p className="font-sans text-xs text-[var(--ink-secondary)]">{strataHint}</p>
-
-        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3" role="tablist" aria-label={stageLabel}>
-          {layers.map((label, idx) => {
-            const focusIdx = idx as FocusIdx;
-            const active = activeFocus === focusIdx;
-            return (
-              <button
-                key={label}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => applyFocusAngle(focusIdx)}
-                className={
-                  "min-h-9 cursor-pointer rounded-[3px] border px-2.5 py-1.5 text-left font-mono text-xs transition-[background-color,border-color,color,transform] duration-150 active:scale-[0.98] " +
-                  (active
-                    ? "border-[var(--ink-primary)] bg-[var(--ink-primary)] font-semibold text-[var(--bg-sheet-top)]"
-                    : "border-[var(--rule-cut)] bg-[var(--bg-canvas)] text-[var(--ink-secondary)] hover:border-[var(--rule-strong)] hover:text-[var(--ink-primary)]")
-                }
-              >
-                <span className="block truncate">{label}</span>
-              </button>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

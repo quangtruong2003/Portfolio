@@ -5,7 +5,6 @@ import { Be_Vietnam_Pro, Brygada_1918, Chivo_Mono } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import MotionProvider from "@/components/animations/MotionProvider";
-import TactileCursor from "@/components/ui/TactileCursor";
 
 const brygadaDisplay = Brygada_1918({
   subsets: ["latin", "latin-ext", "vietnamese"],
@@ -140,7 +139,6 @@ export default async function RootLayout({
       <body className="min-h-[100dvh] antialiased">
         <MotionProvider>
           <LanguageProvider initialLanguage={initialLanguage}>
-            <TactileCursor />
             {children}
           </LanguageProvider>
         </MotionProvider>

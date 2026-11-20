@@ -246,10 +246,6 @@ export default function SmoothScrollLab() {
           {lab.triggerBurst}
         </button>
       </div>
-
-      <p className="mt-2.5 text-xs leading-relaxed text-[var(--ink-secondary)]">
-        {lab.caption}
-      </p>
     </div>
   );
 }

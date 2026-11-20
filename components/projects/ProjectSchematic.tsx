@@ -103,9 +103,6 @@ export default function ProjectSchematic({
           <span className="font-mono text-xs font-medium text-[var(--ink-primary)]">
             {project.architectureTitle[language]}
           </span>
-          <span className="font-sans text-xs text-[var(--ink-tertiary)]">
-            {dictionary.projects.interactiveNodeHint}
-          </span>
         </div>
 
         {/* Drafted SVG Patent Flow Rail (01 -> 02 -> 03 -> 04) */}
