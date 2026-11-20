@@ -18,7 +18,7 @@ export default function ProjectSchematic({
   showLiveLab = true,
   compactOnRail = false,
 }: ProjectSchematicProps) {
-  const { language, dictionary } = useLanguage();
+  const { language } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const activeNode = project.architectureNodes[selectedIndex] ?? project.architectureNodes[0];
 
